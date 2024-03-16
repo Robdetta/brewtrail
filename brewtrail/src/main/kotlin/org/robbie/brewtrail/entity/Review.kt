@@ -1,5 +1,6 @@
 package org.robbie.brewtrail.entity
 
+
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -19,9 +20,8 @@ data class Review(
     @JoinColumn(name = "user_id")
     val user: User,
 
-    @ManyToOne
-    @JoinColumn(name = "brewery_id")
-    val brewery: Brewery,
+    @Column(name = "brewery_api_id")
+    val openBreweryDbId: String, // Brewery ID from the Open Brewery DB API
 
     val rating: Double,
     val comment: String? = null,

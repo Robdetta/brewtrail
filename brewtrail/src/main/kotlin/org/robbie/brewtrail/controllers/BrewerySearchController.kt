@@ -1,27 +1,19 @@
 package org.robbie.brewtrail.controllers
 
+import org.robbie.brewtrail.services.BreweryService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.getForEntity
-
+import org.springframework.web.bind.annotation.*
 
 @RestController
-class BrewerySearchController {
+@RequestMapping("/api")
+class BrewerySearchController(private val breweryService: BreweryService) {
 
-    private val restTemplate = RestTemplate()
-    private val baseUrl = "https://api.openbrewerydb.org/breweries"
-
-    @CrossOrigin(origins = ["http://localhost:8081"])
-    @GetMapping("/api/search")
-    fun searchBreweriesByCityAndState(@RequestParam city: String, @RequestParam(required = false) state: String?): ResponseEntity<String> {
-        var url = "$baseUrl?by_city=${city.replace(" ", "_")}"
-        if (state != null) {
-            url += "&by_state=${state.replace(" ", "_")}"
-        }
-        return restTemplate.getForEntity(url, String::class.java)
+    @CrossOrigin(origins = ["http://localhost:8081"]) // Adjust the origin as per your frontend setup
+    @GetMapping("/search")
+    fun searchBreweriesByCityAndState(
+        @RequestParam city: String,
+        @RequestParam(required = false) state: String?
+    ): ResponseEntity<String> {
+        return breweryService.searchBreweriesByCityAndState(city, state)
     }
 }

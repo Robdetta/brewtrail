@@ -12,8 +12,8 @@ class UserController(private val userService: UserService) {
 
     @PostMapping
     fun addUser(@RequestBody userDto: UserDto): User {
-        return userService.createUser(userDto.name, userDto.email)
-    }
+    return userService.createUser(userDto.name, userDto.email, userDto.password) // Pass the password to createUser   
+     }
 
     @GetMapping
     fun getAllUsers(): List<User> {
@@ -25,5 +25,5 @@ class UserController(private val userService: UserService) {
         return "Test endpoint is working"
     }
 
-    data class UserDto(val name: String, val email: String)
+    data class UserDto(val name: String, val email: String, val password: String)
 }

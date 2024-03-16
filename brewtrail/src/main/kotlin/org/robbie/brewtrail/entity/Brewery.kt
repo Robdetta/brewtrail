@@ -14,7 +14,7 @@ data class Brewery(
     val id: Long = 0,  // Internal unique ID
 
     @Column(unique = true)
-    val externalId: String,  // ID from Open Brewery DB
+    val openBreweryDbId: String,  // ID from Open Brewery DB
 
     val name: String,
     @Column(name = "brewery_type")
