@@ -16,12 +16,6 @@ class BrewtrailApplication {
     @Bean
     fun restTemplate(): RestTemplate = RestTemplate()
 
-    @GetMapping("/api/search")
-    fun searchBreweries(): String {
-        return "Simplified response"
-    }
-
-    // Other beans and methods...
 }
 
 fun main(args: Array<String>) {
