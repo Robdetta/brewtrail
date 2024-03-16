@@ -3,7 +3,7 @@ services:
     image: 'postgres:latest'
     environment:
       - 'POSTGRES_DB=brewerydb'
-      - 'POSTGRES_PASSWORD=DB_PASSWORD'
-      - 'POSTGRES_USER=DB_USERNAME'
+      - 'POSTGRES_PASSWORD=${DB_PASSWORD}'
+      - 'POSTGRES_USER=${DB_USERNAME}'
     ports:
       - '5432:5432'
