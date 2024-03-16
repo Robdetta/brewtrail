@@ -20,9 +20,6 @@ repositories {
 }
 
 dependencies {
-	implementation ("org.hibernate:hibernate-core")
-    implementation ("org.hibernate:hibernate-entitymanager")
-    implementation ("org.hibernate.javax.persistence:hibernate-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
