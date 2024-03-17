@@ -29,38 +29,13 @@ class ReviewService(
         val user = userRepository.findById(userId).orElseThrow { EntityNotFoundException("User not found") }
 
         val brewery = breweryRepository.findByOpenBreweryDbId(openBreweryDbId)
-            ?: breweryService.fetchBreweryByOpenBreweryDbId(openBreweryDbId)?.let { dto ->
-                Brewery(
-                    openBreweryDbId = dto.openBreweryDbId,
-                    name = dto.name,
-                    breweryType = dto.breweryType,
-                    address1 = dto.address1 ?: "",
-                    city = dto.city,
-                    stateProvince = dto.stateProvince,
-                    postalCode = dto.postalCode ?: "",
-                    country = dto.country,
-                    longitude = dto.longitude,
-                    latitude = dto.latitude,
-                    phone = dto.phone,
-                    websiteUrl = dto.websiteUrl,
-                    createdAt = Instant.now(),
-                    updatedAt = Instant.now()
-                ).also { newBrewery ->
-                    breweryRepository.save(newBrewery)
-                }
-            } ?: throw EntityNotFoundException("Brewery not found with openBreweryDbId: $openBreweryDbId")
+            ?: breweryService.fetchBreweryByOpenBreweryDbId(openBreweryDbId)
+            ?: throw EntityNotFoundException("Brewery not found with openBreweryDbId: $openBreweryDbId")
 
-        val review = Review(
-            user = user,
-            brewery = brewery,  // Use the Brewery entity here
-            rating = rating,
-            comment = comment,
-            createdAt = Instant.now(),
-            updatedAt = Instant.now()
-        )
-
+        val review = Review(user = user, brewery = brewery, rating = rating, comment = comment, createdAt = Instant.now(), updatedAt = Instant.now())
         return reviewRepository.save(review)
     }
+
     // Other service methods...
 }
 

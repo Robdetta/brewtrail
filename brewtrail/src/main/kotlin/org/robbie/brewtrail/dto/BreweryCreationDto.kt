@@ -1,16 +1,18 @@
 package org.robbie.brewtrail.dto
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 data class BreweryCreationDto(
-    val openBreweryDbId: String,
-    val name: String,
-    val breweryType: String,
-    val address1: String,
-    val city: String,
-    val stateProvince: String?,
-    val postalCode: String,
-    val country: String,
-    val longitude: String?,
-    val latitude: String?,
-    val phone: String?,
-    val websiteUrl: String?
+    @JsonProperty("id") val openBreweryDbId: String?,
+    @JsonProperty("name") val name: String?,
+    @JsonProperty("brewery_type") val breweryType: String? = "Unknown", // Make breweryType nullable or provide a default value
+    @JsonProperty("street") val address1: String?,
+    @JsonProperty("city") val city: String?,
+    @JsonProperty("state") val stateProvince: String?,
+    @JsonProperty("postal_code") val postalCode: String?,
+    @JsonProperty("country") val country: String?,
+    @JsonProperty("longitude") val longitude: String?,
+    @JsonProperty("latitude") val latitude: String?,
+    @JsonProperty("phone") val phone: String?,
+    @JsonProperty("website_url") val websiteUrl: String?
 )
