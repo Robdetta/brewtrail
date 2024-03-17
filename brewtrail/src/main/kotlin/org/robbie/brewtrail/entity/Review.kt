@@ -22,7 +22,7 @@ data class Review(
 
     @ManyToOne
     @JoinColumn(name = "brewery_id")
-    val brewery: Brewery, // Brewery ID from the Open Brewery DB API
+    val openBreweryDbId: String, // Brewery ID from the Open Brewery DB API
 
     val rating: Double,
     val comment: String? = null,
