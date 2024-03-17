@@ -20,9 +20,10 @@ class SecurityConfig {
     @Bean
     fun filterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         httpSecurity
+            .csrf().disable()
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/api/search/**").permitAll() // Public endpoints
+                    .requestMatchers("/api/search/**", "/api/reviews/**",("/users/test")).permitAll()  // Public endpoints
                     .anyRequest().authenticated()  // Other endpoints require authentication
             }
             .sessionManagement { session ->

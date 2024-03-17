@@ -1,9 +1,9 @@
 package org.robbie.brewtrail.services
 
+import org.robbie.brewtrail.dto.BreweryCreationDto
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.getForEntity
 
 @Service
 class BreweryService(private val restTemplate: RestTemplate) { // RestTemplate should be configured as a Bean
@@ -18,5 +18,14 @@ class BreweryService(private val restTemplate: RestTemplate) { // RestTemplate s
         return restTemplate.getForEntity(url, String::class.java)
     }
 
+    fun fetchBreweryByOpenBreweryDbId(openBreweryDbId: String): BreweryCreationDto? {
+        val url = "$baseUrl/$openBreweryDbId"
+        return try {
+            restTemplate.getForObject(url, BreweryCreationDto::class.java)
+        } catch (e: Exception) {
+            // Log error or handle it as needed
+            null
+        }
+    }
     // Additional methods related to breweries can be added here
 }

@@ -20,8 +20,9 @@ data class Review(
     @JoinColumn(name = "user_id")
     val user: User,
 
-    @Column(name = "brewery_api_id")
-    val openBreweryDbId: String, // Brewery ID from the Open Brewery DB API
+    @ManyToOne
+    @JoinColumn(name = "brewery_id")
+    val brewery: Brewery, // Brewery ID from the Open Brewery DB API
 
     val rating: Double,
     val comment: String? = null,

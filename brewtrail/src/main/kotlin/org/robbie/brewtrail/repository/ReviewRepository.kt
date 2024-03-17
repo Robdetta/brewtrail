@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository
 
 interface ReviewRepository : CrudRepository<Review, Long> {
     // Find all reviews for a specific brewery
-    fun findByopenBreweryDbId(openBreweryDbId: String): List<Review>
+    fun findByOpenBreweryDbId(openBreweryDbId: String): List<Review>
 
     // Find all reviews made by a specific user
     fun findByUserId(userId: Long): List<Review>

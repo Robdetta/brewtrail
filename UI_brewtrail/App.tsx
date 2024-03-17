@@ -1,6 +1,6 @@
 import React from 'react';
-import HomeScreen from './screens/HomeScreen';
+import AppNavigator from './screens/AppNavigator'; // Adjust the import path as needed
 
 export default function App() {
-  return <HomeScreen />;
+  return <AppNavigator />;
 }

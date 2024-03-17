@@ -3,7 +3,7 @@ import { View, TextInput, Button, StyleSheet, StatusBar } from 'react-native';
 import BreweryList from '../components/BreweryList';
 import { searchBreweries } from '../services/BreweryService';
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [breweries, setBreweries] = useState([]);
@@ -32,7 +32,10 @@ const HomeScreen = () => {
         title='Search'
         color='#841584'
       />
-      <BreweryList breweries={breweries} />
+      <BreweryList
+        breweries={breweries}
+        navigation={navigation}
+      />
       <StatusBar style='auto' />
     </View>
   );
