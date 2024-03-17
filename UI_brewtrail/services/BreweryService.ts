@@ -62,3 +62,19 @@ export const submitReview = async (
     throw error; // Rethrow the error for handling in the component
   }
 };
+
+export const fetchReviewsForBrewery = async (breweryId: string) => {
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/reviews/${breweryId}`,
+    );
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const reviews = await response.json();
+    return reviews;
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    return [];
+  }
+};
