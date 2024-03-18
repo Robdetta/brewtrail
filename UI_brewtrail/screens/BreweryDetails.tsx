@@ -1,78 +1,39 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, Linking } from 'react-native';
+import {
+  View,
+  Text,
+  Button,
+  TextInput,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
 import {
   fetchBreweryDetails,
   fetchReviewsForBrewery,
-} from '../services/BreweryService'; // Adjust the import path as needed
+  submitReview,
+} from '../services/BreweryService';
 
 const BreweryDetailsScreen = ({ route, navigation }) => {
-  const { breweryId } = route.params;
-  const [brewery, setBrewery] = useState(null);
-  const [reviews, setReviews] = useState([]);
+  const { brewery } = route.params;
 
-  useEffect(() => {
-    const getBreweryDetails = async () => {
-      const details = await fetchBreweryDetails(breweryId);
-      setBrewery(details);
-    };
-
-    const getReviews = async () => {
-      const fetchedReviews = await fetchReviewsForBrewery(breweryId);
-      setReviews(fetchedReviews);
-    };
-
-    getBreweryDetails();
-    getReviews();
-  }, [breweryId]);
-
-  const openURL = (url) => {
-    Linking.openURL(url).catch((err) =>
-      console.error('An error occurred', err),
-    );
+  const handleWriteReview = () => {
+    // Navigate to the ReviewScreen and pass the brewery ID as a parameter
+    navigation.navigate('Review', { breweryId: brewery.id });
   };
 
   return (
     <View style={styles.container}>
-      {brewery && (
-        <View>
-          <Text style={styles.title}>{brewery.name}</Text>
-          <Text>City: {brewery.city}</Text>
-          <Text>State: {brewery.state}</Text>
-          <Text>Type: {brewery.breweryType}</Text>
-          <Text>Address: {brewery.address1}</Text>
-          {brewery.phone && <Text>Phone: {brewery.phone}</Text>}
-          {brewery.websiteUrl && (
-            <Text
-              style={styles.link}
-              onPress={() => openURL(brewery.websiteUrl)}
-            >
-              Visit Website
-            </Text>
-          )}
-        </View>
-      )}
-
-      <View style={styles.reviewsSection}>
-        <Text style={styles.subtitle}>Reviews</Text>
-        {reviews.length > 0 ? (
-          reviews.map((review, index) => (
-            <View
-              key={index}
-              style={styles.review}
-            >
-              <Text>Rating: {review.rating}</Text>
-              <Text>{review.comment}</Text>
-            </View>
-          ))
-        ) : (
-          <Text>No reviews yet.</Text>
-        )}
+      <View>
+        <Text style={styles.title}>{brewery.name}</Text>
+        <Text>City: {brewery.city}</Text>
+        <Text>State: {brewery.state}</Text>
+        {/* Display more brewery details here */}
       </View>
-
       <Button
         title='Write Review'
-        onPress={() => navigation.navigate('Review', { breweryId })}
+        onPress={handleWriteReview}
       />
+      {/* Reviews section and Write Review button */}
     </View>
   );
 };
@@ -86,21 +47,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
-  subtitle: {
-    fontSize: 20,
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  reviewsSection: {
-    marginTop: 20,
-  },
-  review: {
-    marginBottom: 10,
-  },
-  link: {
-    color: 'blue',
-    marginTop: 5,
-  },
+  // Add styles for city, state, and other details
 });
 
 export default BreweryDetailsScreen;
