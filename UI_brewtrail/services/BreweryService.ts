@@ -66,7 +66,7 @@ export const submitReview = async (
 export const fetchReviewsForBrewery = async (breweryId: string) => {
   try {
     const response = await fetch(
-      `http://localhost:8080/api/reviews/${breweryId}`,
+      `http://localhost:8080/api/reviews/brewery/${breweryId}`,
     );
     if (!response.ok) {
       throw new Error('Network response was not ok');
