@@ -36,6 +36,9 @@ class ReviewService(
         return reviewRepository.save(review)
     }
 
-    // Other service methods...
+    @Transactional(readOnly = true)
+    fun findReviewsByBrewery(openBreweryDbId: String): List<Review> {
+        return reviewRepository.findByBrewery_OpenBreweryDbId(openBreweryDbId)
+    }
 }
 

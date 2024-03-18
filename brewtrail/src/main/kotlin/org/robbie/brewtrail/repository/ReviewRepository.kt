@@ -4,7 +4,7 @@ import org.robbie.brewtrail.entity.Review
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.CrudRepository
 
-interface ReviewRepository : JpaRepository<Review, Long> {
+interface ReviewRepository : CrudRepository<Review, Long> {
     // Find all reviews for a specific brewery
     fun findByBrewery_OpenBreweryDbId(openBreweryDbId: String): List<Review>
 

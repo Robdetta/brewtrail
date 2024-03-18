@@ -23,4 +23,16 @@ class ReviewController(private val reviewService: ReviewService) {
         )
         return ResponseEntity.ok(review)
     }
+
+
+    @GetMapping("/brewery/{openBreweryDbId}")
+    fun getReviewsByBrewery(@PathVariable openBreweryDbId: String): ResponseEntity<List<Review>> {
+        logger.debug("Fetching reviews for brewery with openBreweryDbId: {}", openBreweryDbId)
+        val reviews = reviewService.findReviewsByBrewery(openBreweryDbId)
+        return if (reviews.isNotEmpty()) {
+            ResponseEntity.ok(reviews)
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
 }

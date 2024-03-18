@@ -78,3 +78,18 @@ export const fetchReviewsForBrewery = async (breweryId: string) => {
     return [];
   }
 };
+
+export const fetchBreweryDetails = async (breweryId: string) => {
+  const url = `${BASE_URL}/breweries/${breweryId}`; // Adjust the endpoint as per your backend API
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch brewery details');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching brewery details:', error);
+    throw error;
+  }
+};
