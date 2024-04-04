@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
-import BreweryList from '@/components/BreweryList';
+import BreweryList from '@/listing/BreweryList';
 import { searchBreweries } from '../../services/services';
 
 const exploreScreen = () => {

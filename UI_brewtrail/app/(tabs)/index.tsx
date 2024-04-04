@@ -1,22 +1,20 @@
-import { StyleSheet } from 'react-native';
-import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
-import { Tabs } from 'expo-router';
 import React from 'react';
-import Colors from '@/constants/Colors';
+import { Link, Stack } from 'expo-router';
+import ExploreHeader from '@/components/ExploreHeader';
+import Listings from '@/components/Listings';
 
-const Layout = () => {
+const Page = () => {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors.primary,
-      }}
-    >
-      <Tabs.Screen
-        name='index'
-        options={{ tabBarLabel: 'Feed' }}
+    <View style={{ flex: 1 }}>
+      <Stack.Screen
+        options={{
+          header: () => <ExploreHeader />,
+        }}
       />
-    </Tabs>
+      <Listings />
+    </View>
   );
 };
-export default Layout;
+
+export default Page;
