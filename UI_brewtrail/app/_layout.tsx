@@ -63,7 +63,7 @@ function RootLayoutNav() {
           options={{ presentation: 'modal' }}
         />
         <Stack.Screen
-          name='listing/[id]'
+          name='/BreweryDetails/[breweryId]'
           options={{ headerTitle: '' }}
         />
       </Stack>

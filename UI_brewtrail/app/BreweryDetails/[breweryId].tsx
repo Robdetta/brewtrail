@@ -4,13 +4,11 @@ import {
   fetchBreweryDetails,
   fetchReviewsForBrewery,
 } from '@/services/services';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useSegments } from 'expo-router';
 
 const BreweryDetailsScreen = () => {
-  const [searchParams] = useLocalSearchParams();
-  const { breweryId } = searchParams;
-
-  const navigation = useNavigation();
+  const segments = useSegments();
+  const breweryId = segments[segments.length - 1];
 
   const [brewery, setBrewery] = useState(null);
   const [reviews, setReviews] = useState([]);

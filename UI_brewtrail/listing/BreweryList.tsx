@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { useNavigation, useRouter } from 'expo-router'; // Use navigate from Expo Router
+import { Link } from 'expo-router'; // Use navigate from Expo Router
 
 interface Brewery {
   id: string;
@@ -20,19 +20,18 @@ interface BreweryListProps {
 }
 
 const BreweryList: React.FC<BreweryListProps> = ({ breweries }) => {
-  const navigate = useNavigation(); // Hook to perform navigation
-  const router = useRouter();
-
   const renderItem = ({ item }: { item: Brewery }) => (
-    <TouchableOpacity
-      onPress={() => router.navigate(`/brewerydetails/${item.id}`)}
+    // Updated to use `href` instead of `to`
+    <Link
+      href={`/BreweryDetails/${item.id}` as any}
+      asChild
     >
       <View style={styles.item}>
         <Text style={styles.title}>{item.name}</Text>
         <Text>City: {item.city}</Text>
         <Text>State: {item.state}</Text>
       </View>
-    </TouchableOpacity>
+    </Link>
   );
 
   return (
@@ -54,6 +53,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  link: {
+    // If you need to style your Link components, do it here
+    // For example, to remove text decoration:
+    textDecoration: 'none',
   },
 });
 

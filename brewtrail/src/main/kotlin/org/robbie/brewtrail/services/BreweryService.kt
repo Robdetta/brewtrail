@@ -42,7 +42,6 @@ class BreweryService(
                 convertDtoToEntity(it).also { brewery ->
                     breweryRepository.save(brewery)
                     logger.debug("Successfully fetched and saved brewery with openBreweryDbId: $openBreweryDbId")
-                    brewery
                 }
             }
         } catch (e: Exception) {
