@@ -1,16 +1,23 @@
+import { TextInput, Button, StyleSheet } from 'react-native';
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, StatusBar } from 'react-native';
-import BreweryList from '../components/BreweryList';
-import { searchBreweries } from '../services/BreweryService';
 
-const HomeScreen = ({ navigation }) => {
+import EditScreenInfo from '@/components/EditScreenInfo';
+import { Text, View } from '@/components/Themed';
+import BreweryList from '@/components/BreweryList';
+import { searchBreweries } from '../../services/services';
+
+const TabTwoScreen = () => {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [breweries, setBreweries] = useState([]);
 
   const handleSearch = async () => {
-    const results = await searchBreweries(city, state);
-    setBreweries(results);
+    try {
+      const results = await searchBreweries(city, state);
+      setBreweries(results);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -32,11 +39,7 @@ const HomeScreen = ({ navigation }) => {
         title='Search'
         color='#841584'
       />
-      <BreweryList
-        breweries={breweries}
-        navigation={navigation}
-      />
-      <StatusBar style='auto' />
+      <BreweryList breweries={breweries} />
     </View>
   );
 };
@@ -44,16 +47,17 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
   input: {
     height: 40,
-    margin: 12,
+    marginVertical: 12,
     borderWidth: 1,
     padding: 10,
-    width: '80%',
+    width: '100%',
   },
 });
 
-export default HomeScreen;
+export default TabTwoScreen;

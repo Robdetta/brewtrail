@@ -3,10 +3,15 @@ import { View, Text, Button, StyleSheet, Linking } from 'react-native';
 import {
   fetchBreweryDetails,
   fetchReviewsForBrewery,
-} from '../services/BreweryService'; // Adjust the import path as needed
+} from '@/services/services';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
 
-const BreweryDetailsScreen = ({ route, navigation }) => {
-  const { breweryId } = route.params;
+const BreweryDetailsScreen = () => {
+  const [searchParams] = useLocalSearchParams();
+  const { breweryId } = searchParams;
+
+  const navigation = useNavigation();
+
   const [brewery, setBrewery] = useState(null);
   const [reviews, setReviews] = useState([]);
 
@@ -30,6 +35,10 @@ const BreweryDetailsScreen = ({ route, navigation }) => {
       console.error('An error occurred', err),
     );
   };
+
+  if (!breweryId) {
+    return <Text>No brewery ID provided</Text>;
+  }
 
   return (
     <View style={styles.container}>

@@ -6,51 +6,55 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation, useRouter } from 'expo-router'; // Use navigate from Expo Router
 
 interface Brewery {
-  id: string; // or number, depending on your ID type
+  id: string;
   name: string;
   city: string;
   state: string;
-  // Include other brewery properties as needed
 }
 
-// Define the props expected by BreweryList
 interface BreweryListProps {
   breweries: Brewery[];
-  navigation: StackNavigationProp<any, any>; // Use the appropriate type based on your navigation setup
 }
 
-const BreweryList: React.FC<BreweryListProps> = ({ breweries, navigation }) => (
-  <FlatList
-    data={breweries}
-    keyExtractor={(item) => item.id.toString()}
-    renderItem={({ item }) => (
-      <TouchableOpacity
-        onPress={() => navigation.navigate('BreweryDetails', { brewery: item })}
-      >
-        <View style={styles.item}>
-          <Text style={styles.title}>{item.name}</Text>
-          <Text>City: {item.city}</Text>
-          <Text>State: {item.state}</Text>
-          {/* You can add more brewery info here */}
-        </View>
-      </TouchableOpacity>
-    )}
-  />
-);
+const BreweryList: React.FC<BreweryListProps> = ({ breweries }) => {
+  const navigate = useNavigation(); // Hook to perform navigation
+  const router = useRouter();
+
+  const renderItem = ({ item }: { item: Brewery }) => (
+    <TouchableOpacity
+      onPress={() => router.navigate(`/brewerydetails/${item.id}`)}
+    >
+      <View style={styles.item}>
+        <Text style={styles.title}>{item.name}</Text>
+        <Text>City: {item.city}</Text>
+        <Text>State: {item.state}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+    <FlatList
+      data={breweries}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={renderItem}
+    />
+  );
+};
 
 const styles = StyleSheet.create({
   item: {
     backgroundColor: '#f9c2ff',
     padding: 20,
     marginVertical: 8,
+    borderRadius: 5, // Rounded corners for each list item
   },
   title: {
     fontSize: 20,
+    fontWeight: 'bold',
   },
-  // Add styles for city and state if needed
 });
 
 export default BreweryList;
