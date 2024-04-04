@@ -6,7 +6,7 @@ import { Text, View } from '@/components/Themed';
 import BreweryList from '@/components/BreweryList';
 import { searchBreweries } from '../../services/services';
 
-const TabTwoScreen = () => {
+const exploreScreen = () => {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [breweries, setBreweries] = useState([]);
@@ -60,4 +60,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TabTwoScreen;
+export default exploreScreen;
