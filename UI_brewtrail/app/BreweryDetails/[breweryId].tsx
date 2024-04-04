@@ -4,11 +4,10 @@ import {
   fetchBreweryDetails,
   fetchReviewsForBrewery,
 } from '@/services/services';
-import { useSegments } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 
 const BreweryDetailsScreen = () => {
-  const segments = useSegments();
-  const breweryId = segments[segments.length - 1];
+  const { breweryId } = useLocalSearchParams();
 
   const [brewery, setBrewery] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -27,6 +26,7 @@ const BreweryDetailsScreen = () => {
     getBreweryDetails();
     getReviews();
   }, [breweryId]);
+  console.log(`Brewery ID from URL: ${breweryId}`);
 
   const openURL = (url) => {
     Linking.openURL(url).catch((err) =>
