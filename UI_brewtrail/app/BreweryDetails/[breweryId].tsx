@@ -15,6 +15,7 @@ const BreweryDetailsScreen = () => {
   useEffect(() => {
     const getBreweryDetails = async () => {
       const details = await fetchBreweryDetails(breweryId);
+      console.log(details);
       setBrewery(details);
     };
 
@@ -44,7 +45,7 @@ const BreweryDetailsScreen = () => {
         <View>
           <Text style={styles.title}>{brewery.name}</Text>
           <Text>City: {brewery.city}</Text>
-          <Text>State: {brewery.state}</Text>
+          <Text>State: {brewery.stateProvince}</Text>
           <Text>Type: {brewery.breweryType}</Text>
           <Text>Address: {brewery.address1}</Text>
           {brewery.phone && <Text>Phone: {brewery.phone}</Text>}

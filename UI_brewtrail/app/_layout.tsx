@@ -58,14 +58,14 @@ function RootLayoutNav() {
           name='(tabs)'
           options={{ headerShown: false }}
         />
-        {/* <Stack.Screen
-          name='(modal)/login'
+        <Stack.Screen
+          name='(modals)/login'
           options={{ presentation: 'modal' }}
         />
         <Stack.Screen
-          name='/BreweryDetails/[breweryId]'
+          name='/BreweryDetails'
           options={{ headerTitle: '' }}
-        /> */}
+        />
       </Stack>
     </ThemeProvider>
   );
