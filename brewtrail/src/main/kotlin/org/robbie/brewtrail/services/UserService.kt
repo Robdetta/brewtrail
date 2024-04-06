@@ -1,5 +1,7 @@
 package org.robbie.brewtrail.services
 
+import jakarta.transaction.Transactional
+import org.robbie.brewtrail.dto.GoogleUserInfoDto
 import org.robbie.brewtrail.entity.User
 import org.robbie.brewtrail.repository.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -19,5 +21,19 @@ class UserService(
 
     fun getAllUsers(): List<User> {
         return userRepository.findAll()
+    }
+
+    @Transactional
+    fun processGoogleUser(userInfo: GoogleUserInfoDto): User {
+        val existingUser = userRepository.findByEmail(userInfo.email).orElse(null)
+        return if (existingUser != null) {
+            // Optionally update user details and return
+            existingUser.name = userInfo.name
+            userRepository.save(existingUser)
+        } else {
+            // Create a new user
+            val newUser = User(name = userInfo.name, email = userInfo.email, passwordHash = "")
+            userRepository.save(newUser)
+        }
     }
 }

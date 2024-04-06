@@ -1,9 +1,12 @@
 package org.robbie.brewtrail.controllers
 
+import org.hibernate.query.sqm.tree.SqmNode.log
+import org.robbie.brewtrail.dto.GoogleUserInfoDto
 import org.springframework.web.bind.annotation.*
 import org.robbie.brewtrail.services.UserService
 import org.robbie.brewtrail.entity.User
 import org.robbie.brewtrail.repository.UserRepository
+import org.springframework.http.ResponseEntity
 
 @RestController
 @RequestMapping("/users") // Base path for this controller
@@ -24,6 +27,14 @@ class UserController(private val userService: UserService) {
     fun testEndpoint(): String {
         return "Test endpoint is working"
     }
+
+    @PostMapping("/oauth/google")
+    fun processGoogleUser(@RequestBody userInfo: GoogleUserInfoDto): ResponseEntity<Any> {
+        val user = userService.processGoogleUser(userInfo)
+        // Generate a token for the user or perform additional actions as needed
+        return ResponseEntity.ok(user)
+    }
+
 
     data class UserDto(val name: String, val email: String, val password: String)
 }

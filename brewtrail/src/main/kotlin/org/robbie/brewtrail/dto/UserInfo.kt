@@ -1,4 +1,3 @@
 package org.robbie.brewtrail.dto
 
-class UserInfo {
-}
+data class GoogleUserInfoDto(val email: String, val name: String)

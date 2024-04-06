@@ -16,7 +16,7 @@ data class User(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    val name: String,
+    var name: String,
     val email: String,
     val passwordHash: String,
 

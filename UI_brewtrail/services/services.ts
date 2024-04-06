@@ -93,3 +93,37 @@ export const fetchBreweryDetails = async (breweryId: string) => {
     throw error;
   }
 };
+
+export const processGoogleUser = async (userInfo) => {
+  const url = `${BASE_URL}/users/oauth/google`; // Adjust the endpoint as needed
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Include any other headers your API requires
+      },
+      body: JSON.stringify({
+        name: userInfo.name,
+        email: userInfo.email,
+        // Add other user info fields as required by your backend
+      }),
+    });
+
+    if (!response.ok) {
+      // Handle non-2xx responses
+      const errorBody = await response.text();
+      console.error('Failed to process user:', response.status, errorBody);
+      throw new Error(
+        `Failed to process user: ${response.status} ${errorBody}`,
+      );
+    }
+
+    const data = await response.json();
+    console.log('User processed successfully:', data);
+    return data; // Return the data for further processing or state updates
+  } catch (error) {
+    console.error('Error processing user:', error);
+    throw error; // Rethrow to handle in the calling component
+  }
+};
