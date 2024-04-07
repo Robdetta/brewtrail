@@ -3,53 +3,67 @@ import { View, Text, Button, Alert } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CLIENT_ID } from '@env';
-
-import { useAuthRequest } from 'expo-auth-session';
-import { processGoogleUser } from '../../services/services'; // Assuming services.js is in the same directory
+import { CLIENT_ID, SUPABASE_URL, SUPABASE_ANON_KEY } from '@env';
+import { createClient } from '@supabase/supabase-js';
 
 WebBrowser.maybeCompleteAuthSession();
 
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 const Page = () => {
   const [userInfo, setUserInfo] = useState(null);
-
   const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: CLIENT_ID,
   });
 
   useEffect(() => {
     if (response?.type === 'success') {
-      const accessToken = response.authentication.accessToken;
-      getUserInfo(accessToken)
-        .then((userInfo) => {
-          AsyncStorage.setItem('@user', JSON.stringify(userInfo));
-          setUserInfo(userInfo);
-          processGoogleUser(userInfo)
-            .then((backendResponse) => {
-              // Handle backend response, e.g., storing a session token
-              console.log('Backend response:', backendResponse);
-              // Example: AsyncStorage.setItem('@session_token', backendResponse.sessionToken);
-            })
-            .catch((error) => {
-              console.error('Failed to process user info on backend:', error);
-              Alert.alert('Login Error', 'Could not log in. Please try again.');
-            });
-        })
-        .catch((error) => {
-          console.error('Failed to fetch user info:', error);
-          Alert.alert('Login Error', 'Could not log in. Please try again.');
-        });
+      const { accessToken } = response.authentication;
+      handleGoogleSignIn(accessToken);
     }
   }, [response]);
 
-  const getUserInfo = async (token) => {
-    const response = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!response.ok) {
-      throw new Error('Google API request failed');
+  const handleGoogleSignIn = async (accessToken) => {
+    try {
+      const { user, session, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        accessToken, // Pass the accessToken to Supabase for OAuth handling
+      });
+
+      if (error) throw new Error(error.message);
+
+      // Assuming your users table is named 'users' and has columns 'id', 'email', and 'name'
+      const { data: userData, error: userDataError } = await supabase
+        .from('users')
+        .upsert(
+          {
+            id: user.id,
+            email: user.email,
+            name: user.user_metadata.full_name,
+          },
+          {
+            returning: 'minimal', // or 'representation' if you need the data back
+          },
+        );
+
+      if (userDataError) throw new Error(userDataError.message);
+
+      setUserInfo({
+        email: user.email,
+        name: user.user_metadata.full_name,
+      });
+
+      AsyncStorage.setItem(
+        '@user',
+        JSON.stringify({
+          email: user.email,
+          name: user.user_metadata.full_name,
+        }),
+      );
+    } catch (error) {
+      console.error('Login Error:', error);
+      Alert.alert('Login Error', error.message);
     }
-    return await response.json();
   };
 
   return (
