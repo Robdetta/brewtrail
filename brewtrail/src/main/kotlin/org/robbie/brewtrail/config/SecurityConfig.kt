@@ -40,13 +40,4 @@ class SecurityConfig {
     fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()  // Define a password encoder bean
     }
-
-     @Configuration
-     class AppConfig {
-         @Bean
-         fun restTemplate(): RestTemplate {
-             return RestTemplate()
-         }
-     }
-
 }
