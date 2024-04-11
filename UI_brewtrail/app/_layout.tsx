@@ -62,10 +62,10 @@ function RootLayoutNav() {
           name='(modals)/login'
           options={{ presentation: 'modal' }}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name='/BreweryDetails'
           options={{ headerTitle: '' }}
-        />
+        /> */}
       </Stack>
     </ThemeProvider>
   );
