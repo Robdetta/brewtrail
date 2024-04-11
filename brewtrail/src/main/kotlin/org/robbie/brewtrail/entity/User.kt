@@ -5,8 +5,6 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.JoinColumn
 import jakarta.persistence.Column
 import java.time.Instant
 import java.util.*
@@ -17,21 +15,21 @@ data class User(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @Column(nullable = true)
+    @Column(name="name",nullable = true)
     var name: String? = null,
 
-    @Column(nullable = false, unique = true)
+    @Column(name ="email", nullable = false, unique = true)
     val email: String,
 
-    @Column(nullable = true)
+    @Column(name="password_Hash", nullable = true)
     var passwordHash: String? = null, // Store hashed password for traditional auth
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: Instant = Instant.now(),
 
-    @Column(nullable = false)
+    @Column(name = "updated_at", nullable = false)
     var updatedAt: Instant = Instant.now(),
 
-    @Column(nullable = true, unique = true)
+    @Column(name = "auth_uid", nullable = true, unique = true)
     val authUid: UUID? = null // Nullable for users who sign up with email/password
 )

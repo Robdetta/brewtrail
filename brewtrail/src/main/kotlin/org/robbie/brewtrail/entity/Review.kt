@@ -24,12 +24,15 @@ data class Review(
     @JoinColumn(name = "brewery_id")
     val brewery: Brewery, // Brewery ID from the Open Brewery DB API
 
+    @Column(name = "rating")
     val rating: Double,
+
+    @Column(name = "comment")
     val comment: String? = null,
 
-    @Column(nullable = false, updatable = false)
+    @Column(name= "created_at", nullable = false, updatable = false)
     val createdAt: Instant = Instant.now(),
 
-    @Column(nullable = false)
+    @Column(name="updated_at",nullable = false)
     var updatedAt: Instant = Instant.now()
 )
