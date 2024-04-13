@@ -12,7 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.web.client.RestTemplate
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import java.util.*
 import javax.crypto.spec.SecretKeySpec
 
@@ -31,10 +33,24 @@ class SecurityConfig {
         return NimbusJwtDecoder.withSecretKey(secretKeySpec).build()
     }
 
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val configuration = CorsConfiguration().apply {
+            allowCredentials = true
+            allowedOrigins = listOf("http://localhost:8081") // Specify your frontend URL
+            allowedHeaders = listOf("*")
+            allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+            maxAge = 3600L
+        }
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", configuration)
+        return source
+    }
 
     @Bean
-    fun filterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
+    fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         httpSecurity
+            .cors { it.configurationSource(corsConfigurationSource()) }
             .csrf { csrf -> csrf.disable() }
             .authorizeHttpRequests { auth ->
                 auth

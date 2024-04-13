@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase-client';
-import { Session, User } from '@supabase/supabase-js';
+import { Session } from '@supabase/supabase-js';
 import {
   PropsWithChildren,
   createContext,

@@ -6,6 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase-client';
 import { Tables } from '@/types/supabase';
 import { StatusBar } from 'expo-status-bar';
+import { sendTokenToBackend } from '@/services/services';
+import { useAuth } from '@/providers/AuthProvider';
 
 WebBrowser.maybeCompleteAuthSession();
 
