@@ -1,7 +1,7 @@
 import { Text, View } from '@/components/Themed';
 import React, { useEffect, useState } from 'react';
 import { Link, Stack } from 'expo-router';
-import { supabase } from '../lib/supabase-client';
+import { supabase } from '../../lib/supabase-client';
 
 const Feed = () => {
   const [userName, setUserName] = useState('');

@@ -33,5 +33,8 @@ data class User(
     var updatedAt: Instant = Instant.now(),
 
     @Column(nullable = true, unique = true)
-    val authUid: UUID? = null // Nullable for users who sign up with email/password
+    val authUid: UUID? = null,// Nullable for users who sign up with email/password
+
+    @Column(nullable = true)
+    var isAdmin: Boolean = false
 )
