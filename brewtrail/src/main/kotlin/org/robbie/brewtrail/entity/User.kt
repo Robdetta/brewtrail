@@ -5,8 +5,6 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.JoinColumn
 import jakarta.persistence.Column
 import java.time.Instant
 import java.util.*

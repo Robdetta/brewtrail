@@ -17,7 +17,7 @@ import java.util.*
 import javax.crypto.spec.SecretKeySpec
 
 
- @Configuration
+@Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 class SecurityConfig {

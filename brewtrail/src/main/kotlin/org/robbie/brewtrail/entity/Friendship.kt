@@ -26,13 +26,14 @@ data class Friendship(
     @JoinColumn(name = "addressee_id", referencedColumnName = "id")
     val addressee: User,
 
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     val status: FriendshipStatus,
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: Instant = Instant.now(),
 
-    @Column(nullable = false)
+    @Column(name = "updated_at", nullable = false)
     var updatedAt: Instant = Instant.now()
 )
 
