@@ -1,40 +1,14 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, Button, Alert, StyleSheet, TextInput } from 'react-native';
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
 import { supabase } from '../../lib/supabase-client';
-import { Tables } from '@/types/supabase';
-import { StatusBar } from 'expo-status-bar';
-import { sendTokenToBackend } from '@/services/services';
-import { useAuth } from '@/providers/AuthProvider';
+import { Button, Input } from 'react-native-elements';
 
-WebBrowser.maybeCompleteAuthSession();
-
-const ProfilePage = () => {
-  const [userInfo, setUserInfo] = useState<Tables<'app_users'> | null>(null);
+export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: process.env.EXPO_PUBLIC_CLIENT_ID,
-  });
 
-  const handleEmailSignUp = async () => {
-    const { user, session, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
-
-    if (error) console.error('Error signing in:', error);
-    else {
-      console.log('Authentication success, user:', user);
-      // Send the session token to your backend
-      sendTokenToBackend(session.access_token);
-    }
-  };
-
-  async function handleEmailSignIn() {
+  async function signInWithEmail() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
       email: email,
@@ -45,74 +19,74 @@ const ProfilePage = () => {
     setLoading(false);
   }
 
+  async function signUpWithEmail() {
+    setLoading(true);
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    });
+
+    if (error) Alert.alert(error.message);
+    if (!session)
+      Alert.alert('Please check your inbox for email verification!');
+    setLoading(false);
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{JSON.stringify(userInfo)}</Text>
-      {!userInfo ? (
-        <>
-          <TextInput
-            style={styles.input}
-            placeholder='Email'
-            value={email}
-            onChangeText={setEmail}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder='Password'
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-          <Button
-            title='Sign In'
-            onPress={handleEmailSignIn}
-            disabled={loading}
-          />
-          <Button
-            title='Sign Up'
-            onPress={handleEmailSignUp}
-            disabled={loading}
-          />
-          <Button
-            title='Sign In with Google'
-            onPress={() => promptAsync()}
-            disabled={!request || loading}
-          />
-
-          <Button
-            title='Delete Local Storage'
-            onPress={() => {
-              AsyncStorage.removeItem('@user');
-            }}
-          />
-          <StatusBar style='auto' />
-        </>
-      ) : (
-        <Text>Welcome, {userInfo.name}</Text>
-      )}
+      <View style={[styles.verticallySpaced, styles.mt20]}>
+        <Input
+          label='Email'
+          leftIcon={{ type: 'font-awesome', name: 'envelope' }}
+          onChangeText={(text) => setEmail(text)}
+          value={email}
+          placeholder='email@address.com'
+          autoCapitalize={'none'}
+        />
+      </View>
+      <View style={styles.verticallySpaced}>
+        <Input
+          label='Password'
+          leftIcon={{ type: 'font-awesome', name: 'lock' }}
+          onChangeText={(text) => setPassword(text)}
+          value={password}
+          secureTextEntry={true}
+          placeholder='Password'
+          autoCapitalize={'none'}
+        />
+      </View>
+      <View style={[styles.verticallySpaced, styles.mt20]}>
+        <Button
+          title='Sign in'
+          disabled={loading}
+          onPress={() => signInWithEmail()}
+        />
+      </View>
+      <View style={styles.verticallySpaced}>
+        <Button
+          title='Sign up'
+          disabled={loading}
+          onPress={() => signUpWithEmail()}
+        />
+      </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    marginTop: 40,
+    padding: 12,
   },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
+  verticallySpaced: {
+    paddingTop: 4,
+    paddingBottom: 4,
+    alignSelf: 'stretch',
   },
-  input: {
-    width: '100%',
-    height: 40,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: 'gray',
-    padding: 10,
+  mt20: {
+    marginTop: 20,
   },
 });
-
-export default ProfilePage;
