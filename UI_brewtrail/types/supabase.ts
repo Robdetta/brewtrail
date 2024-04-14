@@ -18,6 +18,7 @@ export type Database = {
           name: string | null;
           password_hash: string | null;
           updated_at: string;
+          isAdmin: boolean;
         };
         Insert: {
           auth_uid?: string | null;
@@ -27,6 +28,7 @@ export type Database = {
           name?: string | null;
           password_hash?: string | null;
           updated_at?: string;
+          isAdmin: boolean;
         };
         Update: {
           auth_uid?: string | null;
@@ -36,6 +38,7 @@ export type Database = {
           name?: string | null;
           password_hash?: string | null;
           updated_at?: string;
+          isAdmin: boolean;
         };
         Relationships: [];
       };

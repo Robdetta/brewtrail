@@ -94,36 +94,17 @@ export const fetchBreweryDetails = async (breweryId: string) => {
   }
 };
 
-export const processGoogleUser = async (userInfo) => {
-  const url = `${BASE_URL}/users/oauth/google`; // Adjust the endpoint as needed
+export const sendTokenToBackend = async (token: string) => {
   try {
-    const response = await fetch(url, {
+    await fetch(`${BASE_URL}/auth/token`, {
       method: 'POST',
       headers: {
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-        // Include any other headers your API requires
       },
-      body: JSON.stringify({
-        name: userInfo.name,
-        email: userInfo.email,
-        // Add other user info fields as required by your backend
-      }),
+      credentials: 'include', // Necessary for cookies to be handled correctly in web environments
     });
-
-    if (!response.ok) {
-      // Handle non-2xx responses
-      const errorBody = await response.text();
-      console.error('Failed to process user:', response.status, errorBody);
-      throw new Error(
-        `Failed to process user: ${response.status} ${errorBody}`,
-      );
-    }
-
-    const data = await response.json();
-    console.log('User processed successfully:', data);
-    return data; // Return the data for further processing or state updates
   } catch (error) {
-    console.error('Error processing user:', error);
-    throw error; // Rethrow to handle in the calling component
+    console.error('Error sending token to backend:', error);
   }
 };

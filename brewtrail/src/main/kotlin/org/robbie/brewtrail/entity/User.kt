@@ -15,21 +15,24 @@ data class User(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @Column(name="name",nullable = true)
+    @Column(nullable = true)
     var name: String? = null,
 
-    @Column(name ="email", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     val email: String,
 
-    @Column(name="password_Hash", nullable = true)
+    @Column(nullable = true)
     var passwordHash: String? = null, // Store hashed password for traditional auth
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     val createdAt: Instant = Instant.now(),
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(nullable = false)
     var updatedAt: Instant = Instant.now(),
 
-    @Column(name = "auth_uid", nullable = true, unique = true)
-    val authUid: UUID? = null // Nullable for users who sign up with email/password
+    @Column(nullable = true, unique = true)
+    val authUid: UUID? = null,// Nullable for users who sign up with email/password
+
+    @Column(nullable = true)
+    var isAdmin: Boolean = false
 )
