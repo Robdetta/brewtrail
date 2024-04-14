@@ -8,7 +8,7 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-
+import { AuthProvider } from '@/context/auth';
 import { useColorScheme } from '@/components/useColorScheme';
 
 export {
@@ -53,20 +53,18 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen
-          name='(tabs)'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name='(modals)/login'
-          options={{ presentation: 'modal' }}
-        />
-        {/* <Stack.Screen
-          name='/BreweryDetails'
-          options={{ headerTitle: '' }}
-        /> */}
-      </Stack>
+      <AuthProvider>
+        <Stack>
+          <Stack.Screen
+            name='(tabs)'
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name='(modals)/login'
+            options={{ presentation: 'modal' }}
+          />
+        </Stack>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

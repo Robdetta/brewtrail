@@ -1,16 +1,95 @@
-import { StyleSheet } from 'react-native';
-import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
-import { Tabs } from 'expo-router';
-import React from 'react';
-import Colors from '@/constants/Colors';
+import React, { useEffect, useState } from 'react';
+import EditScreenInfo from '@/components/EditScreenInfo';
+import { StyleSheet } from 'react-native';
+import { Button, Input } from 'react-native-elements';
+import { supabase } from '@/lib/supabase-client';
+import { useRouter } from 'expo-router';
+import { useAuth } from '@/context/auth';
 
-const Page = () => {
+export default function Login() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const { signIn } = useAuth();
+
+  async function signInWithEmail() {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+    signIn();
+    setLoading(false);
+    if (error) Alert.alert('Login Failed', error.message);
+  }
+
+  const goToSignUp = () => {
+    router.push('/(modals)/signup');
+  };
+
+  const closeModal = () => {
+    router.dismissAll();
+    setTimeout(() => {
+      router.push('/');
+    }, 0);
+  };
+
   return (
-    <View>
-      <Text>Login</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Login</Text>
+      <Input
+        label='Email'
+        leftIcon={{ type: 'font-awesome', name: 'envelope' }}
+        onChangeText={setEmail}
+        value={email}
+        placeholder='email@address.com'
+        autoCapitalize='none'
+      />
+      <Input
+        label='Password'
+        leftIcon={{ type: 'font-awesome', name: 'lock' }}
+        onChangeText={setPassword}
+        value={password}
+        secureTextEntry={true}
+        placeholder='Password'
+        autoCapitalize='none'
+      />
+      <Button
+        title='Login'
+        loading={loading}
+        onPress={signInWithEmail}
+      />
+      <Button
+        title="Don't have an account? Sign Up"
+        type='clear'
+        onPress={goToSignUp}
+      />
+      <Button
+        title='Close'
+        type='outline'
+        onPress={closeModal}
+      />
     </View>
   );
-};
+}
 
-export default Page;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 12,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  separator: {
+    marginVertical: 30,
+    height: 1,
+    width: '80%',
+  },
+});
