@@ -8,22 +8,21 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/context/auth';
 
 export default function Login() {
+  const { signIn } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const { signIn } = useAuth();
+  const [errorMessage, setErrorMessage] = useState(''); // Store error messages from login attempts
 
   async function signInWithEmail() {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-    signIn();
+    try {
+      await signIn(email, password);
+    } catch (error) {
+      setErrorMessage(errorMessage);
+    }
     setLoading(false);
-    if (error) Alert.alert('Login Failed', error.message);
   }
 
   const goToSignUp = () => {
@@ -93,3 +92,6 @@ const styles = StyleSheet.create({
     width: '80%',
   },
 });
+function setErrorMessage(message: string) {
+  throw new Error('Function not implemented.');
+}

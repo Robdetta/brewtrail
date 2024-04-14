@@ -5,9 +5,8 @@ import React from 'react';
 import { useAuth } from '@/context/auth';
 
 const Friends = () => {
-  const { user } = useAuth();
-
-  if (!user) {
+  const { session } = useAuth();
+  if (!session) {
     // Redirect to the login screen if the user is not authenticated
     return <Redirect href='/(modals)/login' />;
   }
@@ -15,7 +14,11 @@ const Friends = () => {
   // If authenticated, show the Friends content
   return (
     <View>
-      <Text>Friends</Text>
+      {session ? (
+        <Text>Welcome to Friends, {session.user?.user_metadata.username}!</Text>
+      ) : (
+        <Text>You need to login to view this page.</Text>
+      )}
     </View>
   );
 };

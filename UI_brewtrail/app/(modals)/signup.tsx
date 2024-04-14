@@ -5,42 +5,41 @@ import { supabase } from '@/lib/supabase-client'; // Ensure this path is correct
 import { useAuth } from '@/context/auth';
 
 export default function SignUp() {
+  const { signUp } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const { signIn } = useAuth();
+  const [errorMessage, setErrorMessage] = useState('');
 
   const validateAndSignUp = async () => {
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      setErrorMessage('Passwords do not match');
       return;
     }
-
     setLoading(true);
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: { username },
-      },
-    });
 
-    signIn();
+    try {
+      await signUp(email, password, username);
+      // Navigation or additional success logic can be handled within the signUp function if needed
+    } catch (error) {
+      setErrorMessage(errorMessage);
+    }
+
     setLoading(false);
-    if (error) {
-      Alert.alert('Signup Failed', error.message);
-      return;
-    }
 
-    if (data.user) {
-      Alert.alert(
-        'Signup Successful',
-        'Please check your inbox for email verification!',
-      );
-    }
+    // if (error) {
+    //   Alert.alert('Signup Failed', error.message);
+    //   return;
+    // }
+
+    // if (data.user) {
+    //   Alert.alert(
+    //     'Signup Successful',
+    //     'Please check your inbox for email verification!',
+    //   );
+    // }
   };
 
   return (

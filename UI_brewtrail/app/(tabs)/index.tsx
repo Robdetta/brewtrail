@@ -1,27 +1,18 @@
 import { Text, View } from '@/components/Themed';
 import React, { useEffect, useState } from 'react';
-import { Link, Stack } from 'expo-router';
+import { Link, Redirect, Stack } from 'expo-router';
 import { supabase } from '../../lib/supabase-client';
 import { Session } from '@supabase/supabase-js';
-import Auth from './profile';
+import { useAuth } from '@/context/auth';
 
 const Feed = () => {
-  const [session, setSession] = useState<Session | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-  }, []);
+  const { session } = useAuth();
 
   return (
     <View>
-      <Auth />
-      {session && session.user && <Text>{session.user.id}</Text>}
+      {session && session.user && (
+        <Text>{session.user.user_metadata.username}</Text>
+      )}
     </View>
   );
 };
