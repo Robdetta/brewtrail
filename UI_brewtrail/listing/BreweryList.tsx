@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
   link: {
     // If you need to style your Link components, do it here
     // For example, to remove text decoration:
-    textDecoration: 'none',
   },
 });
 
