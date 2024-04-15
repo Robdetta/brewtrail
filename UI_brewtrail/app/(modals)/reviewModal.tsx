@@ -12,7 +12,19 @@ import { useAuth } from '@/context/auth'; // Make sure this path matches where y
 import { submitReview } from '@/services/services';
 import { supabase } from '@/lib/supabase-client';
 
-const ReviewModal = ({ visible, onClose, breweryId, onReviewSubmitted }) => {
+interface ReviewModalProps {
+  visible: boolean;
+  onClose: () => void;
+  onReviewSubmitted: () => void;
+  breweryId: string;
+}
+
+const ReviewModal: React.FC<ReviewModalProps> = ({
+  visible,
+  onClose,
+  onReviewSubmitted,
+  breweryId,
+}) => {
   const [rating, setRating] = useState('');
   const [comment, setComment] = useState('');
   const [error, setError] = useState('');

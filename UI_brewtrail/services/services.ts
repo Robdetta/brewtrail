@@ -87,17 +87,17 @@ export const fetchBreweryDetails = async (breweryId: string) => {
   }
 };
 
-export const sendTokenToBackend = async (token: string) => {
-  try {
-    await fetch(`${BASE_URL}/auth/token`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // Necessary for cookies to be handled correctly in web environments
-    });
-  } catch (error) {
-    console.error('Error sending token to backend:', error);
-  }
-};
+// export const sendTokenToBackend = async (token: string) => {
+//   try {
+//     await fetch(`${BASE_URL}/auth/token`, {
+//       method: 'POST',
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//         'Content-Type': 'application/json',
+//       },
+//       credentials: 'include', // Necessary for cookies to be handled correctly in web environments
+//     });
+//   } catch (error) {
+//     console.error('Error sending token to backend:', error);
+//   }
+// };

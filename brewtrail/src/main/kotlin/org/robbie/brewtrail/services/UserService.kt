@@ -3,7 +3,9 @@ package org.robbie.brewtrail.services
 import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.robbie.brewtrail.dto.GoogleUserInfoDto
+import org.robbie.brewtrail.entity.Review
 import org.robbie.brewtrail.entity.User
+import org.robbie.brewtrail.repository.ReviewRepository
 import org.robbie.brewtrail.repository.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -12,8 +14,9 @@ import java.util.*
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder
-    ) {
+    private val passwordEncoder: PasswordEncoder,
+    private val reviewRepository: ReviewRepository
+) {
 
     fun createUser(name: String, email: String, password: String): User {
         val passwordHash = passwordEncoder.encode(password) // Hash the password

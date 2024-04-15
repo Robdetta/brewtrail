@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase-client';
 
 interface AuthContextType {
   session: Session | null;
+  loading: boolean;
   signUp: (email: string, password: string, username: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -26,15 +27,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [session, setSession] = React.useState<Session | null>(null);
+  const [loading, setLoading] = React.useState(true); // Initialize loading state
   const router = useRouter();
 
   React.useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const updateSession = (session: Session | null) => {
       setSession(session);
+      setLoading(false); // Set loading to false once the session is determined
+    };
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      updateSession(session);
     });
 
     supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+      updateSession(session);
     });
   }, []);
 
@@ -67,8 +74,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <AuthContext.Provider value={{ session, signUp, signIn, signOut }}>
-      {children}
+    <AuthContext.Provider value={{ session, loading, signUp, signIn, signOut }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

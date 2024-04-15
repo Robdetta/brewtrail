@@ -40,5 +40,9 @@ class ReviewService(
     fun findReviewsByBrewery(openBreweryDbId: String): List<Review> {
         return reviewRepository.findByBrewery_OpenBreweryDbId(openBreweryDbId)
     }
+
+    fun findReviewsByUserId(userId: Long): List<Review> {
+        return reviewRepository.findByUserId(userId)
+    }
 }
 

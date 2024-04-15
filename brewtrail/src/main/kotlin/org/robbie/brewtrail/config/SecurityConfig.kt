@@ -28,26 +28,6 @@ import javax.crypto.spec.SecretKeySpec
 @EnableMethodSecurity
 class SecurityConfig {
 
-//    @Bean
-//    fun jwtDecoder(): JwtDecoder {
-//        val secretKey = System.getenv("JWT_SECRET")
-//        val decodedKey = Base64.getDecoder().decode(secretKey)
-//        val secretKeySpec = SecretKeySpec(decodedKey, "HMACSHA256")
-//        val decoder = NimbusJwtDecoder.withSecretKey(secretKeySpec)..build()
-//
-//        return JwtDecoder { token: String ->
-//            println("JWT to decode: $token")  // Log the raw token
-//            try {
-//                val jwt = decoder.decode(token)
-//                println("JWT decoded successfully: $jwt")
-//                jwt
-//            } catch (e: Exception) {
-//                println("Error decoding JWT: ${e.message}")
-//                throw e
-//            }
-//        }
-//    }
-
     @Bean
     fun jwtDecoder(): JwtDecoder {
         val secretKey = System.getenv("JWT_SECRET") ?: throw IllegalStateException("JWT_SECRET is not configured")
@@ -77,16 +57,20 @@ class SecurityConfig {
             .authorizeHttpRequests { auth ->
                 auth
                     .requestMatchers("/api/search/**","/api/breweries/**", "/api/reviews/**").permitAll()  // Public endpoints
-                    .anyRequest().authenticated()  // Other endpoints require authentication
+                    .requestMatchers("/api/user/reviews").authenticated()
+                    .anyRequest().permitAll()// Other endpoints require authentication
             }
             .sessionManagement { session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // Stateless session management
             }
+
+
             .oauth2ResourceServer { oauth2 -> oauth2.jwt { jwt -> jwt.decoder(jwtDecoder()) } }
             .httpBasic(Customizer.withDefaults())  // Basic authentication as a fallback
 
         return httpSecurity.build()
     }
+
 
     @Bean
     fun jwtAuthenticationConverter(): JwtAuthenticationConverter {
