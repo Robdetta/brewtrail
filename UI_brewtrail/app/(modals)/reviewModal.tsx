@@ -12,10 +12,13 @@ import { useAuth } from '@/context/auth'; // Make sure this path matches where y
 import { submitReview } from '@/services/services';
 import { supabase } from '@/lib/supabase-client';
 
-const ReviewModal = ({ visible, onClose, breweryId }) => {
+const ReviewModal = ({ visible, onClose, breweryId, onReviewSubmitted }) => {
   const [rating, setRating] = useState('');
   const [comment, setComment] = useState('');
   const [error, setError] = useState('');
+  const effectiveBreweryId = Array.isArray(breweryId)
+    ? breweryId[0]
+    : breweryId;
 
   const handleReviewSubmit = async () => {
     const { data: session } = await supabase.auth.getSession();
@@ -41,9 +44,9 @@ const ReviewModal = ({ visible, onClose, breweryId }) => {
         comment,
         token,
       );
+      onReviewSubmitted(); // Call the passed function to refresh reviews
       Alert.alert('Success', 'Review submitted successfully.');
-      onClose(); // Close modal on successful submission
-      // Optionally refresh data here if needed
+      onClose();
     } catch (error) {
       console.error('Error submitting review:', error);
       setError('Failed to submit review. Please try again.');

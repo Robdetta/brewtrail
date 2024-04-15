@@ -52,6 +52,15 @@ const BreweryDetailsScreen = () => {
     );
   };
 
+  const fetchReviews = async () => {
+    const fetchedReviews = await fetchReviewsForBrewery(breweryIdString);
+    setReviews(fetchedReviews);
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
   if (!breweryId) {
     return <Text>No brewery ID provided</Text>;
   }
@@ -97,6 +106,7 @@ const BreweryDetailsScreen = () => {
       <ReviewModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
+        onReviewSubmitted={fetchReviews} // Passing the function as a prop
         breweryId={breweryId}
       />
 
