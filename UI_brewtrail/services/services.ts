@@ -1,3 +1,6 @@
+import { Brewery, Review, ApiResponse } from '../types/types';
+import { supabase } from '../lib/supabase-client';
+
 const BASE_URL = 'http://localhost:8080/api';
 
 export const searchBreweries = async (city: string, state: string) => {
@@ -16,29 +19,29 @@ export const searchBreweries = async (city: string, state: string) => {
 
 export const submitReview = async (
   breweryId: string,
-  userId: number, // Add userId as a parameter
+  userId: number,
   rating: number,
   comment: string,
+  token: string, // Add token as a parameter to the function
 ) => {
-  const url = `${BASE_URL}/reviews`; // Adjust the endpoint as needed based on your backend API
+  const url = `${BASE_URL}/reviews`;
   try {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // Include any other headers your API requires, such as authentication tokens
+        Authorization: `Bearer ${token}`, // Using the token here
       },
       body: JSON.stringify({
-        openBreweryDbId: breweryId, // Ensure the field name matches what your backend expects
-        userId, // Include userId in the request body
+        openBreweryDbId: breweryId,
+        userId,
         rating,
         comment,
-        // Include 'userId' if necessary, or handle user identification on the backend
       }),
     });
 
     if (!response.ok) {
-      const errorBody = await response.text(); // Or response.json() if the response is in JSON format
+      const errorBody = await response.text();
       console.error(
         'Failed to submit review, server responded with:',
         response.status,
@@ -48,14 +51,8 @@ export const submitReview = async (
         `Failed to submit review: ${response.status} ${errorBody}`,
       );
     }
-    console.log('Submitting review to URL:', url);
-    console.log(
-      'Request body:',
-      JSON.stringify({ openBreweryDbId: breweryId, rating, comment }),
-    );
 
     const data = await response.json();
-    console.log('Review submitted successfully:', data);
     return data; // Return the response data for further handling if needed
   } catch (error) {
     console.error('Error submitting review:', error);

@@ -1,26 +1,52 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import { useAuth } from '@/context/auth'; // Import useAuth to access user session
+import {
+  Modal,
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+} from 'react-native';
+import { useAuth } from '@/context/auth'; // Make sure this path matches where your context is defined
+import { submitReview } from '@/services/services';
 import { supabase } from '@/lib/supabase-client';
 
 const ReviewModal = ({ visible, onClose, breweryId }) => {
   const [rating, setRating] = useState('');
   const [comment, setComment] = useState('');
-  const { session } = useAuth();
+  const [error, setError] = useState('');
 
-  const submitReview = async () => {
-    if (session) {
-      const { data, error } = await supabase
-        .from('review')
-        .insert([
-          { user_id: session.user.id, brewery_id: breweryId, rating, comment },
-        ]);
+  const handleReviewSubmit = async () => {
+    const { data: session } = await supabase.auth.getSession();
+    if (!session) {
+      Alert.alert(
+        'Authentication Error',
+        'You must be logged in to submit a review.',
+      );
+      return;
+    }
 
-      if (error) {
-        console.error('Error submitting review:', error);
-        return;
+    try {
+      // Assuming you are using the session correctly to retrieve the JWT
+      const token = session.session?.access_token;
+      if (!token) {
+        throw new Error('No token found. Please login again.');
       }
+
+      await submitReview(
+        breweryId,
+        session.session?.user.user_metadata.username, // Assuming userID is needed; adjust according to your API requirements
+        parseInt(rating),
+        comment,
+        token,
+      );
       onClose(); // Close modal on successful submission
+      Alert.alert('Success', 'Review submitted successfully.');
+    } catch (error) {
+      console.error('Error submitting review:', error.message);
+      setError('Failed to submit review. Please try again.');
+      Alert.alert('Error', error.message);
     }
   };
 
@@ -29,7 +55,7 @@ const ReviewModal = ({ visible, onClose, breweryId }) => {
       animationType='slide'
       transparent={true}
       visible={visible}
-      onRequestClose={onClose}
+      onRequestClose={() => onClose()}
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
@@ -50,12 +76,13 @@ const ReviewModal = ({ visible, onClose, breweryId }) => {
           />
           <Button
             title='Submit Review'
-            onPress={submitReview}
+            onPress={handleReviewSubmit}
           />
           <Button
             title='Cancel'
-            onPress={onClose}
+            onPress={() => onClose()}
           />
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </View>
       </View>
     </Modal>
@@ -94,6 +121,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     width: 200,
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 10,
   },
 });
 
