@@ -56,8 +56,8 @@ class SecurityConfig {
             .csrf { csrf -> csrf.disable() }
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/api/search/**","/api/breweries/**", "/api/reviews/**").permitAll()  // Public endpoints
-                    .requestMatchers("/api/user/reviews").authenticated()
+                    .requestMatchers("/api/search/**","/api/breweries/**", "/api/reviews/").permitAll()  // Public endpoints
+                    .requestMatchers("/api/reviews/user/**").authenticated()
                     .anyRequest().permitAll()// Other endpoints require authentication
             }
             .sessionManagement { session ->

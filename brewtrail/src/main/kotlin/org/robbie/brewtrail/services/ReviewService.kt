@@ -1,16 +1,15 @@
 package org.robbie.brewtrail.services
 
+import jakarta.persistence.EntityNotFoundException
 import org.robbie.brewtrail.entity.Review
 import org.robbie.brewtrail.repository.BreweryRepository
 import org.robbie.brewtrail.repository.ReviewRepository
 import org.robbie.brewtrail.repository.UserRepository
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import jakarta.persistence.EntityNotFoundException
-import org.robbie.brewtrail.dto.BreweryCreationDto
-import org.robbie.brewtrail.entity.Brewery
-import org.slf4j.LoggerFactory
 import java.time.Instant
+
 
 @Service
 class ReviewService(
@@ -44,5 +43,8 @@ class ReviewService(
     fun findReviewsByUserId(userId: Long): List<Review> {
         return reviewRepository.findByUserId(userId)
     }
+
+    @Transactional(readOnly = true)
+    fun findAllReviews(): List<Review> = reviewRepository.findAll().toList()
 }
 

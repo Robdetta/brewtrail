@@ -4,14 +4,49 @@ import { Link, Redirect, Stack } from 'expo-router';
 import { supabase } from '../../lib/supabase-client';
 import { Session } from '@supabase/supabase-js';
 import { useAuth } from '@/context/auth';
+import { fetchAllReviews } from '@/services/services';
 
 const Feed = () => {
   const { session } = useAuth();
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchAllReviews()
+      .then((data) => {
+        setReviews(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError('Failed to fetch reviews');
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <Text>Loading...</Text>; // Display a loading indicator
+  }
+
+  if (error) {
+    return <Text>Error: {error}</Text>; // Display error message
+  }
 
   return (
     <View>
-      {session && session.user && (
-        <Text>{session.user.user_metadata.username}</Text>
+      <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Feed</Text>
+      {reviews.length > 0 ? (
+        reviews.map((review, index) => (
+          <View
+            key={index}
+            style={{ padding: 10 }}
+          >
+            <Text>Rating: {review.rating}</Text>
+            <Text>Comment: {review.comment}</Text>
+          </View>
+        ))
+      ) : (
+        <Text>No reviews found.</Text>
       )}
     </View>
   );

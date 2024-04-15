@@ -1,11 +1,10 @@
 package org.robbie.brewtrail.controllers
 
 import org.robbie.brewtrail.dto.ReviewDto
-import org.robbie.brewtrail.services.ReviewService
 import org.robbie.brewtrail.entity.Review
+import org.robbie.brewtrail.services.ReviewService
 import org.robbie.brewtrail.services.UserService
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
@@ -50,18 +49,42 @@ class ReviewController(
         }
     }
 
+//    @GetMapping("/user/reviews")
+//    fun getReviewsByUser(@AuthenticationPrincipal jwt: Jwt): ResponseEntity<Any> {
+//        logger.info("Received request to fetch reviews for JWT subject: ${jwt.subject}")
+//        try {
+//            val authUid = UUID.fromString(jwt.subject)
+//            val user = userService.getUserByAuthUid(authUid)
+//            val reviews = reviewService.findReviewsByUserId(user.id)
+//            logger.info("Sending reviews for User ID ${user.id}: $reviews")
+//            return ResponseEntity.ok(reviews)
+//        } catch (ex: Exception) {
+//            logger.error("Error fetching reviews: ${ex.message}", ex)
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching reviews")
+//        }
+//    }
+    @GetMapping("/all")
+    fun getAllReviews(): ResponseEntity<List<Review>> {
+        val reviews = reviewService.findAllReviews()
+        return if (reviews.isNotEmpty()) ResponseEntity.ok(reviews)
+        else ResponseEntity.noContent().build()
+    }
+
     @GetMapping("/user/reviews")
     fun getReviewsByUser(@AuthenticationPrincipal jwt: Jwt): ResponseEntity<Any> {
-        logger.info("Received request to fetch reviews for JWT subject: ${jwt.subject}")
+        logger.debug("Received request to fetch reviews with JWT subject: ${jwt.subject}")
         try {
-            val authUid = UUID.fromString(jwt.subject)
+            val authUid = UUID.fromString(jwt.subject) // Convert JWT subject to UUID
             val user = userService.getUserByAuthUid(authUid)
             val reviews = reviewService.findReviewsByUserId(user.id)
-            logger.info("Sending reviews for User ID ${user.id}: $reviews")
+            logger.debug("Sending reviews for User ID {}: {}", user.id, reviews)
             return ResponseEntity.ok(reviews)
         } catch (ex: Exception) {
             logger.error("Error fetching reviews: ${ex.message}", ex)
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching reviews")
+            return ResponseEntity.badRequest().body("Error fetching reviews")
         }
     }
+
+
+
 }

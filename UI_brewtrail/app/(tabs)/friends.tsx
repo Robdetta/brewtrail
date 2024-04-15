@@ -1,4 +1,3 @@
-// Assuming you have a similar `useSession` hook as defined in earlier steps
 import { Redirect } from 'expo-router';
 import { View, Text } from 'react-native';
 import React from 'react';

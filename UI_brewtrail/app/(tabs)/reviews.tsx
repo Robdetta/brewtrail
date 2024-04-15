@@ -10,21 +10,24 @@ const Page = () => {
   const [reviews, setReviews] = useState([]);
 
   const fetchReviewsByCurrentUser = async () => {
-    if (!session) {
-      console.error('No session found');
+    const token = session?.access_token;
+    if (!session || !session.access_token) {
+      console.error('No session or access token found');
       return;
     }
+
     try {
-      const token = session.access_token; // Ensure the token is correctly retrieved
-      const response = await fetch(`${BASE_URL}/user/reviews`, {
+      console.log(`Fetching reviews with token: `);
+      const response = await fetch(`${BASE_URL}/reviews/user/reviews`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
 
+      console.log(`Response status: ${response.status}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch reviews');
+        throw new Error(`Failed to fetch reviews: Status ${response.status}`);
       }
 
       const data = await response.json();

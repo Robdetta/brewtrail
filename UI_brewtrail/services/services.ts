@@ -101,3 +101,11 @@ export const fetchBreweryDetails = async (breweryId: string) => {
 //     console.error('Error sending token to backend:', error);
 //   }
 // };
+
+export const fetchAllReviews = async () => {
+  const response = await fetch('http://localhost:8080/api/reviews/all');
+  if (!response.ok) {
+    throw new Error('Failed to fetch reviews');
+  }
+  return response.json();
+};
