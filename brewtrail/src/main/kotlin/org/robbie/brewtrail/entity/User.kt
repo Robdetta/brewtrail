@@ -33,6 +33,6 @@ data class User(
     @Column(nullable = true, unique = true)
     val authUid: UUID? = null,// Nullable for users who sign up with email/password
 
-    @Column(nullable = true)
+    @Column
     var isAdmin: Boolean = false
 )

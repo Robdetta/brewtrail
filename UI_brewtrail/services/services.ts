@@ -19,7 +19,7 @@ export const searchBreweries = async (city: string, state: string) => {
 
 export const submitReview = async (
   breweryId: string,
-  userId: number,
+  userId: string,
   rating: number,
   comment: string,
   token: string, // Add token as a parameter to the function
@@ -40,23 +40,19 @@ export const submitReview = async (
       }),
     });
 
+    const responseBody = await response.text(); // Change from json() to text() to see raw response
+    console.log('Raw response:', responseBody);
+
     if (!response.ok) {
-      const errorBody = await response.text();
-      console.error(
-        'Failed to submit review, server responded with:',
-        response.status,
-        errorBody,
-      );
       throw new Error(
-        `Failed to submit review: ${response.status} ${errorBody}`,
+        `Failed to submit review: ${response.status} ${responseBody}`,
       );
     }
 
-    const data = await response.json();
-    return data; // Return the response data for further handling if needed
+    return JSON.parse(responseBody); // Manually parse the JSON after checking
   } catch (error) {
     console.error('Error submitting review:', error);
-    throw error; // Rethrow the error for handling in the component
+    throw error;
   }
 };
 

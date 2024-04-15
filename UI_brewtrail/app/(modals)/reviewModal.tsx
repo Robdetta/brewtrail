@@ -36,17 +36,17 @@ const ReviewModal = ({ visible, onClose, breweryId }) => {
 
       await submitReview(
         breweryId,
-        session.session?.user.user_metadata.username, // Assuming userID is needed; adjust according to your API requirements
+        session.session?.user.user_metadata.id, // Assuming userID is needed; adjust according to your API requirements
         parseInt(rating),
         comment,
         token,
       );
-      onClose(); // Close modal on successful submission
       Alert.alert('Success', 'Review submitted successfully.');
+      onClose(); // Close modal on successful submission
+      // Optionally refresh data here if needed
     } catch (error) {
-      console.error('Error submitting review:', error.message);
+      console.error('Error submitting review:', error);
       setError('Failed to submit review. Please try again.');
-      Alert.alert('Error', error.message);
     }
   };
 

@@ -3,26 +3,37 @@ package org.robbie.brewtrail.controllers
 import org.robbie.brewtrail.dto.ReviewDto
 import org.robbie.brewtrail.services.ReviewService
 import org.robbie.brewtrail.entity.Review
+import org.robbie.brewtrail.services.UserService
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
+import java.util.*
 
+
+data class ApiResponse(val message: String)
 @RestController
 @CrossOrigin(origins = ["http://localhost:8081"])
 @RequestMapping("/api/reviews")
-class ReviewController(private val reviewService: ReviewService) {
+class ReviewController(
+    private val reviewService: ReviewService,
+    private val userService: UserService
+) {
     private val logger = LoggerFactory.getLogger(ReviewController::class.java)
     @PostMapping
-    fun addReview(@RequestBody reviewDto: ReviewDto): ResponseEntity<Review> {
-        logger.debug("Attempting to add review: {}", reviewDto)
-        val review = reviewService.createReview(
-            userId = reviewDto.userId,
+    fun addReview(@RequestBody reviewDto: ReviewDto, @AuthenticationPrincipal jwt: Jwt): ResponseEntity<ApiResponse> {
+        val userUuid = UUID.fromString(jwt.subject) // Assuming JWT 'sub' contains the UUID
+        val user = userService.getUserByAuthUid(userUuid)
+
+        reviewService.createReview(
+            userId = user.id,
             openBreweryDbId = reviewDto.openBreweryDbId,
             rating = reviewDto.rating,
             comment = reviewDto.comment
         )
-        return ResponseEntity.ok(review)
-    }
+
+        return ResponseEntity.ok(ApiResponse("Review added successfully"))    }
 
 
     @GetMapping("/brewery/{openBreweryDbId}")
