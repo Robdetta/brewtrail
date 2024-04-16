@@ -11,11 +11,12 @@ import {
 import { useAuth } from '@/context/auth'; // Make sure this path matches where your context is defined
 import { submitReview } from '@/services/services';
 import { supabase } from '@/lib/supabase-client';
+import { Review } from '@/types/reviewTypes';
 
 interface ReviewModalProps {
   visible: boolean;
   onClose: () => void;
-  onReviewSubmitted: (breweryId: string) => void;
+  onReviewSubmitted: (review: Review) => void; // Expect a review object
   breweryId: string;
 }
 
@@ -48,17 +49,30 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
       return;
     }
 
+    const userId = session.session?.user.user_metadata.id;
+    const parsedRating = parseInt(rating);
+
     try {
       await submitReview(
         effectiveBreweryId,
-        session.session?.user.user_metadata.id,
-        parseInt(rating),
+        userId,
+        parsedRating,
         comment,
         token,
       );
       Alert.alert('Success', 'Review submitted successfully.');
+
+      // Create the review object to pass
+      const newReview: Review = {
+        breweryId: effectiveBreweryId,
+        rating: parsedRating,
+        comment: comment,
+        userId: userId,
+        id: '',
+      };
+
       onClose(); // Close the modal
-      onReviewSubmitted(effectiveBreweryId); // Refresh the review list after successful submission
+      onReviewSubmitted(newReview); // Pass the full review object to update context
     } catch (error) {
       console.error('Error submitting review:', error);
       setError('Failed to submit review. Please try again.');

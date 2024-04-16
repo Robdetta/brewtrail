@@ -26,7 +26,7 @@ interface Review {
 const BreweryDetailsScreen = () => {
   const { breweryId } = useLocalSearchParams();
   const [brewery, setBrewery] = useState<Brewery | null>(null);
-  const { reviewsByBrewery, fetchBreweryReviews } = useReviews();
+  const { reviewsByBrewery, addReview, fetchBreweryReviews } = useReviews();
   const [modalVisible, setModalVisible] = useState(false);
   const breweryIdString = Array.isArray(breweryId) ? breweryId[0] : breweryId;
 
@@ -96,7 +96,10 @@ const BreweryDetailsScreen = () => {
       <ReviewModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onReviewSubmitted={() => fetchBreweryReviews(breweryIdString)} // Passing the function as a prop
+        onReviewSubmitted={(review) => {
+          addReview(review); // Add review to context
+          fetchBreweryReviews(review.breweryId); // Optionally refetch reviews for the brewery
+        }} // Passing the function as a prop
         breweryId={breweryIdString}
       />
 
