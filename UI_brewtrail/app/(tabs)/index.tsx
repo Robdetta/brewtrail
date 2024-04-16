@@ -9,7 +9,7 @@ import { useReviews } from '@/context/ReviewContext';
 
 const Feed = () => {
   const { session } = useAuth();
-  const { reviews, loading, error, fetchGeneralReviews } = useReviews();
+  const { generalReviews, loading, error, fetchGeneralReviews } = useReviews();
 
   useEffect(() => {
     fetchGeneralReviews();
@@ -26,8 +26,8 @@ const Feed = () => {
   return (
     <View>
       <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Feed</Text>
-      {reviews.length > 0 ? (
-        reviews.map((review, index) => (
+      {generalReviews.length > 0 ? (
+        generalReviews.map((review, index) => (
           <View
             key={index}
             style={{ padding: 10 }}

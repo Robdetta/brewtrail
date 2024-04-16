@@ -26,7 +26,7 @@ interface Review {
 const BreweryDetailsScreen = () => {
   const { breweryId } = useLocalSearchParams();
   const [brewery, setBrewery] = useState<Brewery | null>(null);
-  const { reviewsByBrewery, addReview, fetchBreweryReviews } = useReviews();
+  const { breweryReviews, addReview, fetchBreweryReviews } = useReviews();
   const [modalVisible, setModalVisible] = useState(false);
   const breweryIdString = Array.isArray(breweryId) ? breweryId[0] : breweryId;
 
@@ -41,7 +41,7 @@ const BreweryDetailsScreen = () => {
     }
   }, [breweryIdString, fetchBreweryReviews]);
 
-  const reviews = reviewsByBrewery[breweryIdString] || [];
+  const reviews = breweryReviews[breweryIdString] || [];
 
   console.log(`Brewery ID from URL: ${breweryId}`);
 

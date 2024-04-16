@@ -6,60 +6,42 @@ import { useReviews } from '@/context/ReviewContext';
 
 const BASE_URL = 'http://localhost:8080/api';
 
-const Page = () => {
+const ReviewsPage = () => {
+  const { userReviews, loading, error, fetchUserReviews } = useReviews();
   const { session } = useAuth();
-  const { reviews, fetchReviews } = useReviews();
-
-  const fetchReviewsByCurrentUser = async () => {
-    const token = session?.access_token;
-    if (!session || !session.access_token) {
-      console.error('No session or access token found');
-      return;
-    }
-
-    try {
-      console.log(`Fetching reviews with token: `);
-      const response = await fetch(`${BASE_URL}/reviews/user/reviews`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      console.log(`Response status: ${response.status}`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch reviews: Status ${response.status}`);
-      }
-
-      const data = await response.json();
-      setReviews(data);
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-    }
-  };
 
   useEffect(() => {
     if (session?.access_token) {
-      fetchReviewsByCurrentUser();
+      fetchUserReviews();
     }
-  }, [session?.access_token]); // Depend on access_token for changes
+  }, [fetchUserReviews, session?.access_token]);
 
   if (!session) {
     // Redirect to the login screen if the user is not authenticated
     return <Redirect href='/(modals)/login' />;
   }
 
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
+
+  if (error) {
+    return <Text>Error: {error}</Text>;
+  }
+
   return (
     <View>
       <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Your Reviews</Text>
-      {reviews.length > 0 ? (
-        reviews.map((review, index) => (
+      {userReviews.length > 0 ? (
+        userReviews.map((review, index) => (
           <View
             key={index}
             style={{ padding: 10 }}
           >
             <Text>Rating: {review.rating}</Text>
             <Text>Comment: {review.comment}</Text>
+            <Text>Posted: {review.datePosted?.toLocaleDateString()}</Text>
+            <Text>By: {review.userName}</Text>
           </View>
         ))
       ) : (
@@ -69,4 +51,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default ReviewsPage;
