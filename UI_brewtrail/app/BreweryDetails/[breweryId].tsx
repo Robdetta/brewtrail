@@ -6,6 +6,7 @@ import {
 } from '@/services/services';
 import { useLocalSearchParams } from 'expo-router';
 import ReviewModal from '../(modals)/reviewModal';
+import { useReviews } from '@/context/ReviewContext';
 
 interface Brewery {
   name: string;
@@ -25,45 +26,34 @@ interface Review {
 const BreweryDetailsScreen = () => {
   const { breweryId } = useLocalSearchParams();
   const [brewery, setBrewery] = useState<Brewery | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const { reviewsByBrewery, fetchBreweryReviews } = useReviews();
   const [modalVisible, setModalVisible] = useState(false);
   const breweryIdString = Array.isArray(breweryId) ? breweryId[0] : breweryId;
 
   useEffect(() => {
-    const getBreweryDetails = async () => {
-      const details = await fetchBreweryDetails(breweryIdString);
-      console.log(details);
-      setBrewery(details);
-    };
+    if (breweryIdString) {
+      async function fetchData() {
+        const details = await fetchBreweryDetails(breweryIdString);
+        setBrewery(details);
+        fetchBreweryReviews(breweryIdString);
+      }
+      fetchData();
+    }
+  }, [breweryIdString, fetchBreweryReviews]);
 
-    const getReviews = async () => {
-      const fetchedReviews = await fetchReviewsForBrewery(breweryIdString);
-      setReviews(fetchedReviews);
-    };
+  const reviews = reviewsByBrewery[breweryIdString] || [];
 
-    getBreweryDetails();
-    getReviews();
-  }, [breweryId]);
   console.log(`Brewery ID from URL: ${breweryId}`);
+
+  if (!breweryId) {
+    return <Text>No brewery ID provided</Text>;
+  }
 
   const openURL = (url: string) => {
     Linking.openURL(url).catch((err) =>
       console.error('An error occurred', err),
     );
   };
-
-  const fetchReviews = async () => {
-    const fetchedReviews = await fetchReviewsForBrewery(breweryIdString);
-    setReviews(fetchedReviews);
-  };
-
-  useEffect(() => {
-    fetchReviews();
-  }, []);
-
-  if (!breweryId) {
-    return <Text>No brewery ID provided</Text>;
-  }
 
   return (
     <View style={styles.container}>
@@ -106,8 +96,8 @@ const BreweryDetailsScreen = () => {
       <ReviewModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onReviewSubmitted={fetchReviews} // Passing the function as a prop
-        breweryId={breweryId}
+        onReviewSubmitted={() => fetchBreweryReviews(breweryIdString)} // Passing the function as a prop
+        breweryId={breweryIdString}
       />
 
       <Button

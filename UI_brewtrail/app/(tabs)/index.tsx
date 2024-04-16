@@ -5,24 +5,15 @@ import { supabase } from '../../lib/supabase-client';
 import { Session } from '@supabase/supabase-js';
 import { useAuth } from '@/context/auth';
 import { fetchAllReviews } from '@/services/services';
+import { useReviews } from '@/context/ReviewContext';
 
 const Feed = () => {
   const { session } = useAuth();
-  const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { reviews, loading, error, fetchGeneralReviews } = useReviews();
 
   useEffect(() => {
-    fetchAllReviews()
-      .then((data) => {
-        setReviews(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setError('Failed to fetch reviews');
-        setLoading(false);
-      });
-  }, []);
+    fetchGeneralReviews();
+  }, [fetchGeneralReviews]);
 
   if (loading) {
     return <Text>Loading...</Text>; // Display a loading indicator

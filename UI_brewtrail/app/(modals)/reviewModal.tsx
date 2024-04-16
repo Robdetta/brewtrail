@@ -15,7 +15,7 @@ import { supabase } from '@/lib/supabase-client';
 interface ReviewModalProps {
   visible: boolean;
   onClose: () => void;
-  onReviewSubmitted: () => void;
+  onReviewSubmitted: (breweryId: string) => void;
   breweryId: string;
 }
 
@@ -42,23 +42,23 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
       return;
     }
 
-    try {
-      // Assuming you are using the session correctly to retrieve the JWT
-      const token = session.session?.access_token;
-      if (!token) {
-        throw new Error('No token found. Please login again.');
-      }
+    const token = session.session?.access_token;
+    if (!token) {
+      Alert.alert('Session Error', 'No token found. Please login again.');
+      return;
+    }
 
+    try {
       await submitReview(
-        breweryId,
-        session.session?.user.user_metadata.id, // Assuming userID is needed; adjust according to your API requirements
+        effectiveBreweryId,
+        session.session?.user.user_metadata.id,
         parseInt(rating),
         comment,
         token,
       );
-      onReviewSubmitted(); // Call the passed function to refresh reviews
       Alert.alert('Success', 'Review submitted successfully.');
-      onClose();
+      onClose(); // Close the modal
+      onReviewSubmitted(effectiveBreweryId); // Refresh the review list after successful submission
     } catch (error) {
       console.error('Error submitting review:', error);
       setError('Failed to submit review. Please try again.');

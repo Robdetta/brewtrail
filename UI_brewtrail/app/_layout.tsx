@@ -10,6 +10,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { AuthProvider } from '@/context/auth';
 import { useColorScheme } from '@/components/useColorScheme';
+import { ReviewProvider } from '@/context/ReviewContext';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -54,16 +55,18 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
-        <Stack>
-          <Stack.Screen
-            name='(tabs)'
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name='(modals)/login'
-            options={{ presentation: 'modal' }}
-          />
-        </Stack>
+        <ReviewProvider>
+          <Stack>
+            <Stack.Screen
+              name='(tabs)'
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name='(modals)/login'
+              options={{ presentation: 'modal' }}
+            />
+          </Stack>
+        </ReviewProvider>
       </AuthProvider>
     </ThemeProvider>
   );

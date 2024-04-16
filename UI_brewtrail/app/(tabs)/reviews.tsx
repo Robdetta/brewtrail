@@ -2,12 +2,13 @@ import { View, Text } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/auth';
 import { Redirect } from 'expo-router';
+import { useReviews } from '@/context/ReviewContext';
 
 const BASE_URL = 'http://localhost:8080/api';
 
 const Page = () => {
   const { session } = useAuth();
-  const [reviews, setReviews] = useState([]);
+  const { reviews, fetchReviews } = useReviews();
 
   const fetchReviewsByCurrentUser = async () => {
     const token = session?.access_token;
