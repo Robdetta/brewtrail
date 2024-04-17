@@ -29,33 +29,45 @@ class ReviewService(
     @Transactional
     fun createReview(userId: Long, openBreweryDbId: String, rating: Double, comment: String?): Review {
         val user = userRepository.findById(userId).orElseThrow { EntityNotFoundException("User not found") }
-
         val brewery = breweryRepository.findByOpenBreweryDbId(openBreweryDbId)
             ?: breweryService.fetchBreweryByOpenBreweryDbId(openBreweryDbId)
             ?: throw EntityNotFoundException("Brewery not found with openBreweryDbId: $openBreweryDbId")
 
-        val review = Review(user = user, brewery = brewery, rating = rating, comment = comment, createdAt = Instant.now(), updatedAt = Instant.now())
+        // Check if a review by this user for this brewery already exists
+        reviewRepository.findByUserAndBrewery(user, brewery)?.let {
+            throw IllegalStateException("Review already exists for this brewery by the user")
+        }
+
+        val newReview = Review(user = user, brewery = brewery, rating = rating, comment = comment, createdAt = Instant.now(), updatedAt = Instant.now())
+        return reviewRepository.save(newReview)
+    }
+
+    @Transactional
+    fun updateReview(reviewId: Long, userId: Long, rating: Double, comment: String?): Review {
+        val review = reviewRepository.findByIdAndUserId(reviewId, userId).orElseThrow {
+            EntityNotFoundException("Review not found or does not belong to the user")
+        }
+
+        review.rating = rating
+        review.comment = comment
+        review.updatedAt = Instant.now()
         return reviewRepository.save(review)
     }
 
-    @Transactional(readOnly = true)
-    fun findReviewsByBrewery(openBreweryDbId: String): List<Review> {
-        return reviewRepository.findByBrewery_OpenBreweryDbId(openBreweryDbId)
+    @Transactional
+    fun deleteReview(reviewId: Long, userId: Long) {
+        val review = reviewRepository.findById(reviewId).orElseThrow { EntityNotFoundException("Review not found") }
+        reviewRepository.delete(review)
     }
-
-    fun findReviewsByUserId(userId: Long): List<Review> {
-        return reviewRepository.findByUserId(userId)
-    }
-
-    @Transactional(readOnly = true)
-    fun findAllReviews(): List<Review> = reviewRepository.findAll().toList()
 
     fun getAllDetailedReviews(): List<DetailedReview> = detailedReviewRepository.findAll()
 
     fun getDetailedReviewsByUserId(userId: Long): List<DetailedReview> =
         detailedReviewRepository.findByUserId(userId)
 
-    fun getDetailedReviewsByBreweryId(breweryId: String): List<DetailedReview> =
-        detailedReviewRepository.findByBreweryId(breweryId)
+    fun getDetailedReviewsByBreweryId(openBreweryDbId: String): List<DetailedReview> {
+        return detailedReviewRepository.findByOpenBreweryDbId(openBreweryDbId)
+    }
+
 }
 

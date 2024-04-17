@@ -75,18 +75,23 @@ const BreweryDetailsScreen = () => {
       <View style={styles.reviewsSection}>
         <Text style={styles.subtitle}>Reviews</Text>
         {reviews.length > 0 ? (
-          reviews.map((review, index) => (
-            // console.log(reviews),
-            <View
-              key={index}
-              style={styles.review}
-            >
-              <Text>Rating: {review.rating}</Text>
-              <Text>Comment: {review.comment}</Text>
-              <Text>Posted by: {review.userName}</Text>
-              {/* Display the username */}
-            </View>
-          ))
+          reviews.map(
+            (review, index) => (
+              fetchReviewsForBrewery(breweryId),
+              console.log(reviews),
+              (
+                <View
+                  key={index}
+                  style={styles.review}
+                >
+                  <Text>Rating: {review.rating}</Text>
+                  <Text>Comment: {review.comment}</Text>
+                  <Text>Posted by: {review.userName}</Text>
+                  {/* Display the username */}
+                </View>
+              )
+            ),
+          )
         ) : (
           <Text>No reviews yet.</Text>
         )}

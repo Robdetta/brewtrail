@@ -25,6 +25,9 @@ class DetailedReview(
     @Column(name = "brewery_name")
     val breweryName: String,
 
+    @Column(name = "open_brewery_db_id")
+    val openBreweryDbId: String,
+
     @Column(name = "rating")
     val rating: Double,
 

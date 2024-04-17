@@ -58,9 +58,7 @@ export const submitReview = async (
 
 export const fetchReviewsForBrewery = async (breweryId: string) => {
   try {
-    const response = await fetch(
-      `http://localhost:8080/api/reviews/brewery/${breweryId}`,
-    );
+    const response = await fetch(`${BASE_URL}/reviews/brewery/${breweryId}`);
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
@@ -88,7 +86,7 @@ export const fetchBreweryDetails = async (breweryId: string) => {
 };
 
 export const fetchAllReviews = async () => {
-  const response = await fetch('http://localhost:8080/api/reviews/all');
+  const response = await fetch(`${BASE_URL}/reviews/all`);
   if (!response.ok) {
     throw new Error('Failed to fetch reviews');
   }

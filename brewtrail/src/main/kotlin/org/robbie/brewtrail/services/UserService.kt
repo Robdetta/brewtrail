@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.robbie.brewtrail.dto.GoogleUserInfoDto
 import org.robbie.brewtrail.entity.Review
+import org.springframework.security.oauth2.jwt.Jwt
 import org.robbie.brewtrail.entity.User
 import org.robbie.brewtrail.repository.ReviewRepository
 import org.robbie.brewtrail.repository.UserRepository
@@ -28,7 +29,6 @@ class UserService(
         return userRepository.findAll()
     }
 
-
     fun getUserByAuthUid(authUid: UUID): User {
         return userRepository.findByAuthUid(authUid)
             .orElseThrow { EntityNotFoundException("User not found for UUID: $authUid") }
@@ -46,5 +46,12 @@ class UserService(
             val newUser = User(name = userInfo.name, email = userInfo.email, passwordHash = "")
             userRepository.save(newUser)
         }
+    }
+
+    fun getUserIdFromJwt(jwt: Jwt): Long {
+        val authUid = UUID.fromString(jwt.subject)
+        val user = userRepository.findByAuthUid(authUid)
+            .orElseThrow { EntityNotFoundException("User not found") }
+        return user.id
     }
 }
