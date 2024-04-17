@@ -41,9 +41,9 @@ class ReviewController(
     }
 
     @GetMapping("/brewery/{openBreweryDbId}")
-    fun getReviewsByBrewery(@PathVariable openBreweryDbId: String): ResponseEntity<List<Review>> {
+    fun getReviewsByBrewery(@PathVariable openBreweryDbId: String): ResponseEntity<List<DetailedReview>> {
         logger.debug("Fetching reviews for brewery with openBreweryDbId: {}", openBreweryDbId)
-        val reviews = reviewService.findReviewsByBrewery(openBreweryDbId)
+        val reviews = reviewService.getDetailedReviewsByBreweryId(openBreweryDbId)
         return if (reviews.isNotEmpty()) {
             ResponseEntity.ok(reviews)
         } else {
@@ -64,7 +64,7 @@ class ReviewController(
         try {
             val authUid = UUID.fromString(jwt.subject) // Convert JWT subject to UUID
             val user = userService.getUserByAuthUid(authUid)
-            val reviews = reviewService.findReviewsByUserId(user.id)
+            val reviews = reviewService.getDetailedReviewsByUserId(user.id)
             logger.debug("Sending reviews for User ID {}: {}", user.id, reviews)
             return ResponseEntity.ok(reviews)
         } catch (ex: Exception) {

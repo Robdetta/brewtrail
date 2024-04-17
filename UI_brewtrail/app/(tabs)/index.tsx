@@ -28,12 +28,19 @@ const Feed = () => {
       <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Feed</Text>
       {generalReviews.length > 0 ? (
         generalReviews.map((review, index) => (
+          // console.log(review),
           <View
             key={index}
             style={{ padding: 10 }}
           >
             <Text>Rating: {review.rating}</Text>
             <Text>Comment: {review.comment}</Text>
+            <Text>Brewery: {review.breweryName}</Text>
+            <Text>Reviewed by: {review.userName}</Text>
+
+            <Text>
+              Posted: {new Date(review.createdAt).toLocaleDateString()}
+            </Text>
           </View>
         ))
       ) : (

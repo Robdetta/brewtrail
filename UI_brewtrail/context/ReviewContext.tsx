@@ -9,11 +9,13 @@ import React, {
 import { useAuth } from '@/context/auth';
 
 interface Review {
+  id: string;
   rating: number;
   comment: string;
+  userName: string;
+  breweryName: string;
+  createdAt: Date;
   breweryId: string;
-  datePosted?: Date;
-  userName?: string;
 }
 
 interface ReviewsByBrewery {
@@ -83,9 +85,10 @@ export const ReviewProvider: React.FC<{ children: ReactNode }> = ({
   const fetchBreweryReviews = useCallback(async (breweryId: string) => {
     setLoading(true);
     try {
-      const data = await fetchReviewsForBrewery(breweryId);
-      setBreweryReviews((prev) => ({ ...prev, [breweryId]: data }));
+      const reviews = await fetchReviewsForBrewery(breweryId);
+      setBreweryReviews((prev) => ({ ...prev, [breweryId]: reviews }));
     } catch (error) {
+      console.error('Error fetching brewery reviews:', error);
       setError('Failed to fetch brewery reviews');
     } finally {
       setLoading(false);

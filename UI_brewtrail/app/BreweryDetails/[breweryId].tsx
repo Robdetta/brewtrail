@@ -32,12 +32,8 @@ const BreweryDetailsScreen = () => {
 
   useEffect(() => {
     if (breweryIdString) {
-      async function fetchData() {
-        const details = await fetchBreweryDetails(breweryIdString);
-        setBrewery(details);
-        fetchBreweryReviews(breweryIdString);
-      }
-      fetchData();
+      fetchBreweryDetails(breweryIdString).then(setBrewery);
+      fetchBreweryReviews(breweryIdString);
     }
   }, [breweryIdString, fetchBreweryReviews]);
 
@@ -80,12 +76,15 @@ const BreweryDetailsScreen = () => {
         <Text style={styles.subtitle}>Reviews</Text>
         {reviews.length > 0 ? (
           reviews.map((review, index) => (
+            // console.log(reviews),
             <View
               key={index}
               style={styles.review}
             >
               <Text>Rating: {review.rating}</Text>
-              <Text>{review.comment}</Text>
+              <Text>Comment: {review.comment}</Text>
+              <Text>Posted by: {review.userName}</Text>
+              {/* Display the username */}
             </View>
           ))
         ) : (
