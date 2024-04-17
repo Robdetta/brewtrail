@@ -1,8 +1,10 @@
 package org.robbie.brewtrail.services
 
 import jakarta.persistence.EntityNotFoundException
+import org.robbie.brewtrail.entity.DetailedReview
 import org.robbie.brewtrail.entity.Review
 import org.robbie.brewtrail.repository.BreweryRepository
+import org.robbie.brewtrail.repository.DetailedReviewRepository
 import org.robbie.brewtrail.repository.ReviewRepository
 import org.robbie.brewtrail.repository.UserRepository
 import org.slf4j.LoggerFactory
@@ -16,7 +18,8 @@ class ReviewService(
     private val reviewRepository: ReviewRepository,
     private val userRepository: UserRepository, // Repository to access User entities
     private val breweryRepository: BreweryRepository, // Repository to access Brewery entities
-    private val breweryService: BreweryService
+    private val breweryService: BreweryService,
+    private val detailedReviewRepository: DetailedReviewRepository
 
 ) {
     companion object {
@@ -46,5 +49,13 @@ class ReviewService(
 
     @Transactional(readOnly = true)
     fun findAllReviews(): List<Review> = reviewRepository.findAll().toList()
+
+    fun getAllDetailedReviews(): List<DetailedReview> = detailedReviewRepository.findAll()
+
+    fun getDetailedReviewsByUserId(userId: Long): List<DetailedReview> =
+        detailedReviewRepository.findByUserId(userId)
+
+    fun getDetailedReviewsByBreweryId(breweryId: String): List<DetailedReview> =
+        detailedReviewRepository.findByBreweryId(breweryId)
 }
 

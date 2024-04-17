@@ -1,7 +1,9 @@
 package org.robbie.brewtrail.controllers
 
 import org.robbie.brewtrail.dto.ReviewDto
+import org.robbie.brewtrail.entity.DetailedReview
 import org.robbie.brewtrail.entity.Review
+import org.robbie.brewtrail.repository.DetailedReviewRepository
 import org.robbie.brewtrail.services.ReviewService
 import org.robbie.brewtrail.services.UserService
 import org.slf4j.LoggerFactory
@@ -18,7 +20,8 @@ data class ApiResponse(val message: String)
 @RequestMapping("/api/reviews")
 class ReviewController(
     private val reviewService: ReviewService,
-    private val userService: UserService
+    private val userService: UserService,
+    private val detailedReviewRepository: DetailedReviewRepository
 ) {
     private val logger = LoggerFactory.getLogger(ReviewController::class.java)
 
@@ -37,7 +40,6 @@ class ReviewController(
         return ResponseEntity.ok(ApiResponse("Review added successfully"))
     }
 
-
     @GetMapping("/brewery/{openBreweryDbId}")
     fun getReviewsByBrewery(@PathVariable openBreweryDbId: String): ResponseEntity<List<Review>> {
         logger.debug("Fetching reviews for brewery with openBreweryDbId: {}", openBreweryDbId)
@@ -49,23 +51,9 @@ class ReviewController(
         }
     }
 
-//    @GetMapping("/user/reviews")
-//    fun getReviewsByUser(@AuthenticationPrincipal jwt: Jwt): ResponseEntity<Any> {
-//        logger.info("Received request to fetch reviews for JWT subject: ${jwt.subject}")
-//        try {
-//            val authUid = UUID.fromString(jwt.subject)
-//            val user = userService.getUserByAuthUid(authUid)
-//            val reviews = reviewService.findReviewsByUserId(user.id)
-//            logger.info("Sending reviews for User ID ${user.id}: $reviews")
-//            return ResponseEntity.ok(reviews)
-//        } catch (ex: Exception) {
-//            logger.error("Error fetching reviews: ${ex.message}", ex)
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching reviews")
-//        }
-//    }
     @GetMapping("/all")
-    fun getAllReviews(): ResponseEntity<List<Review>> {
-        val reviews = reviewService.findAllReviews()
+    fun getAllReviews(): ResponseEntity<List<DetailedReview>> {
+        val reviews = reviewService.getAllDetailedReviews()
         return if (reviews.isNotEmpty()) ResponseEntity.ok(reviews)
         else ResponseEntity.noContent().build()
     }
@@ -84,7 +72,5 @@ class ReviewController(
             return ResponseEntity.badRequest().body("Error fetching reviews")
         }
     }
-
-
 
 }
