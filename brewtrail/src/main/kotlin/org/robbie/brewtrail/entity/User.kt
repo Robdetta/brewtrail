@@ -1,16 +1,11 @@
 package org.robbie.brewtrail.entity
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
-import jakarta.persistence.Column
+import jakarta.persistence.*
 import java.time.Instant
 import java.util.*
 
 @Entity
-@Table(name = "app_users") 
+@Table(name = "app_users")
 data class User(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
@@ -34,5 +29,11 @@ data class User(
     val authUid: UUID? = null,// Nullable for users who sign up with email/password
 
     @Column(nullable = false)
-    var isAdmin: Boolean = false
+    var isAdmin: Boolean = false,
+
+    @OneToMany(mappedBy = "requester")
+    val sentRequests: Set<Friendship> = HashSet(),
+
+    @OneToMany(mappedBy = "addressee")
+    val receivedRequests: Set<Friendship> = HashSet()
 )

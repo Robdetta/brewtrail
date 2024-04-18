@@ -1,16 +1,7 @@
 package org.robbie.brewtrail.entity
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
-import jakarta.persistence.Column
+import jakarta.persistence.*
 import java.time.Instant
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.Enumerated
-import jakarta.persistence.EnumType
-import jakarta.persistence.JoinColumn
 
 @Entity
 @Table(name = "friendships")
@@ -18,17 +9,17 @@ data class Friendship(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_id", referencedColumnName = "id")
     val requester: User,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "addressee_id", referencedColumnName = "id")
     val addressee: User,
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    val status: FriendshipStatus,
+    var status: FriendshipStatus,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: Instant = Instant.now(),
