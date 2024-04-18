@@ -20,3 +20,10 @@ export interface ApiResponse<T> {
   data: T | null;
   error?: string;
 }
+
+export interface UserProfile {
+  id: number;
+  name: string;
+  email: string;
+  profilePicture?: string;
+}

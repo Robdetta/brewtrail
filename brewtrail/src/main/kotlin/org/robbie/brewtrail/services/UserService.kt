@@ -3,10 +3,9 @@ package org.robbie.brewtrail.services
 import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.robbie.brewtrail.dto.GoogleUserInfoDto
-import org.robbie.brewtrail.entity.Review
+import org.robbie.brewtrail.dto.UserProfile
 import org.springframework.security.oauth2.jwt.Jwt
 import org.robbie.brewtrail.entity.User
-import org.robbie.brewtrail.repository.ReviewRepository
 import org.robbie.brewtrail.repository.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -16,7 +15,6 @@ import java.util.*
 class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val reviewRepository: ReviewRepository
 ) {
 
     fun createUser(name: String, email: String, password: String): User {
@@ -54,4 +52,15 @@ class UserService(
             .orElseThrow { EntityNotFoundException("User not found") }
         return user.id
     }
+
+    fun getUserProfile(userId: Long): UserProfile {
+        return userRepository.findById(userId).map { user ->
+            UserProfile(
+                id = user.id,
+                name = user.name,
+                email = user.email
+            )
+        }.orElseThrow { RuntimeException("User not found") }
+    }
+
 }

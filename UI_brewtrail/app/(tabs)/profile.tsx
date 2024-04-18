@@ -4,24 +4,27 @@ import { supabase } from '../../lib/supabase-client';
 import { Button, Input, Text } from 'react-native-elements';
 import { useAuth } from '@/context/auth';
 import { Redirect } from 'expo-router';
+import { fetchUserProfile } from '@/services/services';
+import { UserProfile } from '@/types/types';
 
 const Profile: React.FC = () => {
-  const { session } = useAuth();
+  const { userProfile, signOut } = useAuth();
 
-  if (!session) {
-    // Redirect to login if not authenticated
-    return <Redirect href='/(modals)/login' />;
+  if (!userProfile) {
+    return <Text>Please log in to view your profile.</Text>;
   }
+
+  const handleLogout = async () => {
+    await signOut();
+  };
 
   return (
     <View>
-      {session ? (
-        <Text>
-          Profile Page: Welcome, {session.user?.user_metadata.username}!
-        </Text>
-      ) : (
-        <Text>Please log in to view your profile.</Text>
-      )}
+      <Text>Profile Page: Welcome, {userProfile.name}!</Text>
+      <Button
+        title='Logout'
+        onPress={handleLogout}
+      />
     </View>
   );
 };

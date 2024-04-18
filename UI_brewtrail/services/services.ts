@@ -1,5 +1,6 @@
 import { Brewery, Review, ApiResponse } from '../types/types';
 import { supabase } from '../lib/supabase-client';
+import { UserProfile } from '../types/types';
 
 const BASE_URL = 'http://localhost:8080/api';
 
@@ -91,4 +92,32 @@ export const fetchAllReviews = async () => {
     throw new Error('Failed to fetch reviews');
   }
   return response.json();
+};
+
+export const fetchUserProfile = async (
+  token: string,
+): Promise<UserProfile | null> => {
+  const url = `${BASE_URL}/users/profile`;
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // JWT token is passed for authentication
+      },
+    });
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error(
+        `Failed to fetch user profile, status: ${response.status}, body: ${errorBody}`,
+      );
+      throw new Error(
+        `Failed to fetch user profile, status: ${response.status}, body: ${errorBody}`,
+      );
+    }
+    const userProfile: UserProfile = await response.json();
+    return userProfile;
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    return null;
+  }
 };
