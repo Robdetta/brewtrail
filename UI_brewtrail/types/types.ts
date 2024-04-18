@@ -27,3 +27,24 @@ export interface UserProfile {
   email: string;
   profilePicture?: string;
 }
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export enum FriendshipStatus {
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+}
+
+export interface Friendship {
+  id: number;
+  requester: User;
+  addressee: User;
+  status: FriendshipStatus;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+}

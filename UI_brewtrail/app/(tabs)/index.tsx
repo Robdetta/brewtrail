@@ -37,7 +37,6 @@ const Feed = () => {
             <Text>Comment: {review.comment}</Text>
             <Text>Brewery: {review.breweryName}</Text>
             <Text>Reviewed by: {review.userName}</Text>
-
             <Text>
               Posted: {new Date(review.createdAt).toLocaleDateString()}
             </Text>

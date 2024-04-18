@@ -9,7 +9,7 @@ import { fetchUserProfile } from '@/services/services';
 
 interface AuthContextType {
   session: Session | null;
-  userProfile: UserProfile | null;
+  userProfile: UserProfile;
   loading: boolean;
   setUserProfile: (userProfile: UserProfile | null) => void;
   signUp: (email: string, password: string, username: string) => Promise<void>;

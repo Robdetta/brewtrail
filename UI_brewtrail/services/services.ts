@@ -1,6 +1,6 @@
 import { Brewery, Review, ApiResponse } from '../types/types';
 import { supabase } from '../lib/supabase-client';
-import { UserProfile } from '../types/types';
+import { UserProfile, Friendship, FriendshipStatus } from '../types/types';
 
 const BASE_URL = 'http://localhost:8080/api';
 
@@ -118,6 +118,62 @@ export const fetchUserProfile = async (
     return userProfile;
   } catch (error) {
     console.error('Error fetching user profile:', error);
+    return null;
+  }
+};
+
+export const fetchFriendships = async (
+  userId: number,
+  status: FriendshipStatus,
+  token: string,
+): Promise<Friendship[] | null> => {
+  const url = `${BASE_URL}/friendships?userId=${userId}&status=${status}`;
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // Ensure the token is passed correctly
+      },
+    });
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(
+        `Failed to fetch friendships, status: ${response.status}, body: ${errorBody}`,
+      );
+    }
+    const friendships: Friendship[] = await response.json();
+    return friendships;
+  } catch (error) {
+    console.error('Error fetching friendships:', error);
+    return null;
+  }
+};
+
+export const manageFriendRequest = async (
+  action: 'send' | 'accept' | 'reject',
+  requesterId: number,
+  addresseeId: number,
+  token: string,
+): Promise<string | null> => {
+  const url = `${BASE_URL}/friendships/${action}`;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ requesterId, addresseeId }),
+    });
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(
+        `Failed to ${action} friend request, status: ${response.status}, body: ${errorBody}`,
+      );
+    }
+    return 'Success';
+  } catch (error) {
+    console.error(`Error ${action}ing friend request:`, error);
     return null;
   }
 };

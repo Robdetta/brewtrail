@@ -40,7 +40,9 @@ const ReviewsPage = () => {
           >
             <Text>Rating: {review.rating}</Text>
             <Text>Comment: {review.comment}</Text>
-            <Text>Posted: {review.datePosted?.toLocaleDateString()}</Text>
+            <Text>
+              Posted: {new Date(review.createdAt).toLocaleDateString()}
+            </Text>{' '}
             <Text>By: {review.userName}</Text>
           </View>
         ))
