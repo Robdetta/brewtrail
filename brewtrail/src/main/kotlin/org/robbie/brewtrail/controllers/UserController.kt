@@ -65,5 +65,6 @@ class UserController(private val userService: UserService) {
             ResponseEntity.notFound().build()
         }
     }
+
     data class UserDto(val name: String, val email: String, val password: String)
 }
