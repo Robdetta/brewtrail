@@ -70,8 +70,7 @@ function RootLayoutNav() {
               />
               <Stack.Screen
                 name='UserProfile'
-                component={UserProfile}
-                path='/user/:userId'
+                options={{ headerShown: false }}
               />
             </Stack>
           </FriendsProvider>

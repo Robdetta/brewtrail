@@ -19,7 +19,7 @@ class UserController(private val userService: UserService) {
     private val logger: Logger = LoggerFactory.getLogger(BreweryService::class.java)
     @PostMapping
     fun addUser(@RequestBody userDto: UserDto): User {
-    return userService.createUser(userDto.name, userDto.email, userDto.password) // Pass the password to createUser   
+    return userService.createUser(userDto.name, userDto.email, userDto.password) // Pass the password to createUser
      }
 
     @GetMapping
@@ -39,18 +39,18 @@ class UserController(private val userService: UserService) {
         return ResponseEntity.ok(user)
     }
 
-//    @GetMapping("/profile/{userId}")
-//    fun getUserProfile(@PathVariable userId: Long?): ResponseEntity<UserProfile> {
-//        logger.info("Fetching profile for user ID: {}", userId)
-//        try {
-//            val userProfile = userService.getUserProfile(userId!!)
-//            logger.info("Successfully retrieved user profile: {}", userProfile)
-//            return ResponseEntity.ok(userProfile)
-//        } catch (e: Exception) {
-//            logger.error("Error retrieving user profile", e)
-//            return ResponseEntity.notFound().build()
-//        }
-//    }
+    @GetMapping("/profile/{userId}")
+    fun getUserProfile(@PathVariable userId: Long?): ResponseEntity<UserProfile> {
+        logger.info("Fetching profile for user ID: {}", userId)
+        try {
+            val userProfile = userService.getUserProfile(userId!!)
+            logger.info("Successfully retrieved user profile: {}", userProfile)
+            return ResponseEntity.ok(userProfile)
+        } catch (e: Exception) {
+            logger.error("Error retrieving user profile", e)
+            return ResponseEntity.notFound().build()
+        }
+    }
 
     @GetMapping("/profile")
     fun getUserProfile(@AuthenticationPrincipal jwt: Jwt): ResponseEntity<UserProfile> {
@@ -64,6 +64,12 @@ class UserController(private val userService: UserService) {
             logger.error("Error retrieving user profile", e)
             ResponseEntity.notFound().build()
         }
+    }
+
+    @GetMapping("/search")
+    fun searchUsers(@RequestParam query: String): ResponseEntity<List<User>> {
+        val users = userService.searchUsers(query)
+        return ResponseEntity.ok(users)
     }
 
     data class UserDto(val name: String, val email: String, val password: String)

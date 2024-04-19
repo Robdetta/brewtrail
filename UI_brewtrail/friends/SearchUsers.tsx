@@ -2,6 +2,8 @@ import React, { useState, useContext } from 'react';
 import { TextInput, View, Text, Button, FlatList } from 'react-native';
 import { useFriends } from '../context/FriendsContex';
 import { User } from '@/types/types';
+import UserListItem from '@/app/userProfile/UserListItem';
+
 const SearchUsers: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const { searchResults, handleSearchUsers } = useFriends();
@@ -33,18 +35,7 @@ const SearchUsers: React.FC = () => {
       <FlatList
         data={searchResults}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View
-            style={{
-              padding: 10,
-              borderBottomWidth: 1,
-              borderBottomColor: '#ccc',
-            }}
-          >
-            <Text style={{ fontSize: 18 }}>{item.name}</Text>
-            <Text style={{ color: 'grey' }}>{item.email}</Text>
-          </View>
-        )}
+        renderItem={({ item }) => <UserListItem user={item} />}
       />
     </View>
   );

@@ -210,3 +210,25 @@ export const searchUsers = async (
     return null;
   }
 };
+
+export const fetchUserDetailsById = async (userId: number, token: string) => {
+  const url = `${BASE_URL}/users/profile/${userId}`;
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // Include if authentication is required
+      },
+    });
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(
+        `Failed to load user details, status: ${response.status}, body: ${errorBody}`,
+      );
+    }
+    return await response.json(); // This should match the UserProfile structure
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    throw error;
+  }
+};
