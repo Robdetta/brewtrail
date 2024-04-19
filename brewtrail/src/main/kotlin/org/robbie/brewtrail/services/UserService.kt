@@ -63,4 +63,9 @@ class UserService(
         }.orElseThrow { RuntimeException("User not found") }
     }
 
+    fun searchUsers(query: String): List<User> {
+        return userRepository.findByNameContainingIgnoreCase(query)
+    }
+
+
 }

@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
-
+import org.robbie.brewtrail.entity.User
 
 @RestController
 @RequestMapping("/api")
@@ -56,6 +56,12 @@ class FriendshipController(
         } catch (e: Exception) {
             ResponseEntity.badRequest().body("Failed to get friends and requests: ${e.message}")
         }
+    }
+
+    @GetMapping("/search/user")
+    fun searchUsers(@RequestParam query: String): ResponseEntity<List<User>> {
+        val users = userService.searchUsers(query)
+        return ResponseEntity.ok(users)
     }
 
 }

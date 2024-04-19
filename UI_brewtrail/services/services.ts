@@ -1,6 +1,11 @@
 import { Brewery, Review, ApiResponse } from '../types/types';
 import { supabase } from '../lib/supabase-client';
-import { UserProfile, Friendship, FriendshipStatus } from '../types/types';
+import {
+  UserProfile,
+  Friendship,
+  FriendshipStatus,
+  User,
+} from '../types/types';
 
 const BASE_URL = 'http://localhost:8080/api';
 
@@ -174,6 +179,34 @@ export const manageFriendRequest = async (
     return 'Success';
   } catch (error) {
     console.error(`Error ${action}ing friend request:`, error);
+    return null;
+  }
+};
+
+export const searchUsers = async (
+  searchTerm: string,
+  token: string,
+): Promise<User[] | null> => {
+  const url = `${BASE_URL}/users/search?searchTerm=${encodeURIComponent(
+    searchTerm,
+  )}`;
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // Ensure the token is passed correctly
+      },
+    });
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(
+        `Failed to search users, status: ${response.status}, body: ${errorBody}`,
+      );
+    }
+    const users: User[] = await response.json();
+    return users;
+  } catch (error) {
+    console.error('Error searching users:', error);
     return null;
   }
 };

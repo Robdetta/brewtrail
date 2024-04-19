@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 import { AuthProvider } from '@/context/auth';
 import { useColorScheme } from '@/components/useColorScheme';
 import { ReviewProvider } from '@/context/ReviewContext';
+import { FriendsProvider } from '@/context/FriendsContex';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -56,16 +57,18 @@ function RootLayoutNav() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
         <ReviewProvider>
-          <Stack>
-            <Stack.Screen
-              name='(tabs)'
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name='(modals)/login'
-              options={{ presentation: 'modal' }}
-            />
-          </Stack>
+          <FriendsProvider>
+            <Stack>
+              <Stack.Screen
+                name='(tabs)'
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name='(modals)/login'
+                options={{ presentation: 'modal' }}
+              />
+            </Stack>
+          </FriendsProvider>
         </ReviewProvider>
       </AuthProvider>
     </ThemeProvider>

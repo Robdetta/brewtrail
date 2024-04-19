@@ -2,7 +2,7 @@ import { Redirect } from 'expo-router';
 import { View, Text } from 'react-native';
 import * as React from 'react';
 import { useAuth } from '@/context/auth';
-import { fetchFriendships } from '@/services/services';
+import { fetchFriendships, searchUsers } from '@/services/services';
 import { Friendship, FriendshipStatus } from '@/types/types';
 
 const Friends = ({ userId, token }: { userId: number; token: string }) => {
