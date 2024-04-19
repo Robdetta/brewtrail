@@ -7,6 +7,7 @@ import {
 import { useLocalSearchParams } from 'expo-router';
 import ReviewModal from '../(modals)/reviewModal';
 import { useReviews } from '@/context/ReviewContext';
+import { Review } from '@/types/types';
 
 interface Brewery {
   name: string;
@@ -18,10 +19,10 @@ interface Brewery {
   websiteUrl?: string;
 }
 
-interface Review {
-  rating: number;
-  comment: string;
-}
+// interface Review {
+//   rating: number;
+//   comment: string;
+// }
 
 const BreweryDetailsScreen = () => {
   const { breweryId } = useLocalSearchParams();

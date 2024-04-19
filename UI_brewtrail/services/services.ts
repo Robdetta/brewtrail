@@ -187,7 +187,7 @@ export const searchUsers = async (
   searchTerm: string,
   token: string,
 ): Promise<User[] | null> => {
-  const url = `${BASE_URL}/users/search?searchTerm=${encodeURIComponent(
+  const url = `${BASE_URL}/users/search?query=${encodeURIComponent(
     searchTerm,
   )}`;
   try {

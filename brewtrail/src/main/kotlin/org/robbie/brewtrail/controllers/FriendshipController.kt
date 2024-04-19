@@ -58,7 +58,7 @@ class FriendshipController(
         }
     }
 
-    @GetMapping("/search/user")
+    @GetMapping("/users/search")
     fun searchUsers(@RequestParam query: String): ResponseEntity<List<User>> {
         val users = userService.searchUsers(query)
         return ResponseEntity.ok(users)

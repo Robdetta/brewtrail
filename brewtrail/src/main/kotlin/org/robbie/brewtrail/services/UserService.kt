@@ -67,5 +67,4 @@ class UserService(
         return userRepository.findByNameContainingIgnoreCase(query)
     }
 
-
 }

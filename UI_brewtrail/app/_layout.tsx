@@ -12,6 +12,7 @@ import { AuthProvider } from '@/context/auth';
 import { useColorScheme } from '@/components/useColorScheme';
 import { ReviewProvider } from '@/context/ReviewContext';
 import { FriendsProvider } from '@/context/FriendsContex';
+import UserProfile from './userProfile/[userId]';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -66,6 +67,11 @@ function RootLayoutNav() {
               <Stack.Screen
                 name='(modals)/login'
                 options={{ presentation: 'modal' }}
+              />
+              <Stack.Screen
+                name='UserProfile'
+                component={UserProfile}
+                path='/user/:userId'
               />
             </Stack>
           </FriendsProvider>
