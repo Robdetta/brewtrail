@@ -68,10 +68,6 @@ function RootLayoutNav() {
                 name='(modals)/login'
                 options={{ presentation: 'modal' }}
               />
-              <Stack.Screen
-                name='userProfile'
-                options={{ headerShown: false }}
-              />
             </Stack>
           </FriendsProvider>
         </ReviewProvider>

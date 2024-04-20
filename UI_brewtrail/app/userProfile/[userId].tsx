@@ -61,6 +61,7 @@ const UserProfilePage: React.FC<UserProfile> = () => {
     return <Text>User not found.</Text>;
   }
 
+  console.log('userProfile', userProfile);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>User Profile: {userProfile.name}</Text>
