@@ -128,6 +128,80 @@ export const fetchUserReviews = async (
   }
 };
 
+export const sendFriendRequest = async (
+  token: string,
+  addresseeId: number,
+): Promise<Friendship | null> => {
+  const url = `${BASE_URL}/friendships/request`;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ addresseeId }),
+    });
+    const textResponse = await response.text(); // First get the text
+    console.log('Raw response:', textResponse); // Log raw response
+    if (!response.ok) {
+      throw new Error(
+        `Failed to send friend request: ${response.status}, body: ${textResponse}`,
+      );
+    }
+    return (await response.json()) as Friendship;
+  } catch (error) {
+    console.error('Error sending friend request:', error);
+    return null;
+  }
+};
+
+export const acceptFriendRequest = async (
+  token: string,
+  requestId: number,
+): Promise<Friendship | null> => {
+  const url = `${BASE_URL}/friendships/accept/${requestId}`;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to accept friend request: ${response.status}`);
+    }
+    return (await response.json()) as Friendship;
+  } catch (error) {
+    console.error('Error accepting friend request:', error);
+    return null;
+  }
+};
+
+export const rejectFriendRequest = async (
+  token: string,
+  requestId: number,
+): Promise<Friendship | null> => {
+  const url = `${BASE_URL}/friendships/reject/${requestId}`;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to reject friend request');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error rejecting friend request:', error);
+    throw error;
+  }
+};
+
 export const fetchUserProfile = async (
   token: string,
 ): Promise<UserProfile | null> => {
@@ -183,32 +257,27 @@ export const fetchFriendships = async (
   }
 };
 
-export const manageFriendRequest = async (
-  action: 'send' | 'accept' | 'reject',
-  requesterId: number,
-  addresseeId: number,
+export const fetchPendingFriendRequests = async (
+  userId: number,
   token: string,
-): Promise<string | null> => {
-  const url = `${BASE_URL}/friendships/${action}`;
+) => {
+  const url = `${BASE_URL}/friendships/requests?userId=${userId}&status=Pending`;
   try {
     const response = await fetch(url, {
-      method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ requesterId, addresseeId }),
     });
     if (!response.ok) {
-      const errorBody = await response.text();
       throw new Error(
-        `Failed to ${action} friend request, status: ${response.status}, body: ${errorBody}`,
+        `Failed to fetch pending friend requests: ${response.status}`,
       );
     }
-    return 'Success';
+    return await response.json();
   } catch (error) {
-    console.error(`Error ${action}ing friend request:`, error);
-    return null;
+    console.error('Error fetching pending friend requests:', error);
+    return []; // Return an empty array in case of error to maintain component functionality
   }
 };
 
