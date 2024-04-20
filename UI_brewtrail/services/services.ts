@@ -131,8 +131,8 @@ export const fetchUserReviews = async (
 export const sendFriendRequest = async (
   token: string,
   addresseeId: number,
-): Promise<Friendship | null> => {
-  const url = `${BASE_URL}/friendships/request`;
+): Promise<string | null> => {
+  const url = `${BASE_URL}/friendships/request?addresseeId=${addresseeId}`; // Ensure addresseeId is included in the URL as a query parameter
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -140,16 +140,14 @@ export const sendFriendRequest = async (
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ addresseeId }),
     });
-    const textResponse = await response.text(); // First get the text
-    console.log('Raw response:', textResponse); // Log raw response
+    const textResponse = await response.text(); // Get the response as text
     if (!response.ok) {
       throw new Error(
         `Failed to send friend request: ${response.status}, body: ${textResponse}`,
       );
     }
-    return (await response.json()) as Friendship;
+    return textResponse;
   } catch (error) {
     console.error('Error sending friend request:', error);
     return null;

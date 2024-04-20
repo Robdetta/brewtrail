@@ -3,7 +3,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './auth';
 import {
   fetchFriendships,
-  manageFriendRequest,
+  sendFriendRequest,
+  acceptFriendRequest,
+  rejectFriendRequest,
   searchUsers,
 } from '@/services/services';
 import { Friendship, FriendshipStatus, User } from '@/types/types';
@@ -13,7 +15,7 @@ const FriendsContext = createContext(
     friends: Friendship[];
     setFriends: React.Dispatch<React.SetStateAction<Friendship[]>>;
     handleFriendRequest: (
-      action: 'send' | 'accept' | 'reject',
+      action: 'request' | 'accept' | 'reject',
       requesterId: number,
       addresseeId: number,
     ) => Promise<string | null>;
@@ -59,18 +61,34 @@ export const FriendsProvider = ({
   };
 
   const handleFriendRequest = async (
-    action: 'send' | 'accept' | 'reject',
+    action: 'request' | 'accept' | 'reject',
     requesterId: number,
     addresseeId: number,
   ) => {
-    return await manageFriendRequest(
-      action,
-      requesterId,
-      addresseeId,
-      session?.access_token || '',
-    );
+    const token = session?.access_token || '';
+    try {
+      let result;
+      switch (action) {
+        case 'request':
+          result = await sendFriendRequest(token, addresseeId);
+          break;
+        case 'accept':
+          result = await acceptFriendRequest(token, requesterId);
+          break;
+        case 'reject':
+          result = await rejectFriendRequest(token, requesterId);
+          break;
+        default:
+          throw new Error('Invalid action');
+      }
+      // Optionally, refresh friends list here
+      loadFriends(userProfile.id, FriendshipStatus.ACCEPTED, token);
+      return result ? 'Success' : 'Failure';
+    } catch (error) {
+      console.error(`Error processing friend request (${action}):`, error);
+      return null;
+    }
   };
-
   const handleSearchUsers = async (searchTerm: string) => {
     const results = await searchUsers(searchTerm, session?.access_token || '');
     setSearchResults(results || []);
