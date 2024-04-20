@@ -22,9 +22,6 @@ class ReviewService(
     private val detailedReviewRepository: DetailedReviewRepository
 
 ) {
-    companion object {
-        private val logger = LoggerFactory.getLogger(ReviewService::class.java)
-    }
 
     @Transactional
     fun createReview(userId: Long, openBreweryDbId: String, rating: Double, comment: String?): Review {
@@ -69,5 +66,5 @@ class ReviewService(
         return detailedReviewRepository.findByOpenBreweryDbId(openBreweryDbId)
     }
 
-}
+    fun getUserReviews(userId: Long): List<Review> = reviewRepository.findByUserId(userId).orEmpty().filterNotNull()}
 

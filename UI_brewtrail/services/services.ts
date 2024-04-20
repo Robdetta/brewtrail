@@ -99,6 +99,35 @@ export const fetchAllReviews = async () => {
   return response.json();
 };
 
+export const fetchUserReviews = async (
+  userId: number,
+  token: string,
+): Promise<Review[] | null> => {
+  const url = `${BASE_URL}/users/${userId}/reviews`;
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // JWT token is passed for authentication
+      },
+    });
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error(
+        `Failed to fetch user reviews, status: ${response.status}, body: ${errorBody}`,
+      );
+      throw new Error(
+        `Failed to fetch user reviews, status: ${response.status}, body: ${errorBody}`,
+      );
+    }
+    const reviews: Review[] = await response.json();
+    return reviews;
+  } catch (error) {
+    console.error('Error fetching user reviews:', error);
+    return null;
+  }
+};
+
 export const fetchUserProfile = async (
   token: string,
 ): Promise<UserProfile | null> => {

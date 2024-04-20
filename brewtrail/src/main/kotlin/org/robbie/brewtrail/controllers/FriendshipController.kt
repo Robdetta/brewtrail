@@ -1,12 +1,9 @@
 package org.robbie.brewtrail.controllers
 
-import org.robbie.brewtrail.entity.DetailedFriendship
+
 import org.robbie.brewtrail.entity.FriendshipStatus
-import org.robbie.brewtrail.services.DetailedFriendshipService
 import org.robbie.brewtrail.services.FriendshipService
 import org.robbie.brewtrail.services.UserService
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
@@ -17,7 +14,6 @@ import org.springframework.web.bind.annotation.*
 class FriendshipController(
     private val userService: UserService,
     private val friendshipService: FriendshipService,
-    private val detailedFriendshipService: DetailedFriendshipService
 ) {
 
     @PostMapping("/friendships/request")
@@ -59,20 +55,6 @@ class FriendshipController(
             ResponseEntity.ok(friendsAndRequests)
         } catch (e: Exception) {
             ResponseEntity.badRequest().body("Failed to get friends and requests: ${e.message}")
-        }
-    }
-
-    @GetMapping("/friendships/details")
-    fun getUserDetailsWithFriendships(
-        @RequestParam userId: Long,
-        @RequestParam status: String = "ACCEPTED"
-    ): ResponseEntity<List<DetailedFriendship>> {
-        return try {
-            val friendships = detailedFriendshipService.getFriendships(userId, status)
-            if (friendships.isEmpty()) ResponseEntity.noContent().build()
-            else ResponseEntity.ok(friendships)
-        } catch (e: Exception) {
-            ResponseEntity.badRequest().body(listOf())
         }
     }
 

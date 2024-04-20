@@ -2,8 +2,10 @@ package org.robbie.brewtrail.controllers
 
 import org.robbie.brewtrail.dto.GoogleUserInfoDto
 import org.robbie.brewtrail.dto.UserProfile
+import org.robbie.brewtrail.entity.Review
 import org.robbie.brewtrail.entity.User
 import org.robbie.brewtrail.services.BreweryService
+import org.robbie.brewtrail.services.ReviewService
 import org.robbie.brewtrail.services.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -14,7 +16,10 @@ import org.springframework.security.oauth2.jwt.Jwt
 
 @RestController
 @RequestMapping("/api/users") // Base path for this controller
-class UserController(private val userService: UserService) {
+class UserController(
+    private val userService: UserService,
+    private val reviewService: ReviewService
+) {
 
     private val logger: Logger = LoggerFactory.getLogger(BreweryService::class.java)
     @PostMapping
@@ -70,6 +75,13 @@ class UserController(private val userService: UserService) {
     fun searchUsers(@RequestParam query: String): ResponseEntity<List<User>> {
         val users = userService.searchUsers(query)
         return ResponseEntity.ok(users)
+    }
+
+    @GetMapping("/{userId}/reviews")
+    fun getUserReviews(@PathVariable userId: Long): ResponseEntity<List<Review>> {
+        val reviews = reviewService.getUserReviews(userId)
+        return if (reviews.isNotEmpty()) ResponseEntity.ok(reviews)
+        else ResponseEntity.noContent().build()
     }
 
     data class UserDto(val name: String, val email: String, val password: String)
