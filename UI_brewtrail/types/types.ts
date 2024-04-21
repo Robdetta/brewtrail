@@ -41,6 +41,7 @@ export enum FriendshipStatus {
 }
 
 export interface Friendship {
+  [x: string]: any;
   id: number;
   requester: User;
   addressee: User;

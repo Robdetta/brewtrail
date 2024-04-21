@@ -1,30 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
-import { Redirect, useLocalSearchParams } from 'expo-router';
-import {
-  fetchUserReviews,
-  fetchUserDetailsById,
-  sendFriendRequest,
-} from '@/services/services';
-import { UserProfile, Review, FriendshipStatus } from '@/types/types';
+import { useLocalSearchParams } from 'expo-router';
+import { fetchUserReviews, fetchUserDetailsById } from '@/services/services';
+import { UserProfile, Review } from '@/types/types';
 import { useAuth } from '@/context/auth';
 import { useFriends } from '@/context/FriendsContex';
 
 const UserProfilePage: React.FC = () => {
   const { userId } = useLocalSearchParams();
   const { session } = useAuth();
-  const { handleFriendRequest, friends, loadFriends } = useFriends();
+  const { handleFriendRequest, friends } = useFriends();
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isFriend, setIsFriend] = useState(false);
   const normalizedUserId = parseInt(Array.isArray(userId) ? userId[0] : userId);
 
   useEffect(() => {
-    if (!normalizedUserId) {
-      setError('Invalid user ID format');
+    if (!session?.access_token || !normalizedUserId) {
+      setError('Invalid user ID format or missing authentication token');
       setLoading(false);
       return;
     }
@@ -33,19 +28,14 @@ const UserProfilePage: React.FC = () => {
       try {
         const userProfileData = await fetchUserDetailsById(
           normalizedUserId,
-          session?.access_token,
-        );
-        const userReviews = await fetchUserReviews(
-          normalizedUserId,
-          session?.access_token,
+          session.access_token,
         );
         setUserProfile(userProfileData);
-        setReviews(userReviews || []);
-        await loadFriends(
-          userProfileData.id,
-          FriendshipStatus.ACCEPTED,
-          session?.access_token,
+        const userReviews = await fetchUserReviews(
+          normalizedUserId,
+          session.access_token,
         );
+        setReviews(userReviews || []);
       } catch (e) {
         console.error('Failed to load data:', e);
         setError('Failed to load user details');
@@ -55,39 +45,30 @@ const UserProfilePage: React.FC = () => {
     };
 
     fetchData();
-  }, [normalizedUserId, session?.access_token, loadFriends]);
+  }, [normalizedUserId, session?.access_token]);
 
-  useEffect(() => {
-    const alreadyFriend = friends.some(
-      (friend) =>
-        (friend.requester.id === normalizedUserId ||
-          friend.addressee.id === normalizedUserId) &&
-        friend.status === FriendshipStatus.ACCEPTED,
-    );
-    setIsFriend(alreadyFriend);
-  }, [friends, normalizedUserId]);
+  const isAlreadyFriend = friends.some(
+    (friend) =>
+      (friend.requester.id === normalizedUserId ||
+        friend.addressee.id === normalizedUserId) &&
+      friend.status === 'ACCEPTED',
+  );
 
   const handleSendFriendRequest = async () => {
-    if (!session?.access_token || !userProfile) {
-      alert('Authentication token missing or user profile not loaded');
+    if (!userProfile) {
+      alert('User profile is not loaded.');
       return;
     }
 
-    try {
-      const result = await handleFriendRequest(
-        'request',
-        userProfile.id,
-        normalizedUserId,
-      );
-      if (result === 'Success') {
-        alert('Friend request sent successfully!');
-        setIsFriend(true);
-      } else {
-        throw new Error(result || 'Unknown error occurred');
-      }
-    } catch (error) {
-      console.error('Failed to send friend request:', error);
-      alert(`Failed to send friend request: ${error}`);
+    const result = await handleFriendRequest(
+      'request',
+      userProfile.id,
+      normalizedUserId,
+    );
+    if (result === 'Success') {
+      alert('Friend request sent successfully!');
+    } else {
+      alert('Failed to send friend request');
     }
   };
 
@@ -99,20 +80,29 @@ const UserProfilePage: React.FC = () => {
     return <Text>Loading...</Text>;
   }
 
+  if (error) {
+    return <Text>{error}</Text>;
+  }
+
   if (!userProfile) {
     return <Text>User not found.</Text>;
   }
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>User Profile: {userProfile?.name}</Text>
-      <Text>Email: {userProfile?.email}</Text>
+      <Text style={styles.title}>User Profile: {userProfile.name}</Text>
+      <Text>Email: {userProfile.email}</Text>
       {reviews.map((review, index) => (
-        <Text key={index}>
-          {review.comment} - Rating: {review.rating}
-        </Text>
+        <View
+          key={index}
+          style={styles.review}
+        >
+          <Text>
+            {review.comment} - Rating: {review.rating}
+          </Text>
+        </View>
       ))}
-      {!isFriend && (
+      {!isAlreadyFriend && (
         <Button
           title='Send Friend Request'
           onPress={handleSendFriendRequest}
@@ -130,6 +120,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
+  },
+  review: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#eaeaea',
   },
 });
 

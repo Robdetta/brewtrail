@@ -3,11 +3,10 @@ import {
   acceptFriendRequest,
   rejectFriendRequest,
   fetchFriendships,
-  fetchPendingFriendRequests,
 } from '@/services/services';
 import { Friendship, FriendshipStatus } from '@/types/types';
 import { useAuth } from '@/context/auth';
-import { Redirect } from 'expo-router';
+import { Link } from 'expo-router';
 
 interface Friend {
   id: number;
@@ -24,61 +23,108 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
   userId,
   token,
 }) => {
-  const [friends, setFriends] = React.useState<Friendship[]>([]);
   const { userProfile } = useAuth();
-  const [pendingRequests, setPendingRequests] = React.useState<Friendship[]>(
-    [],
-  );
+  const [friends, setFriends] = React.useState<Friendship[]>([]);
+  const [loading, setLoading] = React.useState(false);
+  const [message, setMessage] = React.useState('');
 
   React.useEffect(() => {
     const loadFriends = async () => {
-      const fetchedFriends = await fetchFriendships(
-        userId,
-        FriendshipStatus.ACCEPTED,
-        token, // You may need to replace 'ACCEPTED' with FriendshipStatus.ACCEPTED if it's defined as such
-      );
-      const fetchedPendingRequests = await fetchFriendships(
-        userId,
-        FriendshipStatus.PENDING,
-        token,
-      );
-
-      if (fetchedFriends) {
-        setFriends(fetchedFriends);
-        setPendingRequests(fetchedPendingRequests || []);
+      setLoading(true);
+      try {
+        const fetchedFriends =
+          (await fetchFriendships(userId, FriendshipStatus.ACCEPTED, token)) ||
+          [];
+        const fetchedPendingRequests =
+          (await fetchFriendships(userId, FriendshipStatus.PENDING, token)) ||
+          [];
+        const transformedFriends = transformFriendshipsData(
+          [...fetchedFriends, ...fetchedPendingRequests],
+          userProfile.id,
+        );
+        setFriends(transformedFriends);
+      } catch (error) {
+        console.error('Error loading friendships:', error);
       }
+      setLoading(false);
     };
 
     loadFriends();
-  }, [userId, token]);
+  }, [userId, token, userProfile.id]);
+
+  const handleRequestAction = async (
+    action: 'accept' | 'reject',
+    requestId: number,
+  ) => {
+    setLoading(true);
+    try {
+      const result = await (action === 'accept'
+        ? acceptFriendRequest(token, requestId)
+        : rejectFriendRequest(token, requestId));
+      if (result === 'Success') {
+        setMessage('Action was successful!');
+        setTimeout(() => setMessage(''), 5000); // Clear message after 5 seconds
+      } else {
+        setMessage('Failed to perform the action.');
+      }
+    } catch (error) {
+      console.error('Error processing friend request:', error);
+      setMessage(`Failed to perform the action: ${error}`);
+    }
+    setLoading(false);
+  };
+
+  function transformFriendshipsData(
+    friendships: Friendship[],
+    currentUserId: number,
+  ) {
+    return friendships.map((friendship) => ({
+      ...friendship,
+      friendId:
+        friendship.requester.id === currentUserId
+          ? friendship.addressee.id
+          : friendship.requester.id,
+      friendName:
+        friendship.requester.id === currentUserId
+          ? friendship.addressee.name
+          : friendship.requester.name,
+    }));
+  }
 
   return (
     <>
+      {loading && <p>Loading...</p>}
+      {message && <p>{message}</p>}
+
       <h2>Accepted Friends</h2>
       <ul>
         {friends
           .filter((friend) => friend.status === FriendshipStatus.ACCEPTED)
           .map((friend) => (
             <li key={friend.id}>
-              <a href={`/userProfile/${friend.requester.id}`}>
-                {friend.requester.name} - {friend.status}
-              </a>
+              <Link href={`/userProfile/${friend.friendId}`}>
+                {friend.friendName} - {friend.status}
+              </Link>
             </li>
           ))}
       </ul>
       <h2>Pending Requests</h2>
       <ul>
-        {pendingRequests
-          .filter((request) => request.addressee.id === userId)
-          .map((request) => (
-            <li key={request.id}>
-              <a href={`/userProfile/${request.requester.id}`}>
-                {request.requester.name} - Pending
-              </a>
-              <button onClick={() => acceptFriendRequest(token, request.id)}>
+        {friends
+          .filter(
+            (friend) =>
+              friend.status === FriendshipStatus.PENDING &&
+              friend.addressee.id === userId,
+          )
+          .map((friend) => (
+            <li key={friend.id}>
+              <Link href={`/userProfile/${friend.friendId}`}>
+                {friend.friendName} - Pending
+              </Link>
+              <button onClick={() => handleRequestAction('accept', friend.id)}>
                 Accept
               </button>
-              <button onClick={() => rejectFriendRequest(token, request.id)}>
+              <button onClick={() => handleRequestAction('reject', friend.id)}>
                 Reject
               </button>
             </li>
