@@ -1,12 +1,10 @@
 import * as React from 'react';
-import {
-  acceptFriendRequest,
-  rejectFriendRequest,
-  fetchFriendships,
-} from '@/services/services';
 import { Friendship, FriendshipStatus } from '@/types/types';
 import { useAuth } from '@/context/auth';
 import { Link } from 'expo-router';
+import { useFriends } from '@/context/FriendsContex';
+import { fetchFriendships } from '@/services/services';
+import SimpleModal from './FriendModal';
 
 interface Friend {
   id: number;
@@ -24,9 +22,12 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
   token,
 }) => {
   const { userProfile } = useAuth();
+  const { handleFriendRequest, pendingRequests, loadFriends } = useFriends();
   const [friends, setFriends] = React.useState<Friendship[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [message, setMessage] = React.useState('');
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [modalMessage, setModalMessage] = React.useState('');
 
   React.useEffect(() => {
     const loadFriends = async () => {
@@ -58,18 +59,41 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
   ) => {
     setLoading(true);
     try {
-      const result = await (action === 'accept'
-        ? acceptFriendRequest(token, requestId)
-        : rejectFriendRequest(token, requestId));
-      if (result === 'Success') {
-        setMessage('Action was successful!');
-        setTimeout(() => setMessage(''), 5000); // Clear message after 5 seconds
+      // Optimistically update the UI
+      const updatedFriends = friends.map((friend) => {
+        if (friend.id === requestId && action === 'accept') {
+          return { ...friend, status: FriendshipStatus.ACCEPTED };
+        } else if (friend.id === requestId && action === 'reject') {
+          return { ...friend, status: FriendshipStatus.REJECTED }; // Assuming there's a rejected status
+        }
+        return friend;
+      });
+
+      setFriends(updatedFriends); // Set the optimistic update
+
+      const result = await handleFriendRequest(
+        action,
+        requestId,
+        userProfile.id,
+        false,
+      );
+
+      if (result && typeof result === 'string' && result.includes('success')) {
+        setMessage(`Friend request ${action}ed successfully!`);
+        setModalMessage(`Friend request ${action}ed successfully!`);
+        setModalVisible(true);
       } else {
-        setMessage('Failed to perform the action.');
+        throw new Error(result || 'Failed to perform the action.');
       }
     } catch (error) {
-      console.error('Error processing friend request:', error);
-      setMessage(`Failed to perform the action: ${error}`);
+      const errorMessage = (error as Error).message;
+
+      setMessage(`Failed to ${action} the friend request: ${errorMessage}`);
+      setModalMessage(errorMessage);
+      setModalVisible(true);
+
+      // If error, revert to the original friends state
+      loadFriends(userProfile.id, FriendshipStatus.ACCEPTED, token);
     }
     setLoading(false);
   };
@@ -93,9 +117,12 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
 
   return (
     <>
+      <SimpleModal
+        message={modalMessage}
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
       {loading && <p>Loading...</p>}
-      {message && <p>{message}</p>}
-
       <h2>Accepted Friends</h2>
       <ul>
         {friends
@@ -103,11 +130,12 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
           .map((friend) => (
             <li key={friend.id}>
               <Link href={`/userProfile/${friend.friendId}`}>
-                {friend.friendName} - {friend.status}
+                {friend.friendName}
               </Link>
             </li>
           ))}
       </ul>
+
       <h2>Pending Requests</h2>
       <ul>
         {friends

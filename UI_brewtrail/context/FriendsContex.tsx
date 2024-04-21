@@ -87,7 +87,9 @@ export const FriendsProvider = ({
           break;
         case 'accept':
           result = await acceptFriendRequest(token, requesterId);
-          removePendingRequest(addresseeId); // Remove pending request when accepting
+          if (result === 'Success') {
+            removePendingRequest(requesterId);
+          }
           break;
         case 'reject':
           result = await rejectFriendRequest(token, requesterId);
@@ -98,7 +100,7 @@ export const FriendsProvider = ({
     } catch (error) {
       console.error(`Error processing friend request (${action}):`, error);
     }
-
+    console.log('Frontend Response Message:', result);
     return result;
   };
 
@@ -127,6 +129,21 @@ export const FriendsProvider = ({
   const handleSearchUsers = async (searchTerm: string) => {
     const results = await searchUsers(searchTerm, session?.access_token || '');
     setSearchResults(results || []);
+  };
+
+  const parseResponse = (
+    response: string | null,
+  ): Friendship | string | null => {
+    if (response) {
+      try {
+        return JSON.parse(response); // Parse the JSON response
+      } catch (error) {
+        console.error('Error parsing response:', error);
+        return null;
+      }
+    } else {
+      return null;
+    }
   };
 
   return (

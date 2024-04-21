@@ -80,7 +80,7 @@ const UserProfilePage: React.FC = () => {
       normalizedUserId,
       false, // Do not add to pending requests
     );
-    if (result === 'Success') {
+    if (result === 'Friend request sent.') {
       setModalMessage('Friend request sent successfully!');
       // loadFriends(
       //   userProfile.id,

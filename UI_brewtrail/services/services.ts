@@ -141,15 +141,16 @@ export const sendFriendRequest = async (
         Authorization: `Bearer ${token}`,
       },
     });
-    const textResponse = await response.text(); // Get the response as text
-    console.log('Response Status:', response.status);
-    console.log('Response Body:', textResponse);
+    const data = await response.json(); // Get the response as text
+
     if (!response.ok) {
       throw new Error(
-        `Failed to send friend request: ${response.status}, body: ${textResponse}`,
+        `Failed to send friend request: ${response.status}, body: ${
+          data.error || data.message
+        }`,
       );
     }
-    return textResponse;
+    return data.message;
   } catch (error) {
     console.error('Error sending friend request:', error);
     return null;
@@ -170,10 +171,14 @@ export const acceptFriendRequest = async (
       },
     });
     if (!response.ok) {
-      throw new Error(`Failed to accept friend request: ${response.status}`);
+      const errorResponse = await response.text();
+      throw new Error(
+        `Failed to accept friend request: ${response.status}, body: ${errorResponse}`,
+      );
     }
-    const data = await response.json();
-    return data.message; // Assuming backend always sends a message field
+    const jsonResponse = await response.json();
+    console.log('Response Status:', jsonResponse);
+    return jsonResponse.message; // Assuming the message is in the response JSON
   } catch (error) {
     console.error('Error accepting friend request:', error);
     return null;
