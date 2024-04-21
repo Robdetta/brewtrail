@@ -78,12 +78,15 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
         false,
       );
 
-      if (result && typeof result === 'string' && result.includes('success')) {
-        setMessage(`Friend request ${action}ed successfully!`);
+      if (result && typeof result === 'string') {
         setModalMessage(`Friend request ${action}ed successfully!`);
         setModalVisible(true);
+      } else if (result && typeof result === 'object') {
+        setModalMessage(result.message || 'Action completed with warnings.');
+        setModalVisible(true);
       } else {
-        throw new Error(result || 'Failed to perform the action.');
+        setModalMessage('Failed to perform the action.');
+        setModalVisible(true);
       }
     } catch (error) {
       const errorMessage = (error as Error).message;

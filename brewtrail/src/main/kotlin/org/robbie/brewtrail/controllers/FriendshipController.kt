@@ -41,7 +41,7 @@ class FriendshipController(
     fun rejectFriendRequest(@PathVariable requestId: Long): ResponseEntity<Any> {
         return try {
             friendshipService.rejectFriendRequest(requestId)
-            ResponseEntity.ok("Friend request rejected.")
+            ResponseEntity.ok(mapOf("message" to "Friend request rejected."))
         } catch (e: Exception) {
             ResponseEntity.badRequest().body("Failed to reject friend request: ${e.message}")
         }
