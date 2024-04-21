@@ -2,24 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { fetchUserReviews, fetchUserDetailsById } from '@/services/services';
-import { UserProfile, Review } from '@/types/types';
+import { UserProfile, Review, FriendshipStatus } from '@/types/types';
 import { useAuth } from '@/context/auth';
 import { useFriends } from '@/context/FriendsContex';
+import SimpleModal from '@/friends/FriendModal';
 
 const UserProfilePage: React.FC = () => {
   const { userId } = useLocalSearchParams();
   const { session } = useAuth();
-  const { handleFriendRequest, friends } = useFriends();
+  const {
+    handleFriendRequest,
+    isFriend,
+    addPendingRequest,
+    removePendingRequest,
+    pendingRequests,
+    loadFriends,
+  } = useFriends();
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
   const normalizedUserId = parseInt(Array.isArray(userId) ? userId[0] : userId);
 
   useEffect(() => {
     if (!session?.access_token || !normalizedUserId) {
-      setError('Invalid user ID format or missing authentication token');
+      setModalMessage('Invalid user ID format or missing authentication token');
+      setModalVisible(true);
       setLoading(false);
       return;
     }
@@ -37,8 +47,8 @@ const UserProfilePage: React.FC = () => {
         );
         setReviews(userReviews || []);
       } catch (e) {
-        console.error('Failed to load data:', e);
-        setError('Failed to load user details');
+        setModalMessage('Failed to load user details');
+        setModalVisible(true);
       } finally {
         setLoading(false);
       }
@@ -47,29 +57,36 @@ const UserProfilePage: React.FC = () => {
     fetchData();
   }, [normalizedUserId, session?.access_token]);
 
-  const isAlreadyFriend = friends.some(
-    (friend) =>
-      (friend.requester.id === normalizedUserId ||
-        friend.addressee.id === normalizedUserId) &&
-      friend.status === 'ACCEPTED',
-  );
-
   const handleSendFriendRequest = async () => {
-    if (!userProfile) {
-      alert('User profile is not loaded.');
+    if (!userProfile || !session) {
+      setModalMessage('User profile is not loaded or session is expired.');
+      setModalVisible(true);
       return;
     }
 
+    addPendingRequest(normalizedUserId);
     const result = await handleFriendRequest(
       'request',
       userProfile.id,
       normalizedUserId,
     );
     if (result === 'Success') {
-      alert('Friend request sent successfully!');
+      setModalMessage('Friend request sent successfully!');
+      removePendingRequest(normalizedUserId);
+      // loadFriends(
+      //   userProfile.id,
+      //   FriendshipStatus.ACCEPTED,
+      //   session.access_token,
+      // );
     } else {
-      alert('Failed to send friend request');
+      setModalMessage('Failed to send friend request');
+      removePendingRequest(normalizedUserId);
     }
+    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
   };
 
   if (!userId) {
@@ -80,18 +97,19 @@ const UserProfilePage: React.FC = () => {
     return <Text>Loading...</Text>;
   }
 
-  if (error) {
-    return <Text>{error}</Text>;
-  }
-
   if (!userProfile) {
     return <Text>User not found.</Text>;
   }
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>User Profile: {userProfile.name}</Text>
-      <Text>Email: {userProfile.email}</Text>
+      <SimpleModal
+        message={modalMessage}
+        visible={modalVisible}
+        onClose={handleCloseModal}
+      />
+      <Text style={styles.title}>User Profile: {userProfile?.name}</Text>
+      <Text>Email: {userProfile?.email}</Text>
       {reviews.map((review, index) => (
         <View
           key={index}
@@ -102,11 +120,15 @@ const UserProfilePage: React.FC = () => {
           </Text>
         </View>
       ))}
-      {!isAlreadyFriend && (
-        <Button
-          title='Send Friend Request'
-          onPress={handleSendFriendRequest}
-        />
+      {pendingRequests.includes(normalizedUserId) ? (
+        <Text style={styles.pendingRequest}>Request Pending...</Text>
+      ) : (
+        !isFriend(normalizedUserId) && (
+          <Button
+            title='Send Friend Request'
+            onPress={handleSendFriendRequest}
+          />
+        )
       )}
     </ScrollView>
   );
@@ -125,6 +147,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     padding: 10,
     backgroundColor: '#eaeaea',
+  },
+  pendingRequest: {
+    color: 'orange',
+    fontSize: 18,
+    marginTop: 10,
   },
 });
 

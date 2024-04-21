@@ -142,6 +142,8 @@ export const sendFriendRequest = async (
       },
     });
     const textResponse = await response.text(); // Get the response as text
+    console.log('Response Status:', response.status);
+    console.log('Response Body:', textResponse);
     if (!response.ok) {
       throw new Error(
         `Failed to send friend request: ${response.status}, body: ${textResponse}`,

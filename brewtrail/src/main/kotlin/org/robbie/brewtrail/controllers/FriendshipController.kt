@@ -21,7 +21,7 @@ class FriendshipController(
         val requesterId = userService.getUserIdFromJwt(jwt)
         return try {
             friendshipService.sendFriendRequest(requesterId, addresseeId)
-            ResponseEntity.ok().body(mapOf("message" to "Friend request sent successfully."))
+            ResponseEntity.ok("Success")
         } catch (e: Exception) {
             ResponseEntity.badRequest().body(mapOf("error" to "Failed to send friend request: ${e.message}"))
         }
