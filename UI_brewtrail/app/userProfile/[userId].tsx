@@ -2,10 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { fetchUserReviews, fetchUserDetailsById } from '@/services/services';
-import { UserProfile, Review, FriendshipStatus } from '@/types/types';
+import {
+  UserProfile,
+  Review,
+  FriendshipStatus,
+  Friendship,
+} from '@/types/types';
 import { useAuth } from '@/context/auth';
 import { useFriends } from '@/context/FriendsContex';
 import SimpleModal from '@/friends/FriendModal';
+
+interface FriendshipExtended extends Friendship {
+  requestId: number; // This represents the unique ID of the friendship.
+}
 
 const UserProfilePage: React.FC = () => {
   const { userId } = useLocalSearchParams();
@@ -29,9 +38,6 @@ const UserProfilePage: React.FC = () => {
   const normalizedUserId = parseInt(Array.isArray(userId) ? userId[0] : userId);
 
   useEffect(() => {
-    console.log('normalizedUserId:', normalizedUserId);
-    console.log('pendingRequests:', pendingRequests);
-    console.log('friends:', friends);
     if (!session?.access_token || !normalizedUserId) {
       setModalMessage('Invalid user ID format or missing authentication token');
       setModalVisible(true);
@@ -41,12 +47,10 @@ const UserProfilePage: React.FC = () => {
 
     const fetchData = async () => {
       try {
-        console.log('Fetching user details...');
         const userProfileData = await fetchUserDetailsById(
           normalizedUserId,
           session.access_token,
         );
-        console.log('User profile data:', userProfileData);
         setUserProfile(userProfileData);
         const userReviews = await fetchUserReviews(
           normalizedUserId,
@@ -54,7 +58,6 @@ const UserProfilePage: React.FC = () => {
         );
         setReviews(userReviews || []);
       } catch (e) {
-        console.log('Failed to load user details:', e);
         setModalMessage('Failed to load user details');
         setModalVisible(true);
       } finally {
@@ -72,24 +75,60 @@ const UserProfilePage: React.FC = () => {
       return;
     }
 
-    console.log('Sending friend request...');
-    addPendingRequest(normalizedUserId); // Add pending request
     const result = await handleFriendRequest(
       'request',
       userProfile.id,
       normalizedUserId,
-      false, // Do not add to pending requests
     );
     if (result === 'Friend request sent.') {
       setModalMessage('Friend request sent successfully!');
-      // loadFriends(
-      //   userProfile.id,
-      //   FriendshipStatus.ACCEPTED,
-      //   session.access_token,
-      // );
     } else {
       setModalMessage('Failed to send friend request');
-      removePendingRequest(normalizedUserId);
+    }
+    setModalVisible(true);
+  };
+
+  const handleUnfriend = async () => {
+    console.log('Attempting to unfriend:', {
+      fromUserId: userProfile?.id,
+      toUserId: normalizedUserId,
+    });
+    if (!userProfile || !session) {
+      setModalMessage('User profile is not loaded or session is expired.');
+      setModalVisible(true);
+      return;
+    }
+
+    // Find the specific friendship's requestId
+    const friendship = friends.find(
+      (f) =>
+        (f.requester.id === normalizedUserId ||
+          f.addressee.id === normalizedUserId) &&
+        f.status === FriendshipStatus.ACCEPTED,
+    );
+
+    console.log('Found friendship for unfriending:', friendship);
+    if (!friendship) {
+      setModalMessage('No active friendship found.');
+      setModalVisible(true);
+      return;
+    }
+
+    const result = await handleFriendRequest(
+      'reject',
+      userProfile.id, // This might not be needed for 'reject'. Check your API needs.
+      friendship.id, // This is the actual ID of the friendship to end.
+      false, // Assuming this is your method signature
+    );
+    if (result === 'Friend request rejected.') {
+      setModalMessage('Friendship has been ended successfully.');
+      loadFriends(
+        userProfile.id,
+        FriendshipStatus.ACCEPTED,
+        session.access_token,
+      ); // Assuming you handle multiple statuses
+    } else {
+      setModalMessage('Failed to unfriend.');
     }
     setModalVisible(true);
   };
@@ -131,13 +170,16 @@ const UserProfilePage: React.FC = () => {
       ))}
       {isPending(normalizedUserId) ? (
         <Text style={styles.pendingRequest}>Request Pending...</Text>
+      ) : isFriend(normalizedUserId) ? (
+        <Button
+          title='Unfriend'
+          onPress={handleUnfriend}
+        />
       ) : (
-        !isFriend(normalizedUserId) && (
-          <Button
-            title='Send Friend Request'
-            onPress={handleSendFriendRequest}
-          />
-        )
+        <Button
+          title='Send Friend Request'
+          onPress={handleSendFriendRequest}
+        />
       )}
     </ScrollView>
   );
