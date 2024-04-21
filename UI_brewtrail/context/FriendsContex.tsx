@@ -57,7 +57,21 @@ export const FriendsProvider = ({
     token: string,
   ) => {
     const fetchedFriends = await fetchFriendships(userId, status, token);
-    setFriends(fetchedFriends || []);
+    const pendingRequests = await fetchFriendships(
+      userId,
+      FriendshipStatus.PENDING,
+      token,
+    );
+    const acceptedFriends = await fetchFriendships(
+      userId,
+      FriendshipStatus.ACCEPTED,
+      token,
+    );
+    const combinedFriends = [
+      ...(acceptedFriends || []),
+      ...(pendingRequests || []),
+    ];
+    setFriends(combinedFriends);
   };
 
   const handleFriendRequest = async (

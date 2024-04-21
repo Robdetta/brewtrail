@@ -157,7 +157,7 @@ export const sendFriendRequest = async (
 export const acceptFriendRequest = async (
   token: string,
   requestId: number,
-): Promise<Friendship | null> => {
+): Promise<string | null> => {
   const url = `${BASE_URL}/friendships/accept/${requestId}`;
   try {
     const response = await fetch(url, {
@@ -170,7 +170,8 @@ export const acceptFriendRequest = async (
     if (!response.ok) {
       throw new Error(`Failed to accept friend request: ${response.status}`);
     }
-    return (await response.json()) as Friendship;
+    const data = await response.json();
+    return data.message; // Assuming backend always sends a message field
   } catch (error) {
     console.error('Error accepting friend request:', error);
     return null;

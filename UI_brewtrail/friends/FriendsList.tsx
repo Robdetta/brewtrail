@@ -25,6 +25,7 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
   token,
 }) => {
   const [friends, setFriends] = React.useState<Friendship[]>([]);
+  const { userProfile } = useAuth();
   const [pendingRequests, setPendingRequests] = React.useState<Friendship[]>(
     [],
   );
@@ -41,6 +42,7 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
         FriendshipStatus.PENDING,
         token,
       );
+
       if (fetchedFriends) {
         setFriends(fetchedFriends);
         setPendingRequests(fetchedPendingRequests || []);
@@ -54,37 +56,33 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
     <>
       <h2>Accepted Friends</h2>
       <ul>
-        {friends.map((friend) => (
-          <li key={friend.id}>
-            <a
-              href={`/userProfile/${friend.requester.id}`}
-              style={{ cursor: 'pointer' }}
-            >
-              {friend.requester.name} - {friend.status}
-            </a>
-          </li>
-        ))}
+        {friends
+          .filter((friend) => friend.status === FriendshipStatus.ACCEPTED)
+          .map((friend) => (
+            <li key={friend.id}>
+              <a href={`/userProfile/${friend.requester.id}`}>
+                {friend.requester.name} - {friend.status}
+              </a>
+            </li>
+          ))}
       </ul>
       <h2>Pending Requests</h2>
       <ul>
-        {pendingRequests.map((request) => (
-          <li key={request.id}>
-            <a
-              href={`/userProfile/${request.requester.id}`}
-              style={{
-                cursor: 'pointer',
-                textDecoration: 'none',
-                color: 'blue',
-              }}
-            >
-              {request.requester.name} - {request.status}
-            </a>
-            {/* Implement accept request functionality */}
-            <button onClick={() => acceptFriendRequest(token, request.id)}>
-              Accept
-            </button>
-          </li>
-        ))}
+        {pendingRequests
+          .filter((request) => request.addressee.id === userId)
+          .map((request) => (
+            <li key={request.id}>
+              <a href={`/userProfile/${request.requester.id}`}>
+                {request.requester.name} - Pending
+              </a>
+              <button onClick={() => acceptFriendRequest(token, request.id)}>
+                Accept
+              </button>
+              <button onClick={() => rejectFriendRequest(token, request.id)}>
+                Reject
+              </button>
+            </li>
+          ))}
       </ul>
     </>
   );
