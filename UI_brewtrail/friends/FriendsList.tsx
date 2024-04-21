@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {
-  fetchFriendships,
-  sendFriendRequest,
   acceptFriendRequest,
   rejectFriendRequest,
+  fetchFriendships,
+  fetchPendingFriendRequests,
 } from '@/services/services';
 import { Friendship, FriendshipStatus } from '@/types/types';
 import { useAuth } from '@/context/auth';
@@ -25,67 +25,69 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
   token,
 }) => {
   const [friends, setFriends] = React.useState<Friendship[]>([]);
+  const [pendingRequests, setPendingRequests] = React.useState<Friendship[]>(
+    [],
+  );
 
   React.useEffect(() => {
     const loadFriends = async () => {
       const fetchedFriends = await fetchFriendships(
         userId,
         FriendshipStatus.ACCEPTED,
+        token, // You may need to replace 'ACCEPTED' with FriendshipStatus.ACCEPTED if it's defined as such
+      );
+      const fetchedPendingRequests = await fetchFriendships(
+        userId,
+        FriendshipStatus.PENDING,
         token,
       );
       if (fetchedFriends) {
         setFriends(fetchedFriends);
+        setPendingRequests(fetchedPendingRequests || []);
       }
     };
 
     loadFriends();
   }, [userId, token]);
 
-  // Handling friend request actions
-  const handleRequestAction = async (
-    action: 'send' | 'accept' | 'reject',
-    targetId: number,
-  ) => {
-    if (action === 'send') {
-      await sendFriendRequest(token, targetId);
-    } else if (action === 'accept') {
-      await acceptFriendRequest(token, targetId);
-    } else if (action === 'reject') {
-      await rejectFriendRequest(token, targetId);
-    }
-    // Reload friend list to reflect updated status
-    loadFriends();
-  };
-
   return (
-    <ul>
-      {friends.map((friend) => (
-        <li key={friend.id}>
-          <a href={`/userProfile/${friend.requester.id}`}>
-            {friend.requester.name} - {friend.status}
-          </a>
-          {friend.status === 'PENDING' && (
-            <>
-              <button onClick={() => handleRequestAction('accept', friend.id)}>
-                Accept
-              </button>
-              <button onClick={() => handleRequestAction('reject', friend.id)}>
-                Reject
-              </button>
-            </>
-          )}
-          {friend.status === 'NONE' && (
-            <button onClick={() => handleRequestAction('send', friend.id)}>
-              Send Request
+    <>
+      <h2>Accepted Friends</h2>
+      <ul>
+        {friends.map((friend) => (
+          <li key={friend.id}>
+            <a
+              href={`/userProfile/${friend.requester.id}`}
+              style={{ cursor: 'pointer' }}
+            >
+              {friend.requester.name} - {friend.status}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <h2>Pending Requests</h2>
+      <ul>
+        {pendingRequests.map((request) => (
+          <li key={request.id}>
+            <a
+              href={`/userProfile/${request.requester.id}`}
+              style={{
+                cursor: 'pointer',
+                textDecoration: 'none',
+                color: 'blue',
+              }}
+            >
+              {request.requester.name} - {request.status}
+            </a>
+            {/* Implement accept request functionality */}
+            <button onClick={() => acceptFriendRequest(token, request.id)}>
+              Accept
             </button>
-          )}
-        </li>
-      ))}
-    </ul>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 };
 
 export default FriendsListComponent;
-function loadFriends() {
-  throw new Error('Function not implemented.');
-}
