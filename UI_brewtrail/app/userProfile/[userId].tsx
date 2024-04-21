@@ -17,6 +17,8 @@ const UserProfilePage: React.FC = () => {
     removePendingRequest,
     pendingRequests,
     loadFriends,
+    friends,
+    isPending,
   } = useFriends();
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -27,6 +29,9 @@ const UserProfilePage: React.FC = () => {
   const normalizedUserId = parseInt(Array.isArray(userId) ? userId[0] : userId);
 
   useEffect(() => {
+    console.log('normalizedUserId:', normalizedUserId);
+    console.log('pendingRequests:', pendingRequests);
+    console.log('friends:', friends);
     if (!session?.access_token || !normalizedUserId) {
       setModalMessage('Invalid user ID format or missing authentication token');
       setModalVisible(true);
@@ -36,10 +41,12 @@ const UserProfilePage: React.FC = () => {
 
     const fetchData = async () => {
       try {
+        console.log('Fetching user details...');
         const userProfileData = await fetchUserDetailsById(
           normalizedUserId,
           session.access_token,
         );
+        console.log('User profile data:', userProfileData);
         setUserProfile(userProfileData);
         const userReviews = await fetchUserReviews(
           normalizedUserId,
@@ -47,6 +54,7 @@ const UserProfilePage: React.FC = () => {
         );
         setReviews(userReviews || []);
       } catch (e) {
+        console.log('Failed to load user details:', e);
         setModalMessage('Failed to load user details');
         setModalVisible(true);
       } finally {
@@ -64,15 +72,16 @@ const UserProfilePage: React.FC = () => {
       return;
     }
 
-    addPendingRequest(normalizedUserId);
+    console.log('Sending friend request...');
+    addPendingRequest(normalizedUserId); // Add pending request
     const result = await handleFriendRequest(
       'request',
       userProfile.id,
       normalizedUserId,
+      false, // Do not add to pending requests
     );
     if (result === 'Success') {
       setModalMessage('Friend request sent successfully!');
-      removePendingRequest(normalizedUserId);
       // loadFriends(
       //   userProfile.id,
       //   FriendshipStatus.ACCEPTED,
@@ -120,7 +129,7 @@ const UserProfilePage: React.FC = () => {
           </Text>
         </View>
       ))}
-      {pendingRequests.includes(normalizedUserId) ? (
+      {isPending(normalizedUserId) ? (
         <Text style={styles.pendingRequest}>Request Pending...</Text>
       ) : (
         !isFriend(normalizedUserId) && (

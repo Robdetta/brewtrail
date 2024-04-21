@@ -17,6 +17,7 @@ interface FriendsContextType {
     action: 'request' | 'accept' | 'reject',
     requesterId: number,
     addresseeId: number,
+    addToPendingRequests?: boolean,
   ) => Promise<string | Friendship | null>;
   searchResults: User[];
   setSearchResults: React.Dispatch<React.SetStateAction<User[]>>;
@@ -30,6 +31,7 @@ interface FriendsContextType {
   addPendingRequest: (userId: number) => void;
   removePendingRequest: (userId: number) => void;
   pendingRequests: number[];
+  isPending: (userId: number) => boolean;
 }
 
 const FriendsContext = createContext<FriendsContextType>(null!); // Use null! to assert non-null at initialization
@@ -45,6 +47,7 @@ export const FriendsProvider = ({
   const [friends, setFriends] = useState<Friendship[]>([]);
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [pendingRequests, setPendingRequests] = useState<number[]>([]);
+
   useEffect(() => {
     if (session && session.access_token && userProfile) {
       loadFriends(
@@ -68,39 +71,44 @@ export const FriendsProvider = ({
     action: 'request' | 'accept' | 'reject',
     requesterId: number,
     addresseeId: number,
+    addToPendingRequests: boolean = true, // Add this parameter with a default value
   ): Promise<string | Friendship | null> => {
     const token = session?.access_token || '';
     let result: string | Friendship | null = null;
 
     try {
+      if (addToPendingRequests && action !== 'accept') {
+        addPendingRequest(addresseeId); // Add pending request only if specified and not accepting
+      }
+
       switch (action) {
         case 'request':
-          addPendingRequest(addresseeId);
           result = await sendFriendRequest(token, addresseeId);
-          if ((result as any)?.status === 'Success') {
-            // Assuming the result has a status property indicating success
-            removePendingRequest(addresseeId);
-          }
           break;
         case 'accept':
           result = await acceptFriendRequest(token, requesterId);
+          removePendingRequest(addresseeId); // Remove pending request when accepting
           break;
         case 'reject':
           result = await rejectFriendRequest(token, requesterId);
           break;
       }
+
       loadFriends(userProfile.id, FriendshipStatus.ACCEPTED, token);
     } catch (error) {
       console.error(`Error processing friend request (${action}):`, error);
     }
+
     return result;
   };
 
   const addPendingRequest = (userId: number) => {
+    console.log('Adding pending request:', userId);
     setPendingRequests((prev) => [...prev, userId]);
   };
 
   const removePendingRequest = (userId: number) => {
+    console.log('removing pending request:', userId);
     setPendingRequests((prev) => prev.filter((id) => id !== userId));
   };
 
@@ -110,6 +118,10 @@ export const FriendsProvider = ({
         (friend.requester.id === userId || friend.addressee.id === userId) &&
         friend.status === FriendshipStatus.ACCEPTED,
     );
+  };
+
+  const isPending = (userId: number): boolean => {
+    return pendingRequests.includes(userId); // assuming pendingRequests is a Set for efficiency
   };
 
   const handleSearchUsers = async (searchTerm: string) => {
@@ -131,6 +143,7 @@ export const FriendsProvider = ({
         addPendingRequest,
         removePendingRequest,
         pendingRequests,
+        isPending,
       }}
     >
       {children}
