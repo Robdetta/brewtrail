@@ -93,8 +93,9 @@ export const FriendsProvider = ({
           break;
         case 'reject':
           result = await rejectFriendRequest(token, requestId); // Use requestId for unfriending.
-          if (!addToPendingRequests) {
+          if (result && !addToPendingRequests) {
             removePendingRequest(requestId); // Remove from pending requests if needed.
+            loadFriends(userProfile.id, FriendshipStatus.ACCEPTED, token); // Refresh friends list after unfriend
           }
           break;
       }

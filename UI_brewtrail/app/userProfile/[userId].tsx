@@ -28,6 +28,7 @@ const UserProfilePage: React.FC = () => {
     loadFriends,
     friends,
     isPending,
+    setFriends,
   } = useFriends();
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -93,13 +94,13 @@ const UserProfilePage: React.FC = () => {
       fromUserId: userProfile?.id,
       toUserId: normalizedUserId,
     });
+
     if (!userProfile || !session) {
       setModalMessage('User profile is not loaded or session is expired.');
       setModalVisible(true);
       return;
     }
 
-    // Find the specific friendship's requestId
     const friendship = friends.find(
       (f) =>
         (f.requester.id === normalizedUserId ||
@@ -107,30 +108,42 @@ const UserProfilePage: React.FC = () => {
         f.status === FriendshipStatus.ACCEPTED,
     );
 
-    console.log('Found friendship for unfriending:', friendship);
     if (!friendship) {
       setModalMessage('No active friendship found.');
       setModalVisible(true);
       return;
     }
 
-    const result = await handleFriendRequest(
-      'reject',
-      userProfile.id, // This might not be needed for 'reject'. Check your API needs.
-      friendship.id, // This is the actual ID of the friendship to end.
-      false, // Assuming this is your method signature
-    );
-    if (result === 'Friend request rejected.') {
-      setModalMessage('Friendship has been ended successfully.');
-      loadFriends(
+    // Optimistically update the UI
+    const updatedFriends = friends.filter((f) => f.id !== friendship.id);
+    setFriends(updatedFriends); // Update state immediately
+    console.log('Friends state updated:', updatedFriends);
+    try {
+      const result = await handleFriendRequest(
+        'reject',
         userProfile.id,
-        FriendshipStatus.ACCEPTED,
-        session.access_token,
-      ); // Assuming you handle multiple statuses
-    } else {
+        friendship.id,
+        false,
+      );
+      if (!result) {
+        // If the unfriend request fails, revert the changes
+        setModalMessage('Failed to unfriend.');
+        setFriends(friends); // Revert to original friends list
+      } else {
+        setModalMessage('Friendship has been ended successfully.');
+      }
+    } catch (error) {
+      console.error('Error while unfriending:', error);
       setModalMessage('Failed to unfriend.');
+      setFriends(friends); // Revert to original friends list
     }
     setModalVisible(true);
+    setFriends([]);
+    loadFriends(
+      userProfile.id,
+      FriendshipStatus.ACCEPTED,
+      session.access_token,
+    ).then(() => {});
   };
 
   const handleCloseModal = () => {
