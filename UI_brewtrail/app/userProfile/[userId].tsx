@@ -181,23 +181,21 @@ const UserProfilePage: React.FC = () => {
           </Text>
         </View>
       ))}
-      {normalizedUserId !== userProfile.id && ( // Show buttons only if viewing another user's profile
-        <>
-          {isPending(normalizedUserId) ? (
-            <Text style={styles.pendingRequest}>Request Pending...</Text>
-          ) : isFriend(normalizedUserId) ? (
-            <Button
-              title='Unfriend'
-              onPress={handleUnfriend}
-            />
-          ) : (
-            <Button
-              title='Send Friend Request'
-              onPress={handleSendFriendRequest}
-            />
-          )}
-        </>
-      )}
+      <>
+        {isPending(normalizedUserId) ? (
+          <Text style={styles.pendingRequest}>Request Pending...</Text>
+        ) : isFriend(normalizedUserId) ? (
+          <Button
+            title='Unfriend'
+            onPress={handleUnfriend}
+          />
+        ) : (
+          <Button
+            title='Send Friend Request'
+            onPress={handleSendFriendRequest}
+          />
+        )}
+      </>
     </ScrollView>
   );
 };
