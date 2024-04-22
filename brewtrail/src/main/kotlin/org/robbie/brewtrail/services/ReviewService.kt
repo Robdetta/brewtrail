@@ -7,7 +7,6 @@ import org.robbie.brewtrail.repository.BreweryRepository
 import org.robbie.brewtrail.repository.DetailedReviewRepository
 import org.robbie.brewtrail.repository.ReviewRepository
 import org.robbie.brewtrail.repository.UserRepository
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -35,7 +34,7 @@ class ReviewService(
             throw IllegalStateException("Review already exists for this brewery by the user")
         }
 
-        val newReview = Review(user = user, brewery = brewery, rating = rating, comment = comment, createdAt = Instant.now(), updatedAt = Instant.now())
+        val newReview = Review(user = user, brewery = brewery, rating = rating, comment = comment)
         return reviewRepository.save(newReview)
     }
 
@@ -66,5 +65,5 @@ class ReviewService(
         return detailedReviewRepository.findByOpenBreweryDbId(openBreweryDbId)
     }
 
-    fun getUserReviews(userId: Long): List<Review> = reviewRepository.findByUserId(userId).orEmpty().filterNotNull()}
+    fun getUserReviews(userId: Long): List<Review> = reviewRepository.findByUserId(userId)}
 

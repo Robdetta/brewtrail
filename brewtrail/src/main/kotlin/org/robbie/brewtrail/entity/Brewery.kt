@@ -1,17 +1,11 @@
 package org.robbie.brewtrail.entity
 
 import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
 import jakarta.persistence.Column
-import java.time.Instant
+
 
 @Entity
 data class Brewery(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,  // Internal unique ID
 
     @Column(name = "open_brewery_db_id", unique = true)
     val openBreweryDbId: String,  // ID from Open Brewery DB
@@ -48,10 +42,4 @@ data class Brewery(
 
     @Column(name = "website_url")
     val websiteUrl: String?,
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: Instant = Instant.now(),
-
-    @Column(name = "updated_at", nullable = false)
-    var updatedAt: Instant = Instant.now()
-)
+    ) : BaseEntity()

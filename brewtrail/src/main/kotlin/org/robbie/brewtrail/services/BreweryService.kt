@@ -6,10 +6,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.getForObject
 import org.robbie.brewtrail.entity.Brewery
 import org.robbie.brewtrail.repository.BreweryRepository
-import java.time.Instant
 
 @Service
 class BreweryService(
@@ -65,8 +63,6 @@ class BreweryService(
             latitude = dto.latitude,
             phone = dto.phone,
             websiteUrl = dto.websiteUrl,
-            createdAt = Instant.now(),
-            updatedAt = Instant.now()
         )
     }
 }

@@ -2,12 +2,11 @@ import {
   TextInput,
   Button,
   StyleSheet,
-  AsyncStorage,
   FlatList,
   TouchableOpacity,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
 import BreweryList from '@/listing/BreweryList';
@@ -63,7 +62,7 @@ const ExploreScreen = () => {
     setCity(selectedCity);
     setState(selectedState);
 
-    // Trigger the search directly
+    // Trigger the search
     try {
       const results = await searchBreweries(selectedCity, selectedState);
       setBreweries(results);

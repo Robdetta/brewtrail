@@ -75,7 +75,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
       onReviewSubmitted(newReview); // Pass the full review object to update context
     } catch (error) {
       console.error('Error submitting review:', error);
-      setError('Failed to submit review. Please try again.');
+      setError('Failed to submit review: ' + error.message);
     }
   };
 

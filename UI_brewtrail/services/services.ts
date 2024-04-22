@@ -46,18 +46,18 @@ export const submitReview = async (
       }),
     });
 
-    const responseBody = await response.text(); // Change from json() to text() to see raw response
-    console.log('Raw response:', responseBody);
+    const responseBody = await response.json(); // Change from json() to text() to see raw response
+    // console.log('Raw response:', responseBody);
 
     if (!response.ok) {
       throw new Error(
-        `Failed to submit review: ${response.status} ${responseBody}`,
+        `A review with the same brewery and user already exists.`,
       );
     }
 
-    return JSON.parse(responseBody); // Manually parse the JSON after checking
+    return responseBody; // Manually parse the JSON after checking
   } catch (error) {
-    console.error('Error submitting review:', error);
+    // console.error('Error submitting review:', error);
     throw error;
   }
 };
