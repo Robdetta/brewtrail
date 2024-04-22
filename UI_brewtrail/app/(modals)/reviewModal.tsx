@@ -32,20 +32,23 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
   const effectiveBreweryId = Array.isArray(breweryId)
     ? breweryId[0]
     : breweryId;
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   const handleReviewSubmit = async () => {
     const { data: session } = await supabase.auth.getSession();
     if (!session) {
-      Alert.alert(
-        'Authentication Error',
-        'You must be logged in to submit a review.',
+      setModalMessage(
+        'Authentication Error, You must be logged in to submit a review.',
       );
+      setModalVisible(true);
       return;
     }
 
     const token = session.session?.access_token;
     if (!token) {
-      Alert.alert('Session Error', 'No token found. Please login again.');
+      setModalMessage('Session Error, No token found. Please login again.');
+      setModalVisible(true);
       return;
     }
 
@@ -60,7 +63,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
         comment,
         token,
       );
-      Alert.alert('Success', 'Review submitted successfully.');
+      setModalMessage('Success, Review submitted successfully.');
 
       // Create the review object to pass
       const newReview: Review = {

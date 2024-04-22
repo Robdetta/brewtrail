@@ -4,10 +4,16 @@ import {
   fetchBreweryDetails,
   fetchReviewsForBrewery,
 } from '@/services/services';
-import { useLocalSearchParams } from 'expo-router';
+import {
+  Link,
+  Redirect,
+  useLocalSearchParams,
+  useNavigation,
+} from 'expo-router';
 import ReviewModal from '../(modals)/reviewModal';
 import { useReviews } from '@/context/ReviewContext';
 import { Review } from '@/types/types';
+import { useAuth } from '@/context/auth';
 
 interface Brewery {
   name: string;
@@ -25,11 +31,13 @@ interface Brewery {
 // }
 
 const BreweryDetailsScreen = () => {
+  const { session } = useAuth();
   const { breweryId } = useLocalSearchParams();
   const [brewery, setBrewery] = useState<Brewery | null>(null);
   const { breweryReviews, addReview, fetchBreweryReviews } = useReviews();
   const [modalVisible, setModalVisible] = useState(false);
   const breweryIdString = Array.isArray(breweryId) ? breweryId[0] : breweryId;
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (breweryIdString) {
@@ -108,10 +116,17 @@ const BreweryDetailsScreen = () => {
         breweryId={breweryIdString}
       />
 
-      <Button
-        title='Write Review'
-        onPress={() => setModalVisible(true)}
-      />
+      {session ? (
+        <Button
+          title='Write Review'
+          onPress={() => setModalVisible(true)}
+        />
+      ) : (
+        <Button
+          title='Please Log In'
+          onPress={() => <Redirect href='/(modals)/login' />}
+        />
+      )}
     </View>
   );
 };
