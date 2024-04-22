@@ -40,36 +40,40 @@ const ReviewsPage = () => {
     return <Text>Error: {error}</Text>;
   }
 
-  const handleSaveChanges = async (rating: any, comment: any) => {
+  const handleSaveChanges = async (rating: number, comment: string) => {
+    if (!currentReview || !session?.access_token) {
+      console.error('Missing review ID or session token');
+      return;
+    }
+
+    // Construct the update data according to the backend's ReviewDto structure
+    const updatedData = {
+      rating: Number(rating), // Ensure rating is a number
+      comment: comment,
+      openBreweryDbId: currentReview.openBreweryDbId, // Ensure this field is included in currentReview
+    };
+
     console.log(
       'Attempting to save review:',
-      currentReview?.reviewId,
-      rating,
-      comment,
-    );
-    if (currentReview && session?.access_token) {
-      const updatedData = { rating, comment };
-      console.log('Sending data:', updatedData); // Log the data being sent
-      try {
-        const result = await updateReview(
-          currentReview.reviewId,
-          session.access_token,
-          {
-            ...currentReview,
-            openBreweryDbId: currentReview.openBreweryDbId,
-          },
-        );
-        if (result) {
-          console.log('Review updated:', result);
-          fetchUserReviews(); // Re-fetch reviews to update the list
-          setModalVisible(false);
-          setCurrentReview(null);
-        }
-      } catch (error) {
-        console.error('Failed to update review:', error);
+      currentReview.reviewId,
+      updatedData,
+    ); // Log the data being sent
+
+    try {
+      const result = await updateReview(
+        currentReview.reviewId,
+        session.access_token,
+        updatedData,
+      );
+
+      if (result) {
+        console.log('Review updated successfully:', result); // Log the successful update
+        fetchUserReviews(); // Refresh the reviews list
+        setModalVisible(false);
+        setCurrentReview(null);
       }
-    } else {
-      console.error('Missing review ID or session token');
+    } catch (error) {
+      console.error('Failed to update review:', error);
     }
   };
 

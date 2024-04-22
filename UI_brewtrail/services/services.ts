@@ -128,6 +128,41 @@ export const fetchUserReviews = async (
   }
 };
 
+export const updateReview = async (
+  reviewId: string,
+  token: string,
+  reviewData: { rating: number; comment: string; openBreweryDbId: string },
+): Promise<Review | null> => {
+  const url = `${BASE_URL}/reviews/${reviewId}`;
+  try {
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(reviewData),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error(
+        `Failed to update review: ${response.status}, ${errorBody}`,
+      );
+      throw new Error(
+        `Failed to update review: ${response.status}, ${errorBody}`,
+      );
+    }
+
+    const updatedReview = await response.json();
+    console.log('Update response:', updatedReview); // Log the response from the server
+    return updatedReview;
+  } catch (error) {
+    console.error('Error updating review:', error);
+    return null;
+  }
+};
+
 export const sendFriendRequest = async (
   token: string,
   addresseeId: number,
