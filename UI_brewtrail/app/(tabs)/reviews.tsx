@@ -4,7 +4,8 @@ import { useAuth } from '@/context/auth';
 import { Redirect } from 'expo-router';
 import { useReviews } from '@/context/ReviewContext';
 import EditReviewModal from '@/friends/EditReviewModal';
-import { updateReview } from '@/services/services';
+import { deleteReview, updateReview } from '@/services/services';
+import DeleteReviewModal from '../(modals)/DeleteReviewModal';
 
 interface Review {
   openBreweryDbId: string;
@@ -20,6 +21,9 @@ const ReviewsPage = () => {
   const { session } = useAuth();
   const [currentReview, setCurrentReview] = useState<Review | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [currentReviewToDelete, setCurrentReviewToDelete] =
+    useState<Review | null>(null);
 
   useEffect(() => {
     if (session?.access_token) {
@@ -76,11 +80,32 @@ const ReviewsPage = () => {
       console.error('Failed to update review:', error);
     }
   };
+  const handleDeleteConfirm = async (currentReviewToDelete: Review) => {
+    if (!currentReview || !session?.access_token) {
+      console.error('Missing review ID or session token');
+      return;
+    }
+
+    try {
+      await deleteReview(currentReview.reviewId, session.access_token);
+      console.log('Review deleted successfully');
+      fetchUserReviews(); // Refresh the reviews list
+      setDeleteModalVisible(false);
+      setCurrentReview(null); // Clear current review
+    } catch (error) {
+      console.error('Failed to delete review:', error);
+    }
+  };
 
   const handleEditReview = (review: Review) => {
     console.log('Review selected for edit:', review); // Debug log
     setCurrentReview(review);
     setModalVisible(true);
+  };
+
+  const handleDeleteReview = (review: Review) => {
+    setCurrentReview(review);
+    setDeleteModalVisible(true);
   };
 
   return (
@@ -101,6 +126,14 @@ const ReviewsPage = () => {
               title='Edit'
               onPress={() => handleEditReview(review)}
             />
+            <Button
+              title='Delete'
+              onPress={() => {
+                handleDeleteReview(review); // Set the review to be potentially deleted
+                setDeleteModalVisible(true); // Show the delete confirmation modal
+              }}
+              color='red'
+            />
           </View>
         ))
       ) : (
@@ -114,6 +147,17 @@ const ReviewsPage = () => {
           onSave={handleSaveChanges}
         />
       )}
+      <DeleteReviewModal
+        visible={deleteModalVisible}
+        onClose={() => setDeleteModalVisible(false)}
+        onConfirmDelete={() => {
+          if (currentReviewToDelete) {
+            handleDeleteConfirm(currentReviewToDelete); // Pass the review to be deleted to the confirmation function
+          } else {
+            console.error('currentReviewToDelete is null');
+          }
+        }}
+      />
     </View>
   );
 };

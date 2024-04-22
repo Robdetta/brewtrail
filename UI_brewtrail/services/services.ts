@@ -163,6 +163,32 @@ export const updateReview = async (
   }
 };
 
+export const deleteReview = async (
+  reviewId: string,
+  token: string,
+): Promise<void> => {
+  const url = `${BASE_URL}/reviews/${reviewId}`;
+  try {
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(
+        `Failed to delete review: ${response.status}, ${errorBody}`,
+      );
+    }
+    console.log('Review deleted successfully');
+  } catch (error) {
+    console.error('Error deleting review:', error);
+    throw error; // rethrow to handle it in the component
+  }
+};
+
 export const sendFriendRequest = async (
   token: string,
   addresseeId: number,
