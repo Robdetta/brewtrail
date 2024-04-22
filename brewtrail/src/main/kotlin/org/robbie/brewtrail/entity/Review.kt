@@ -30,7 +30,7 @@ data class Review(
     @Column(name = "comment")
     var comment: String? = null,
 
-    @Column(name= "created_at", nullable = false, updatable = false)
+    @Column(name= "created_at", nullable = false)
     val createdAt: Instant = Instant.now(),
 
     @Column(name="updated_at",nullable = false)
