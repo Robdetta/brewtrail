@@ -2,8 +2,8 @@ package org.robbie.brewtrail.controllers
 
 import org.robbie.brewtrail.dto.ReviewDto
 import org.robbie.brewtrail.entity.DetailedReview
-import org.robbie.brewtrail.entity.Review
 import org.robbie.brewtrail.repository.DetailedReviewRepository
+import org.robbie.brewtrail.services.DetailedReviewService
 import org.robbie.brewtrail.services.ReviewService
 import org.robbie.brewtrail.services.UserService
 import org.slf4j.LoggerFactory
@@ -22,7 +22,7 @@ data class ApiResponse(val message: String)
 class ReviewController(
     private val reviewService: ReviewService,
     private val userService: UserService,
-    private val detailedReviewRepository: DetailedReviewRepository
+    private val detailedReviewService: DetailedReviewService
 ) {
     private val logger = LoggerFactory.getLogger(ReviewController::class.java)
 
@@ -52,8 +52,8 @@ class ReviewController(
     }
 
     @GetMapping("/all")
-    fun getAllReviews(): ResponseEntity<List<DetailedReview>> {
-        val reviews = reviewService.getAllDetailedReviews()
+    fun getAllDetailedReviews(): ResponseEntity<List<DetailedReview>> {
+        val reviews = detailedReviewService.findAll()
         return if (reviews.isNotEmpty()) ResponseEntity.ok(reviews)
         else ResponseEntity.noContent().build()
     }
@@ -84,6 +84,19 @@ class ReviewController(
             return ResponseEntity.badRequest().body("Error updating review")
         }
     }
+
+//    @PutMapping("/{reviewId}")
+//    fun updateReview(@PathVariable reviewId: Long, @RequestBody reviewDto: ReviewDto): ResponseEntity<Any> {
+//        try {
+//            // Temporarily use a fixed user ID or retrieve it in a different way for testing
+//            val userId = 18L // Example static user ID for testing purposes
+//            val updatedReview = reviewService.updateReview(reviewId, userId, reviewDto.rating, reviewDto.comment)
+//            return ResponseEntity.ok(updatedReview)
+//        } catch (ex: Exception) {
+//            return ResponseEntity.badRequest().body("Error updating review: ${ex.message}")
+//        }
+//    }
+
 
     @DeleteMapping("/{reviewId}")
     fun deleteReview(@PathVariable reviewId: Long, @AuthenticationPrincipal jwt: Jwt): ResponseEntity<Any> {

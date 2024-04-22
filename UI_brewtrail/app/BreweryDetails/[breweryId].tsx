@@ -122,10 +122,9 @@ const BreweryDetailsScreen = () => {
           onPress={() => setModalVisible(true)}
         />
       ) : (
-        <Button
-          title='Please Log In'
-          onPress={() => <Redirect href='/(modals)/login' />}
-        />
+        <Link href='/(modals)/login'>
+          <Button title='Please Log In' />
+        </Link>
       )}
     </View>
   );

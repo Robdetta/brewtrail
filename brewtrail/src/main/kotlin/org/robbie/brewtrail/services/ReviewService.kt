@@ -20,7 +20,18 @@ class ReviewService(
     private val breweryService: BreweryService,
     private val detailedReviewRepository: DetailedReviewRepository
 
-) {
+): GenericService<Review, Long> {
+
+    override fun findById(id: Long): Review? = reviewRepository.findById(id).orElse(null)
+
+    override fun save(entity: Review): Review = reviewRepository.save(entity)
+
+    override fun deleteById(id: Long) {
+        reviewRepository.deleteById(id)
+        return Unit  // Explicitly returning Unit to match the interface signature
+    }
+
+    override fun findAll(): List<Review> = reviewRepository.findAll().toList()
 
     @Transactional
     fun createReview(userId: Long, openBreweryDbId: String, rating: Double, comment: String?): Review {
@@ -55,6 +66,7 @@ class ReviewService(
         val review = reviewRepository.findById(reviewId).orElseThrow { EntityNotFoundException("Review not found") }
         reviewRepository.delete(review)
     }
+
 
     fun getAllDetailedReviews(): List<DetailedReview> = detailedReviewRepository.findAll()
 
