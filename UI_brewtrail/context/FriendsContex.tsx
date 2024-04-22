@@ -32,6 +32,7 @@ interface FriendsContextType {
   removePendingRequest: (userId: number) => void;
   pendingRequests: number[];
   isPending: (userId: number) => boolean;
+  refreshFriends: () => Promise<void>;
 }
 
 const FriendsContext = createContext<FriendsContextType>(null!); // Use null! to assert non-null at initialization
@@ -135,6 +136,16 @@ export const FriendsProvider = ({
     setSearchResults(results || []);
   };
 
+  const refreshFriends = async () => {
+    if (session && session.access_token && userProfile) {
+      await loadFriends(
+        userProfile.id,
+        FriendshipStatus.ACCEPTED,
+        session.access_token,
+      );
+    }
+  };
+
   return (
     <FriendsContext.Provider
       value={{
@@ -150,6 +161,7 @@ export const FriendsProvider = ({
         removePendingRequest,
         pendingRequests,
         isPending,
+        refreshFriends,
       }}
     >
       {children}

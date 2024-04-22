@@ -9,6 +9,8 @@ import {
   rejectFriendRequest,
 } from '@/services/services';
 import SimpleModal from './FriendModal';
+import { useNavigation } from 'expo-router';
+import { ActivityIndicator } from 'react-native';
 
 interface Friend {
   id: number;
@@ -32,10 +34,16 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
   const [message, setMessage] = React.useState('');
   const [modalVisible, setModalVisible] = React.useState(false);
   const [modalMessage, setModalMessage] = React.useState('');
+  const { refreshFriends } = useFriends();
+  const navigation = useNavigation();
 
   React.useEffect(() => {
     const loadFriends = async () => {
       setLoading(true);
+      const unsubscribe = navigation.addListener('focus', () => {
+        // This will be triggered when the user navigates to this screen
+        refreshFriends(); // Refresh the friends list
+      });
       try {
         const fetchedFriends =
           (await fetchFriendships(userId, FriendshipStatus.ACCEPTED, token)) ||
@@ -52,28 +60,29 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
         console.error('Error loading friendships:', error);
       }
       setLoading(false);
+      return unsubscribe;
     };
 
+    // Load friends when the component mounts
     loadFriends();
-  }, [userId, token, userProfile.id]);
+  }, [navigation, refreshFriends, userId, token, userProfile.id]);
 
   const handleRequestAction = async (
     action: 'accept' | 'reject',
     requestId: number,
   ) => {
-    setLoading(true);
     try {
-      // Optimistically update the UI
-      const updatedFriends = friends.map((friend) => {
-        if (friend.id === requestId && action === 'accept') {
-          return { ...friend, status: FriendshipStatus.ACCEPTED };
-        } else if (friend.id === requestId && action === 'reject') {
-          return { ...friend, status: FriendshipStatus.REJECTED }; // Assuming there's a rejected status
-        }
-        return friend;
-      });
+      // // Optimistically update the UI
+      // const updatedFriends = friends.map((friend) => {
+      //   if (friend.id === requestId && action === 'accept') {
+      //     return { ...friend, status: FriendshipStatus.ACCEPTED };
+      //   } else if (friend.id === requestId && action === 'reject') {
+      //     return { ...friend, status: FriendshipStatus.REJECTED }; // Assuming there's a rejected status
+      //   }
+      //   return friend;
+      // });
 
-      setFriends(updatedFriends); // Set the optimistic update
+      // setFriends(updatedFriends); // Set the optimistic update
 
       const result = await handleFriendRequest(
         action,
@@ -110,7 +119,6 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
       'User ID:',
       userProfile.id,
     );
-    setLoading(false);
   };
 
   function transformFriendshipsData(
@@ -137,42 +145,54 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
       />
-      {loading && <p>Loading...</p>}
-      <h2>Accepted Friends</h2>
-      <ul>
-        {friends
-          .filter((friend) => friend.status === FriendshipStatus.ACCEPTED)
-          .map((friend) => (
-            <li key={friend.id}>
-              <Link href={`/userProfile/${friend.friendId}`}>
-                {friend.friendName}
-              </Link>
-            </li>
-          ))}
-      </ul>
+      {loading ? (
+        <ActivityIndicator
+          size='large'
+          color='#0000ff'
+        /> // Display a loading spinner
+      ) : (
+        <>
+          <h2>Accepted Friends</h2>
+          <ul>
+            {friends
+              .filter((friend) => friend.status === FriendshipStatus.ACCEPTED)
+              .map((friend) => (
+                <li key={friend.id}>
+                  <Link href={`/userProfile/${friend.friendId}`}>
+                    {friend.friendName}
+                  </Link>
+                </li>
+              ))}
+          </ul>
 
-      <h2>Pending Requests</h2>
-      <ul>
-        {friends
-          .filter(
-            (friend) =>
-              friend.status === FriendshipStatus.PENDING &&
-              friend.addressee.id === userId,
-          )
-          .map((friend) => (
-            <li key={friend.id}>
-              <Link href={`/userProfile/${friend.friendId}`}>
-                {friend.friendName} - Pending
-              </Link>
-              <button onClick={() => handleRequestAction('accept', friend.id)}>
-                Accept
-              </button>
-              <button onClick={() => handleRequestAction('reject', friend.id)}>
-                Reject
-              </button>
-            </li>
-          ))}
-      </ul>
+          <h2>Pending Requests</h2>
+          <ul>
+            {friends
+              .filter(
+                (friend) =>
+                  friend.status === FriendshipStatus.PENDING &&
+                  friend.addressee.id === userId,
+              )
+              .map((friend) => (
+                <li key={friend.id}>
+                  <Link href={`/userProfile/${friend.friendId}`}>
+                    {friend.friendName} - Pending
+                  </Link>
+                  <button
+                    onClick={() => handleRequestAction('accept', friend.id)}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    onClick={() => handleRequestAction('reject', friend.id)}
+                  >
+                    Reject
+                  </button>
+                </li>
+              ))}
+          </ul>
+        </>
+      )}
     </>
   );
 };
