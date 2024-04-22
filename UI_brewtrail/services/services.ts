@@ -188,7 +188,7 @@ export const acceptFriendRequest = async (
 export const rejectFriendRequest = async (
   token: string,
   requestId: number,
-): Promise<Friendship | null> => {
+): Promise<string | null> => {
   const url = `${BASE_URL}/friendships/reject/${requestId}`;
   try {
     const response = await fetch(url, {
@@ -199,9 +199,12 @@ export const rejectFriendRequest = async (
       },
     });
     if (!response.ok) {
+      const errorResponse = await response.text();
       throw new Error('Failed to reject friend request');
     }
-    return await response.json();
+    const jsonResponse = await response.json();
+    console.log('Response Status:', jsonResponse);
+    return jsonResponse.message;
   } catch (error) {
     console.error('Error rejecting friend request:', error);
     throw error;

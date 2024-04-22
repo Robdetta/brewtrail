@@ -69,38 +69,41 @@ export const FriendsProvider = ({
 
   const handleFriendRequest = async (
     action: 'request' | 'accept' | 'reject',
-    requesterId: number,
-    addresseeId: number,
-    addToPendingRequests: boolean = true, // Add this parameter with a default value
+    requesterId: number, // For 'request' and 'accept', this should be the ID of the user initiating or accepting.
+    requestId: number, // For 'reject' (or unfriend), this should be the actual ID of the friendship request.
+    addToPendingRequests: boolean = true,
   ): Promise<string | Friendship | null> => {
     const token = session?.access_token || '';
     let result: string | Friendship | null = null;
 
     try {
-      if (addToPendingRequests && action !== 'accept') {
-        addPendingRequest(addresseeId); // Add pending request only if specified and not accepting
+      if (addToPendingRequests && action === 'request') {
+        addPendingRequest(requesterId); // Only add to pending when making a new friend request.
       }
 
       switch (action) {
         case 'request':
-          result = await sendFriendRequest(token, addresseeId);
+          result = await sendFriendRequest(token, requesterId);
           break;
         case 'accept':
-          result = await acceptFriendRequest(token, requesterId);
+          result = await acceptFriendRequest(token, requestId); // requestId is used because it should be the ID of the friendship.
           if (result === 'Success') {
-            removePendingRequest(requesterId);
+            removePendingRequest(requestId);
           }
           break;
         case 'reject':
-          result = await rejectFriendRequest(token, requesterId);
+          result = await rejectFriendRequest(token, requestId); // Use requestId for unfriending.
+          if (!addToPendingRequests) {
+            removePendingRequest(requestId); // Remove from pending requests if needed.
+          }
           break;
       }
 
-      loadFriends(userProfile.id, FriendshipStatus.ACCEPTED, token);
+      // Optionally, refresh the friends list after any action.
+      loadFriends(userProfile.id, FriendshipStatus.ACCEPTED, token); // Assuming ALL can fetch every status type.
     } catch (error) {
       console.error(`Error processing friend request (${action}):`, error);
     }
-    console.log('Frontend Response Message:', result);
     return result;
   };
 
@@ -129,21 +132,6 @@ export const FriendsProvider = ({
   const handleSearchUsers = async (searchTerm: string) => {
     const results = await searchUsers(searchTerm, session?.access_token || '');
     setSearchResults(results || []);
-  };
-
-  const parseResponse = (
-    response: string | null,
-  ): Friendship | string | null => {
-    if (response) {
-      try {
-        return JSON.parse(response); // Parse the JSON response
-      } catch (error) {
-        console.error('Error parsing response:', error);
-        return null;
-      }
-    } else {
-      return null;
-    }
   };
 
   return (
