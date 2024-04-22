@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { fetchUserReviews, fetchUserDetailsById } from '@/services/services';
+import { fetchUserDetailsById } from '@/services/services';
 import {
   UserProfile,
   Review,
@@ -11,6 +11,7 @@ import {
 import { useAuth } from '@/context/auth';
 import { useFriends } from '@/context/FriendsContex';
 import SimpleModal from '@/friends/FriendModal';
+import { useReviews } from '@/context/ReviewContext';
 
 interface FriendshipExtended extends Friendship {
   requestId: number; // This represents the unique ID of the friendship.
@@ -37,6 +38,7 @@ const UserProfilePage: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const normalizedUserId = parseInt(Array.isArray(userId) ? userId[0] : userId);
+  const { userReviews, fetchUserReviews } = useReviews(); // Using ReviewContext
 
   useEffect(() => {
     if (!session?.access_token || !normalizedUserId) {
@@ -53,11 +55,7 @@ const UserProfilePage: React.FC = () => {
           session.access_token,
         );
         setUserProfile(userProfileData);
-        const userReviews = await fetchUserReviews(
-          normalizedUserId,
-          session.access_token,
-        );
-        setReviews(userReviews || []);
+        await fetchUserReviews(); // Fetch reviews for the user
       } catch (e) {
         setModalMessage('Failed to load user details');
         setModalVisible(true);
@@ -67,7 +65,7 @@ const UserProfilePage: React.FC = () => {
     };
 
     fetchData();
-  }, [normalizedUserId, session?.access_token]);
+  }, [normalizedUserId, session?.access_token, fetchUserReviews]);
 
   const handleSendFriendRequest = async () => {
     if (!userProfile || !session) {
@@ -171,14 +169,14 @@ const UserProfilePage: React.FC = () => {
       />
       <Text style={styles.title}>User Profile: {userProfile?.name}</Text>
       <Text>Email: {userProfile?.email}</Text>
-      {reviews.map((review, index) => (
+      {userReviews.map((review, index) => (
         <View
           key={index}
           style={styles.review}
         >
-          <Text>
-            {review.comment} - Rating: {review.rating}
-          </Text>
+          <Text>{review.breweryName} -</Text>
+          <Text>Comment: {review.comment}</Text>
+          <Text>Rating: {review.rating}</Text>
         </View>
       ))}
       <>
