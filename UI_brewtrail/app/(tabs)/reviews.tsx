@@ -117,6 +117,7 @@ const ReviewsPage = () => {
             key={index}
             style={{ padding: 10 }}
           >
+            <Text>Brewery: {review.breweryName}</Text>
             <Text>Rating: {review.rating}</Text>
             <Text>Comment: {review.comment}</Text>
             <Text>
