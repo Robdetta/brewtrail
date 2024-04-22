@@ -3,7 +3,11 @@ import { Friendship, FriendshipStatus } from '@/types/types';
 import { useAuth } from '@/context/auth';
 import { Link } from 'expo-router';
 import { useFriends } from '@/context/FriendsContex';
-import { fetchFriendships } from '@/services/services';
+import {
+  fetchFriendships,
+  acceptFriendRequest,
+  rejectFriendRequest,
+} from '@/services/services';
 import SimpleModal from './FriendModal';
 
 interface Friend {
@@ -73,8 +77,8 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
 
       const result = await handleFriendRequest(
         action,
-        requestId,
         userProfile.id,
+        requestId,
         false,
       );
 
@@ -98,6 +102,14 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
       // If error, revert to the original friends state
       loadFriends(userProfile.id, FriendshipStatus.ACCEPTED, token);
     }
+    console.log(
+      'Action:',
+      action,
+      'Request ID:',
+      requestId,
+      'User ID:',
+      userProfile.id,
+    );
     setLoading(false);
   };
 
