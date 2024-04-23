@@ -98,5 +98,3 @@ const styles = StyleSheet.create({
 });
 
 export default Feed;
-
-export default Feed;

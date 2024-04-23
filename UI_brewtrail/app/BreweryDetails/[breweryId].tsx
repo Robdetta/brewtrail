@@ -4,12 +4,7 @@ import {
   fetchBreweryDetails,
   fetchReviewsForBrewery,
 } from '@/services/services';
-import {
-  Link,
-  Redirect,
-  useLocalSearchParams,
-  useNavigation,
-} from 'expo-router';
+import { Link, useLocalSearchParams } from 'expo-router';
 import ReviewModal from '../(modals)/reviewModal';
 import { useReviews } from '@/context/ReviewContext';
 import { Review } from '@/types/types';
@@ -37,7 +32,6 @@ const BreweryDetailsScreen = () => {
   const { breweryReviews, addReview, fetchBreweryReviews } = useReviews();
   const [modalVisible, setModalVisible] = useState(false);
   const breweryIdString = Array.isArray(breweryId) ? breweryId[0] : breweryId;
-  const navigation = useNavigation();
 
   useEffect(() => {
     if (breweryIdString) {
