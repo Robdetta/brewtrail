@@ -13,7 +13,7 @@ import org.robbie.brewtrail.repository.BreweryRepository
 class BreweryService(
     private val restTemplate: RestTemplate,
     private val breweryRepository: BreweryRepository
-) {
+) : GenericService<Brewery, Long> {
     private val logger: Logger = LoggerFactory.getLogger(BreweryService::class.java)
     private val baseUrl = "https://api.openbrewerydb.org/breweries"
 
@@ -64,5 +64,14 @@ class BreweryService(
             phone = dto.phone,
             websiteUrl = dto.websiteUrl,
         )
+    }
+    override fun findById(id: Long): Brewery? = breweryRepository.findById(id).orElse(null)
+
+    override fun findAll(): List<Brewery> = breweryRepository.findAll().toList()
+
+    override fun save(entity: Brewery): Brewery = breweryRepository.save(entity)
+
+    override fun deleteById(id: Long) {
+        breweryRepository.deleteById(id)
     }
 }

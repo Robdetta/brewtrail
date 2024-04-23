@@ -6,11 +6,10 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/breweries")
+@RequestMapping("/api")
 class BreweryController(private val breweryService: BreweryService) {
 
-    @CrossOrigin(origins = ["http://localhost:8081"]) // Adjust as needed
-    @GetMapping("/{openBreweryDbId}")
+    @GetMapping("/breweries/{openBreweryDbId}")
     fun getBreweryDetails(@PathVariable openBreweryDbId: String): ResponseEntity<Brewery> {
         val brewery = breweryService.fetchBreweryByOpenBreweryDbId(openBreweryDbId)
         return if (brewery != null) {
@@ -20,5 +19,12 @@ class BreweryController(private val breweryService: BreweryService) {
         }
     }
 
+    @GetMapping("/search")
+    fun searchBreweriesByCityAndState(
+        @RequestParam city: String,
+        @RequestParam(required = false) state: String?
+    ): ResponseEntity<String> {
+        return breweryService.searchBreweriesByCityAndState(city, state)
+    }
     // Add other endpoints as needed
 }
