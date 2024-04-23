@@ -1,6 +1,6 @@
 package org.robbie.brewtrail.controllers
 
-import org.robbie.brewtrail.dto.GoogleUserInfoDto
+import org.robbie.brewtrail.dto.UserDto
 import org.robbie.brewtrail.dto.UserProfile
 import org.robbie.brewtrail.entity.Review
 import org.robbie.brewtrail.entity.User
@@ -29,20 +29,9 @@ class UserController(
 
     @GetMapping
     fun getAllUsers(): List<User> {
-        return userService.getAllUsers()
+        return userService.findAll()
     }
 
-    @GetMapping("/test") // This maps to /users/test
-    fun testEndpoint(): String {
-        return "Test endpoint is working"
-    }
-
-    @PostMapping("/oauth/google")
-    fun processGoogleUser(@RequestBody userInfo: GoogleUserInfoDto): ResponseEntity<Any> {
-        val user = userService.processGoogleUser(userInfo)
-        // Generate a token for the user or perform additional actions as needed
-        return ResponseEntity.ok(user)
-    }
 
     @GetMapping("/profile/{userId}")
     fun getUserProfile(@PathVariable userId: Long?): ResponseEntity<UserProfile> {
@@ -84,5 +73,11 @@ class UserController(
         else ResponseEntity.noContent().build()
     }
 
-    data class UserDto(val name: String, val email: String, val password: String)
 }
+
+//    @PostMapping("/oauth/google")
+//    fun processGoogleUser(@RequestBody userInfo: GoogleUserInfoDto): ResponseEntity<Any> {
+//        val user = userService.processGoogleUser(userInfo)
+//        // Generate a token for the user or perform additional actions as needed
+//        return ResponseEntity.ok(user)
+//    }
