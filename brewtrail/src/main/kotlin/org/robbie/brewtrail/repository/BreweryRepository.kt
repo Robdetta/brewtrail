@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface BreweryRepository : JpaRepository<Brewery, Long> {
-    // Define custom query methods here if needed, for example:
     fun findByOpenBreweryDbId(openBreweryDbId: String): Brewery?
 
 }
