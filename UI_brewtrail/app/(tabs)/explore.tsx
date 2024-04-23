@@ -17,6 +17,7 @@ const ExploreScreen = () => {
   const [state, setState] = useState('');
   const [breweries, setBreweries] = useState([]);
   const [searchHistory, setSearchHistory] = useState([]);
+  const [lastSearchTime, setLastSearchTime] = useState('');
 
   useEffect(() => {
     loadSearchHistory();
@@ -37,6 +38,7 @@ const ExploreScreen = () => {
     try {
       const results = await searchBreweries(city, state);
       setBreweries(results);
+      setLastSearchTime(new Date().toLocaleString());
 
       // Check if the search returned any results
       if (results.length > 0) {
@@ -69,6 +71,7 @@ const ExploreScreen = () => {
     } catch (error) {
       console.error(error);
     }
+    setLastSearchTime(new Date().toLocaleString());
   };
 
   return (
@@ -92,6 +95,8 @@ const ExploreScreen = () => {
           color='#841584'
         />
       </View>
+      <Text>Last Search: {lastSearchTime}</Text>{' '}
+      {/* Display the last search time */}
       <View style={styles.historyContainer}>
         <Text style={styles.historyTitle}>Search History</Text>
         <FlatList
