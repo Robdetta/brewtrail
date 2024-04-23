@@ -3,6 +3,8 @@ import { Alert, StyleSheet, View } from 'react-native';
 import { Button, Input, Text } from 'react-native-elements';
 import { supabase } from '@/lib/supabase-client'; // Ensure this path is correct
 import { useAuth } from '@/context/auth';
+import SimpleModal from '@/friends/FriendModal';
+import { router } from 'expo-router';
 
 export default function SignUp() {
   const { signUp } = useAuth();
@@ -12,34 +14,56 @@ export default function SignUp() {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   const validateAndSignUp = async () => {
+    if (!isValidEmail(email)) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+
+    if (!isValidPassword(password)) {
+      setErrorMessage(
+        'Password must be at least 8 characters long and include at least one number and one special character.',
+      );
+      return;
+    }
+
     if (password !== confirmPassword) {
       setErrorMessage('Passwords do not match');
       return;
     }
-    setLoading(true);
 
+    setLoading(true);
+    setErrorMessage('');
     try {
       await signUp(email, password, username);
+      setModalMessage(
+        'Signup Successful, Please check your inbox for email verification!',
+      );
+      setModalVisible(true);
       // Navigation or additional success logic can be handled within the signUp function if needed
     } catch (error) {
-      setErrorMessage(errorMessage);
+      setModalMessage(errorMessage);
+      setModalVisible(true);
     }
 
     setLoading(false);
+  };
 
-    // if (error) {
-    //   Alert.alert('Signup Failed', error.message);
-    //   return;
-    // }
+  const isValidEmail = (email: string) => {
+    const re =
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  };
 
-    // if (data.user) {
-    //   Alert.alert(
-    //     'Signup Successful',
-    //     'Please check your inbox for email verification!',
-    //   );
-    // }
+  const isValidPassword = (password: string) => {
+    return (
+      password.length >= 8 &&
+      /[0-9]/.test(password) && // checks for at least one digit
+      /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    ); // checks for at least one special character
   };
 
   return (
@@ -52,6 +76,7 @@ export default function SignUp() {
         value={email}
         placeholder='email@address.com'
         autoCapitalize='none'
+        errorMessage={errorMessage.includes('email') ? errorMessage : ''}
       />
       <Input
         label='Username'
@@ -69,6 +94,7 @@ export default function SignUp() {
         secureTextEntry={true}
         placeholder='Password'
         autoCapitalize='none'
+        errorMessage={errorMessage.includes('Password') ? errorMessage : ''}
       />
       <Input
         label='Confirm Password'
@@ -78,11 +104,26 @@ export default function SignUp() {
         secureTextEntry={true}
         placeholder='Confirm Password'
         autoCapitalize='none'
+        errorMessage={
+          password !== confirmPassword && confirmPassword
+            ? 'Passwords do not match.'
+            : ''
+        }
       />
       <Button
         title='Sign Up'
         loading={loading}
         onPress={validateAndSignUp}
+      />
+      <Button
+        title='Already have an account? Login'
+        type='clear'
+        onPress={() => router.push('/(modals)/login')}
+      />
+      <SimpleModal
+        visible={modalVisible}
+        message={modalMessage}
+        onClose={() => setModalVisible(false)}
       />
     </View>
   );
