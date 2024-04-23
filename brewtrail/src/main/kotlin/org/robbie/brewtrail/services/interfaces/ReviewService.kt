@@ -1,4 +1,4 @@
-package org.robbie.brewtrail.services
+package org.robbie.brewtrail.services.interfaces
 
 import jakarta.persistence.EntityNotFoundException
 import org.robbie.brewtrail.entity.DetailedReview

@@ -2,10 +2,9 @@ package org.robbie.brewtrail.controllers
 
 import org.robbie.brewtrail.dto.ReviewDto
 import org.robbie.brewtrail.entity.DetailedReview
-import org.robbie.brewtrail.repository.DetailedReviewRepository
-import org.robbie.brewtrail.services.DetailedReviewService
-import org.robbie.brewtrail.services.ReviewService
-import org.robbie.brewtrail.services.UserService
+import org.robbie.brewtrail.services.interfaces.DetailedReviewService
+import org.robbie.brewtrail.services.interfaces.ReviewService
+import org.robbie.brewtrail.services.interfaces.UserService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

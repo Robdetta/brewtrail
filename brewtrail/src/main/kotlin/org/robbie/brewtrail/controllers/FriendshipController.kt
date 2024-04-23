@@ -2,8 +2,8 @@ package org.robbie.brewtrail.controllers
 
 
 import org.robbie.brewtrail.entity.FriendshipStatus
-import org.robbie.brewtrail.services.FriendshipService
-import org.robbie.brewtrail.services.UserService
+import org.robbie.brewtrail.services.interfaces.FriendshipService
+import org.robbie.brewtrail.services.interfaces.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt

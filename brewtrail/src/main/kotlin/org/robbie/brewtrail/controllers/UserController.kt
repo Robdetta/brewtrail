@@ -4,9 +4,9 @@ import org.robbie.brewtrail.dto.GoogleUserInfoDto
 import org.robbie.brewtrail.dto.UserProfile
 import org.robbie.brewtrail.entity.Review
 import org.robbie.brewtrail.entity.User
-import org.robbie.brewtrail.services.BreweryService
-import org.robbie.brewtrail.services.ReviewService
-import org.robbie.brewtrail.services.UserService
+import org.robbie.brewtrail.services.interfaces.BreweryService
+import org.robbie.brewtrail.services.interfaces.ReviewService
+import org.robbie.brewtrail.services.interfaces.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.slf4j.Logger

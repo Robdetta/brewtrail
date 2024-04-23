@@ -1,4 +1,4 @@
-package org.robbie.brewtrail.services
+package org.robbie.brewtrail.services.interfaces
 
 interface GenericService<T, ID> {
     fun findById(id: ID): T?

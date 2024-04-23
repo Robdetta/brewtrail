@@ -1,4 +1,4 @@
-package org.robbie.brewtrail.services
+package org.robbie.brewtrail.services.interfaces
 
 import org.robbie.brewtrail.entity.Friendship
 import org.robbie.brewtrail.entity.FriendshipStatus

@@ -1,7 +1,7 @@
 package org.robbie.brewtrail.controllers
 
 import org.robbie.brewtrail.entity.Brewery
-import org.robbie.brewtrail.services.BreweryService
+import org.robbie.brewtrail.services.interfaces.BreweryService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
