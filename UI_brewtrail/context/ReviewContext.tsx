@@ -117,13 +117,28 @@ export const ReviewProvider: React.FC<{ children: ReactNode }> = ({
   }, [session?.access_token]);
 
   const addReview = useCallback((review: Review) => {
-    setGeneralReviews((prev) => [...prev, review]);
+    console.log('Adding new review:', review);
+    setGeneralReviews((prev) => [review, ...prev]); // Add new review at the start if sorting by newest first
     if (review.breweryId) {
       setBreweryReviews((prev) => ({
         ...prev,
-        [review.breweryId]: [...(prev[review.breweryId] || []), review],
+        [review.breweryId]: [review, ...(prev[review.breweryId] || [])],
       }));
     }
+  }, []);
+
+  const deleteUserReview = useCallback((reviewId: string) => {
+    setGeneralReviews((prev) =>
+      prev.filter((review) => review.id !== reviewId),
+    );
+    setUserReviews((prev) => prev.filter((review) => review.id !== reviewId));
+    setBreweryReviews((prev) => {
+      const updated = { ...prev };
+      Object.keys(updated).forEach((key) => {
+        updated[key] = updated[key].filter((review) => review.id !== reviewId);
+      });
+      return updated;
+    });
   }, []);
 
   return (

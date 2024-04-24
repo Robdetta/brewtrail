@@ -3,9 +3,19 @@ export interface Brewery {
   open_brewery_db_id: string;
   name: string;
   city: string;
-  state: string;
-  type?: string;
-  website_url?: string;
+  stateProvince: string;
+  breweryType?: string;
+  websiteUrl: string;
+  phone?: string;
+  address1?: string;
+  address2?: string;
+  address3?: string;
+  address4?: string;
+  address5?: string;
+  postalCode?: string;
+  country?: string;
+  longitude?: string;
+  latitude?: string;
 }
 
 export interface Review {

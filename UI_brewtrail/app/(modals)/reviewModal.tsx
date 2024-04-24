@@ -11,7 +11,7 @@ import {
 import { useAuth } from '@/context/auth'; // Make sure this path matches where your context is defined
 import { submitReview } from '@/services/services';
 import { supabase } from '@/lib/supabase-client';
-import { Review } from '@/types/reviewTypes';
+import { Review } from '@/types/types';
 
 interface ReviewModalProps {
   visible: boolean;
@@ -67,11 +67,14 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
 
       // Create the review object to pass
       const newReview: Review = {
-        breweryId: effectiveBreweryId,
+        openBreweryDbId: effectiveBreweryId,
         rating: parsedRating,
         comment: comment,
-        userId: userId,
-        id: '',
+        reviewId: 0,
+        createdAt: new Date(),
+        userName: '',
+        breweryName: '',
+        breweryId: effectiveBreweryId,
       };
 
       onClose(); // Close the modal

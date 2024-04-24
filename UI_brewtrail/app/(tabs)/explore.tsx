@@ -95,8 +95,7 @@ const ExploreScreen = () => {
           color='#841584'
         />
       </View>
-      <Text>Last Search: {lastSearchTime}</Text>{' '}
-      {/* Display the last search time */}
+      <Text>Last Search: {lastSearchTime}</Text>
       <View style={styles.historyContainer}>
         <Text style={styles.historyTitle}>Search History</Text>
         <FlatList

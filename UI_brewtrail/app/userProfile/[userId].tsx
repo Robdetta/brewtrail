@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
+import { Text, StyleSheet, Button, ScrollView } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { fetchUserDetailsById } from '@/services/services';
 import {
@@ -13,10 +13,6 @@ import { useFriends } from '@/context/FriendsContex';
 import SimpleModal from '@/friends/FriendModal';
 import { useReviews } from '@/context/ReviewContext';
 import ReviewsList from '@/listing/ReviewList';
-
-interface FriendshipExtended extends Friendship {
-  requestId: number; // This represents the unique ID of the friendship.
-}
 
 const UserProfilePage: React.FC = () => {
   const { userId } = useLocalSearchParams();
@@ -34,7 +30,6 @@ const UserProfilePage: React.FC = () => {
   } = useFriends();
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
@@ -84,6 +79,20 @@ const UserProfilePage: React.FC = () => {
       setModalMessage('Friend request sent successfully!');
     } else {
       setModalMessage('Failed to send friend request');
+    }
+    setModalVisible(true);
+  };
+
+  const handleAcceptRequest = async () => {
+    const result = await acceptFriendRequest(
+      normalizedUserId,
+      session.access_token,
+    );
+    if (result) {
+      setModalMessage('Friend request accepted!');
+      loadFriends();
+    } else {
+      setModalMessage('Failed to accept friend request');
     }
     setModalVisible(true);
   };

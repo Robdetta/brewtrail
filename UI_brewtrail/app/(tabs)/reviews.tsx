@@ -1,4 +1,4 @@
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/auth';
 import { Redirect } from 'expo-router';
@@ -90,17 +90,6 @@ const ReviewsPage = () => {
     }
   };
 
-  const handleEditReview = (review: Review) => {
-    console.log('Review selected for edit:', review); // Debug log
-    setCurrentReview(review);
-    setModalVisible(true);
-  };
-
-  const handleDeleteReview = (review: Review) => {
-    setCurrentReviewToDelete(review);
-    setDeleteModalVisible(true);
-  };
-
   const sortedUserReviews = userReviews.sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
@@ -110,6 +99,7 @@ const ReviewsPage = () => {
       <Text style={styles.title}>Your Reviews</Text>
       <ReviewsList
         reviews={sortedUserReviews}
+        showUserName={false}
         onEdit={(review) => {
           setCurrentReview(review);
           setModalVisible(true);
@@ -130,7 +120,9 @@ const ReviewsPage = () => {
       <DeleteReviewModal
         visible={deleteModalVisible}
         onClose={() => setDeleteModalVisible(false)}
-        onConfirmDelete={() => handleDeleteConfirm(currentReviewToDelete)}
+        onConfirmDelete={() =>
+          currentReviewToDelete && handleDeleteConfirm(currentReviewToDelete)
+        }
       />
     </View>
   );

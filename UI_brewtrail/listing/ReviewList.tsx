@@ -14,54 +14,73 @@ interface ReviewsListProps {
   reviews: Review[];
   onEdit?: (review: Review) => void;
   onDelete?: (review: Review) => void;
+  showBreweryName?: boolean;
+  showUserName?: boolean;
+  navigable?: boolean;
 }
 
 const ReviewsList: React.FC<ReviewsListProps> = ({
   reviews,
   onEdit,
   onDelete,
+  showBreweryName = true,
+  showUserName = true,
+  navigable = true,
 }) => {
-  const renderItem = ({ item }: { item: Review }) => (
-    <View style={styles.card}>
-      <Link
-        href={`/BreweryDetails/${item.openBreweryDbId}`}
-        style={{ flex: 1 }}
-        asChild
-      >
-        <TouchableOpacity>
+  // Helper function to render each review item
+  const renderReviewItem = ({ item }: { item: Review }) => {
+    const reviewContent = (
+      <>
+        {showBreweryName && (
           <Text style={styles.title}>{item.breweryName}</Text>
-          <Text>Rating: {item.rating}</Text>
-          <Text>Comment: {item.comment}</Text>
-          <Text>Reviewed by: {item.userName}</Text>
-          <Text>Posted: {new Date(item.createdAt).toLocaleDateString()}</Text>
-        </TouchableOpacity>
-      </Link>
-      <View style={styles.buttonContainer}>
-        {onEdit && (
-          <TouchableOpacity
-            onPress={() => onEdit(item)}
-            style={styles.editButton}
-          >
-            <Text style={styles.buttonText}>Edit</Text>
-          </TouchableOpacity>
         )}
-        {onDelete && (
-          <TouchableOpacity
-            onPress={() => onDelete(item)}
-            style={styles.deleteButton}
+        <Text>Rating: {item.rating}</Text>
+        <Text>Comment: {item.comment}</Text>
+        {showUserName && <Text>Reviewed by: {item.userName}</Text>}
+        <Text>Posted: {new Date(item.createdAt).toLocaleDateString()}</Text>
+      </>
+    );
+
+    return (
+      <View style={styles.card}>
+        {navigable ? (
+          <Link
+            href={`/BreweryDetails/${item.openBreweryDbId}`}
+            style={{ flex: 1 }}
+            asChild
           >
-            <Text style={styles.buttonText}>Delete</Text>
-          </TouchableOpacity>
+            <TouchableOpacity>{reviewContent}</TouchableOpacity>
+          </Link>
+        ) : (
+          <View>{reviewContent}</View>
         )}
+        <View style={styles.buttonContainer}>
+          {onEdit && (
+            <TouchableOpacity
+              onPress={() => onEdit(item)}
+              style={styles.editButton}
+            >
+              <Text style={styles.buttonText}>Edit</Text>
+            </TouchableOpacity>
+          )}
+          {onDelete && (
+            <TouchableOpacity
+              onPress={() => onDelete(item)}
+              style={styles.deleteButton}
+            >
+              <Text style={styles.buttonText}>Delete</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <FlatList
       data={reviews}
       keyExtractor={(item, index) => index}
-      renderItem={renderItem}
+      renderItem={renderReviewItem}
     />
   );
 };

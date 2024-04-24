@@ -14,23 +14,9 @@ import {
 import { Link, useLocalSearchParams } from 'expo-router';
 import ReviewModal from '../(modals)/reviewModal';
 import { useReviews } from '@/context/ReviewContext';
-import { Review } from '@/types/types';
+import { Review, Brewery } from '@/types/types';
 import { useAuth } from '@/context/auth';
-
-interface Brewery {
-  name: string;
-  city: string;
-  stateProvince: string;
-  breweryType: string;
-  address1: string;
-  phone?: string;
-  websiteUrl?: string;
-}
-
-// interface Review {
-//   rating: number;
-//   comment: string;
-// }
+import ReviewsList from '@/listing/ReviewList';
 
 const BreweryDetailsScreen = () => {
   const { session } = useAuth();
@@ -80,7 +66,7 @@ const BreweryDetailsScreen = () => {
           {brewery.websiteUrl && (
             <Text
               style={styles.link}
-              onPress={() => openURL(brewery.websiteUrl!)}
+              onPress={() => openURL(brewery.websiteUrl)}
             >
               Visit Website
             </Text>
@@ -90,21 +76,14 @@ const BreweryDetailsScreen = () => {
 
       <View style={styles.reviewsSection}>
         <Text style={styles.subtitle}>Reviews</Text>
-        <FlatList
-          data={sortedReviews}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.review}>
-              <Text style={styles.reviewText}>Rating: {item.rating}</Text>
-              <Text style={styles.reviewText}>Comment: {item.comment}</Text>
-              <Text style={styles.reviewText}>Posted by: {item.userName}</Text>
-              <Text style={styles.reviewText}>
-                Posted: {new Date(item.createdAt).toLocaleDateString()}
-              </Text>
-            </View>
-          )}
-          ListEmptyComponent={<Text>No reviews yet.</Text>}
-        />
+        {sortedReviews.length > 0 ? (
+          <ReviewsList
+            reviews={sortedReviews}
+            showBreweryName={false}
+          />
+        ) : (
+          <Text style={styles.emptyText}>No reviews found.</Text>
+        )}
       </View>
 
       <ReviewModal
@@ -158,6 +137,11 @@ const styles = StyleSheet.create({
   reviewText: {
     fontSize: 16,
     color: '#333', // Dark grey for better readability
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 16,
   },
 });
 

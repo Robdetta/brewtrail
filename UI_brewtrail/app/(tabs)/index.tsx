@@ -1,21 +1,30 @@
 import { Text, View } from '@/components/Themed';
 import React, { useEffect, useState } from 'react';
-import { Link, Redirect, Stack } from 'expo-router';
-import { supabase } from '../../lib/supabase-client';
-import { Session } from '@supabase/supabase-js';
-import { useAuth } from '@/context/auth';
-import { fetchAllReviews } from '@/services/services';
 import { useReviews } from '@/context/ReviewContext';
 import { StyleSheet } from 'react-native';
 import ReviewsList from '@/listing/ReviewList';
+import { useIsFocused } from '@react-navigation/native';
 
 const Feed = () => {
-  const { session } = useAuth();
+  const isFocused = useIsFocused();
   const { generalReviews, loading, error, fetchGeneralReviews } = useReviews();
+  const [sortedReviews, setSortedReviews] = useState([]);
 
   useEffect(() => {
-    fetchGeneralReviews();
-  }, [fetchGeneralReviews]);
+    if (isFocused) {
+      fetchGeneralReviews();
+    }
+  }, [isFocused, fetchGeneralReviews]);
+
+  useEffect(() => {
+    // Sort reviews whenever the generalReviews array changes
+    console.log('General reviews updated:', generalReviews);
+    const sorted = [...generalReviews].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+    setSortedReviews(sorted);
+  }, [generalReviews]);
 
   if (loading) {
     return <Text>Loading...</Text>; // Display a loading indicator
@@ -25,15 +34,11 @@ const Feed = () => {
     return <Text>Error: {error}</Text>; // Display error message
   }
 
-  const sortedReviews = generalReviews.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Feed</Text>
-      {generalReviews.length > 0 ? (
-        <ReviewsList reviews={generalReviews} />
+      {sortedReviews.length > 0 ? (
+        <ReviewsList reviews={sortedReviews} />
       ) : (
         <Text style={styles.emptyText}>No reviews found.</Text>
       )}

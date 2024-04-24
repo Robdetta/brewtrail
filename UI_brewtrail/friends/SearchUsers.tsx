@@ -1,14 +1,13 @@
-import React, { useState, useContext } from 'react';
-import { TextInput, View, Text, Button, FlatList } from 'react-native';
+import React, { useState } from 'react';
+import { TextInput, View, Button, FlatList } from 'react-native';
 import { useFriends } from '../context/FriendsContex';
-import { User } from '@/types/types';
 import UserListItem from '@/app/userProfile/UserListItem';
 import { useAuth } from '@/context/auth';
 
 const SearchUsers: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const { searchResults, handleSearchUsers } = useFriends();
-  const { userProfile, session } = useAuth();
+  const { userProfile } = useAuth();
 
   const handleSearch = async () => {
     if (searchTerm.trim()) {
