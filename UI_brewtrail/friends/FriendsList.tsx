@@ -60,12 +60,12 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
         console.error('Error loading friendships:', error);
       }
       setLoading(false);
-      return unsubscribe;
     };
 
     // Load friends when the component mounts
-    loadFriends();
-  }, [navigation, refreshFriends, userId, token, userProfile.id]);
+    const unsubscribe = navigation.addListener('focus', loadFriends); // Setup listener on focus
+    return unsubscribe; // Clean up listener on component unmount
+  }, [navigation, userId, token]);
 
   const handleRequestAction = async (
     action: 'accept' | 'reject',
