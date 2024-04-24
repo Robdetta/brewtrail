@@ -21,46 +21,40 @@ const ReviewsList: React.FC<ReviewsListProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const handleEdit = (e, review) => {
-    e.stopPropagation(); // Prevent the navigation event
-    onEdit(review);
-  };
-
-  const handleDelete = (e, review) => {
-    e.stopPropagation(); // Prevent the navigation event
-    onDelete(review);
-  };
-
   const renderItem = ({ item }: { item: Review }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => {
-        /* Navigate function here if needed */
-      }}
-    >
-      <View>
-        <Text style={styles.title}>{item.breweryName}</Text>
-        <Text>Rating: {item.rating}</Text>
-        <Text>Comment: {item.comment}</Text>
-        <Text>Reviewed by: {item.userName}</Text>
-        <Text>Posted: {new Date(item.createdAt).toLocaleDateString()}</Text>
-        <View style={styles.buttonContainer}>
-          {onEdit && (
-            <Button
-              title='Edit'
-              onPress={(e) => handleEdit(e, item)}
-            />
-          )}
-          {onDelete && (
-            <Button
-              title='Delete'
-              onPress={(e) => handleDelete(e, item)}
-              color='red'
-            />
-          )}
-        </View>
+    <View style={styles.card}>
+      <Link
+        href={`/BreweryDetails/${item.openBreweryDbId}`}
+        style={{ flex: 1 }}
+        asChild
+      >
+        <TouchableOpacity>
+          <Text style={styles.title}>{item.breweryName}</Text>
+          <Text>Rating: {item.rating}</Text>
+          <Text>Comment: {item.comment}</Text>
+          <Text>Reviewed by: {item.userName}</Text>
+          <Text>Posted: {new Date(item.createdAt).toLocaleDateString()}</Text>
+        </TouchableOpacity>
+      </Link>
+      <View style={styles.buttonContainer}>
+        {onEdit && (
+          <TouchableOpacity
+            onPress={() => onEdit(item)}
+            style={styles.editButton}
+          >
+            <Text style={styles.buttonText}>Edit</Text>
+          </TouchableOpacity>
+        )}
+        {onDelete && (
+          <TouchableOpacity
+            onPress={() => onDelete(item)}
+            style={styles.deleteButton}
+          >
+            <Text style={styles.buttonText}>Delete</Text>
+          </TouchableOpacity>
+        )}
       </View>
-    </TouchableOpacity>
+    </View>
   );
 
   return (
@@ -85,16 +79,32 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
     elevation: 3,
+    flexDirection: 'column',
+    justifyContent: 'space-between', // Ensures the buttons stay at the bottom
+    width: 350, // Width of the card, adjust this to make the card narrower or wider
+    alignSelf: 'center', // Aligns the card to the center of the container
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 5,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     marginTop: 10,
+  },
+  editButton: {
+    backgroundColor: '#2196F3',
+    padding: 10,
+    borderRadius: 5,
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'white',
   },
 });
 
