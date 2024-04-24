@@ -12,6 +12,7 @@ import { useAuth } from '@/context/auth';
 import { useFriends } from '@/context/FriendsContex';
 import SimpleModal from '@/friends/FriendModal';
 import { useReviews } from '@/context/ReviewContext';
+import ReviewsList from '@/listing/ReviewList';
 
 interface FriendshipExtended extends Friendship {
   requestId: number; // This represents the unique ID of the friendship.
@@ -169,16 +170,11 @@ const UserProfilePage: React.FC = () => {
       />
       <Text style={styles.title}>User Profile: {userProfile?.name}</Text>
       <Text>Email: {userProfile?.email}</Text>
-      {userReviews.map((review, index) => (
-        <View
-          key={index}
-          style={styles.review}
-        >
-          <Text>{review.breweryName} -</Text>
-          <Text>Comment: {review.comment}</Text>
-          <Text>Rating: {review.rating}</Text>
-        </View>
-      ))}
+      {userReviews.length > 0 ? (
+        <ReviewsList reviews={userReviews} />
+      ) : (
+        <Text style={styles.emptyText}>No reviews found.</Text>
+      )}
       <>
         {isPending(normalizedUserId) ? (
           <Text style={styles.pendingRequest}>Request Pending...</Text>

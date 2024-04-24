@@ -72,17 +72,17 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
     requestId: number,
   ) => {
     try {
-      // // Optimistically update the UI
-      // const updatedFriends = friends.map((friend) => {
-      //   if (friend.id === requestId && action === 'accept') {
-      //     return { ...friend, status: FriendshipStatus.ACCEPTED };
-      //   } else if (friend.id === requestId && action === 'reject') {
-      //     return { ...friend, status: FriendshipStatus.REJECTED }; // Assuming there's a rejected status
-      //   }
-      //   return friend;
-      // });
+      // Optimistically update the UI
+      const updatedFriends = friends.map((friend) => {
+        if (friend.id === requestId && action === 'accept') {
+          return { ...friend, status: FriendshipStatus.ACCEPTED };
+        } else if (friend.id === requestId && action === 'reject') {
+          return { ...friend, status: FriendshipStatus.REJECTED }; // Assuming there's a rejected status
+        }
+        return friend;
+      });
 
-      // setFriends(updatedFriends); // Set the optimistic update
+      setFriends(updatedFriends); // Set the optimistic update
 
       const result = await handleFriendRequest(
         action,

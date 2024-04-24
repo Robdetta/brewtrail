@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, Linking } from 'react-native';
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  Linking,
+  FlatList,
+} from 'react-native';
 import {
   fetchBreweryDetails,
   fetchReviewsForBrewery,
@@ -54,6 +61,12 @@ const BreweryDetailsScreen = () => {
     );
   };
 
+  const sortedReviews =
+    breweryReviews[breweryIdString]?.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    ) || [];
+
   return (
     <View style={styles.container}>
       {brewery && (
@@ -77,27 +90,21 @@ const BreweryDetailsScreen = () => {
 
       <View style={styles.reviewsSection}>
         <Text style={styles.subtitle}>Reviews</Text>
-        {reviews.length > 0 ? (
-          reviews.map(
-            (review, index) => (
-              fetchReviewsForBrewery(breweryId),
-              console.log(reviews),
-              (
-                <View
-                  key={index}
-                  style={styles.review}
-                >
-                  <Text>Rating: {review.rating}</Text>
-                  <Text>Comment: {review.comment}</Text>
-                  <Text>Posted by: {review.userName}</Text>
-                  {/* Display the username */}
-                </View>
-              )
-            ),
-          )
-        ) : (
-          <Text>No reviews yet.</Text>
-        )}
+        <FlatList
+          data={sortedReviews}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.review}>
+              <Text style={styles.reviewText}>Rating: {item.rating}</Text>
+              <Text style={styles.reviewText}>Comment: {item.comment}</Text>
+              <Text style={styles.reviewText}>Posted by: {item.userName}</Text>
+              <Text style={styles.reviewText}>
+                Posted: {new Date(item.createdAt).toLocaleDateString()}
+              </Text>
+            </View>
+          )}
+          ListEmptyComponent={<Text>No reviews yet.</Text>}
+        />
       </View>
 
       <ReviewModal
@@ -147,6 +154,10 @@ const styles = StyleSheet.create({
   link: {
     color: 'blue',
     marginTop: 5,
+  },
+  reviewText: {
+    fontSize: 16,
+    color: '#333', // Dark grey for better readability
   },
 });
 
