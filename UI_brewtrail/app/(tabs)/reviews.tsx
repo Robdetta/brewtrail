@@ -104,7 +104,7 @@ const ReviewsPage = () => {
   };
 
   const handleDeleteReview = (review: Review) => {
-    setCurrentReview(review);
+    setCurrentReviewToDelete(review);
     setDeleteModalVisible(true);
   };
 

@@ -9,11 +9,14 @@ export interface Brewery {
 }
 
 export interface Review {
-  id?: number;
-  brewery_id: number;
-  user_id: number;
+  reviewId: number;
   rating: number;
   comment: string;
+  userName: string;
+  breweryName: string;
+  createdAt: Date;
+  breweryId: string;
+  openBreweryDbId: string;
 }
 
 export interface ApiResponse<T> {

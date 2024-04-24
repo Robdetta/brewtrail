@@ -1,10 +1,12 @@
-import { Brewery, Review, ApiResponse } from '../types/types';
 import { supabase } from '../lib/supabase-client';
 import {
   UserProfile,
   Friendship,
   FriendshipStatus,
   User,
+  Review,
+  Brewery,
+  ApiResponse,
 } from '../types/types';
 
 const BASE_URL = 'http://localhost:8080/api';

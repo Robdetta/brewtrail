@@ -6,7 +6,8 @@ import { Session } from '@supabase/supabase-js';
 import { useAuth } from '@/context/auth';
 import { fetchAllReviews } from '@/services/services';
 import { useReviews } from '@/context/ReviewContext';
-import { FlatList, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import ReviewsList from '@/listing/ReviewList';
 
 const Feed = () => {
   const { session } = useAuth();
@@ -31,24 +32,11 @@ const Feed = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Feed</Text>
-      <FlatList
-        data={sortedReviews}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.ratingText}>Rating: {item.rating}</Text>
-            <Text style={styles.commentText}>Comment: {item.comment}</Text>
-            <Text style={styles.breweryText}>Brewery: {item.breweryName}</Text>
-            <Text style={styles.userText}>Reviewed by: {item.userName}</Text>
-            <Text style={styles.dateText}>
-              Posted: {new Date(item.createdAt).toLocaleDateString()}
-            </Text>
-          </View>
-        )}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No reviews found.</Text>
-        }
-      />
+      {generalReviews.length > 0 ? (
+        <ReviewsList reviews={generalReviews} />
+      ) : (
+        <Text style={styles.emptyText}>No reviews found.</Text>
+      )}
     </View>
   );
 };
