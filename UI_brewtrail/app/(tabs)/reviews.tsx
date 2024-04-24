@@ -1,4 +1,4 @@
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/auth';
 import { Redirect } from 'expo-router';
@@ -6,15 +6,8 @@ import { useReviews } from '@/context/ReviewContext';
 import EditReviewModal from '@/friends/EditReviewModal';
 import { deleteReview, updateReview } from '@/services/services';
 import DeleteReviewModal from '../(modals)/DeleteReviewModal';
-
-interface Review {
-  openBreweryDbId: string;
-  reviewId: string;
-  rating: number;
-  comment: string;
-  userName: string;
-  createdAt: string;
-}
+import { Review } from '@/types/types';
+import ReviewsList from '@/listing/ReviewList';
 
 const ReviewsPage = () => {
   const { userReviews, loading, error, fetchUserReviews } = useReviews();
@@ -109,37 +102,19 @@ const ReviewsPage = () => {
   };
 
   return (
-    <View>
-      <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Your Reviews</Text>
-      {userReviews.length > 0 ? (
-        userReviews.map((review, index) => (
-          <View
-            key={index}
-            style={{ padding: 10 }}
-          >
-            <Text>Brewery: {review.breweryName}</Text>
-            <Text>Rating: {review.rating}</Text>
-            <Text>Comment: {review.comment}</Text>
-            <Text>
-              Posted: {new Date(review.createdAt).toLocaleDateString()}
-            </Text>
-            <Button
-              title='Edit'
-              onPress={() => handleEditReview(review)}
-            />
-            <Button
-              title='Delete'
-              onPress={() => {
-                handleDeleteReview(review); // Set the review to be potentially deleted
-                setDeleteModalVisible(true); // Show the delete confirmation modal
-              }}
-              color='red'
-            />
-          </View>
-        ))
-      ) : (
-        <Text>No reviews found.</Text>
-      )}
+    <View style={styles.container}>
+      <Text style={styles.title}>Your Reviews</Text>
+      <ReviewsList
+        reviews={userReviews}
+        onEdit={(review) => {
+          setCurrentReview(review);
+          setModalVisible(true);
+        }}
+        onDelete={(review) => {
+          setCurrentReviewToDelete(review);
+          setDeleteModalVisible(true);
+        }}
+      />
       {currentReview && (
         <EditReviewModal
           review={currentReview}
@@ -151,16 +126,22 @@ const ReviewsPage = () => {
       <DeleteReviewModal
         visible={deleteModalVisible}
         onClose={() => setDeleteModalVisible(false)}
-        onConfirmDelete={() => {
-          if (currentReviewToDelete) {
-            handleDeleteConfirm(currentReviewToDelete); // Pass the review to be deleted to the confirmation function
-          } else {
-            console.error('currentReviewToDelete is null');
-          }
-        }}
+        onConfirmDelete={() => handleDeleteConfirm(currentReviewToDelete)}
       />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+});
 
 export default ReviewsPage;

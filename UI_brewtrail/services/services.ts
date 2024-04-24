@@ -131,7 +131,7 @@ export const fetchUserReviews = async (
 };
 
 export const updateReview = async (
-  reviewId: string,
+  reviewId: number,
   token: string,
   reviewData: { rating: number; comment: string; openBreweryDbId: string },
 ): Promise<Review | null> => {
@@ -166,7 +166,7 @@ export const updateReview = async (
 };
 
 export const deleteReview = async (
-  reviewId: string,
+  reviewId: number,
   token: string,
 ): Promise<void> => {
   const url = `${BASE_URL}/reviews/${reviewId}`;
