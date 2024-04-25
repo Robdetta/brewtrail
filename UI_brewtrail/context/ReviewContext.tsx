@@ -37,6 +37,7 @@ interface ReviewContextType {
     updateData: Partial<Review>,
   ) => Promise<void>;
   deleteUserReview: (reviewId: string) => Promise<void>;
+  fetchReviewsForUser: (userId: number) => Promise<void>;
 }
 
 const BASE_URL = 'http://localhost:8080/api/reviews';
@@ -56,6 +57,7 @@ const ReviewContext = createContext<ReviewContextType>({
     _updateData: Partial<Review>,
   ) => {},
   deleteUserReview: async (_reviewId: string) => {},
+  fetchReviewsForUser: async (_userId: number) => {},
 });
 
 export const ReviewProvider: React.FC<{ children: ReactNode }> = ({
@@ -67,6 +69,7 @@ export const ReviewProvider: React.FC<{ children: ReactNode }> = ({
   const [breweryReviews, setBreweryReviews] = useState<ReviewsByBrewery>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [reviews, setReviews] = useState({});
 
   // Fetch all reviews
   const fetchGeneralReviews = useCallback(async () => {
@@ -116,6 +119,30 @@ export const ReviewProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [session?.access_token]);
 
+  const fetchReviewsForUser = useCallback(
+    async (userId: number) => {
+      if (session?.access_token) {
+        const url = `${BASE_URL}/user/${userId}/reviews`;
+        try {
+          const response = await fetch(url, {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`, // Ensure you're using a valid token
+              'Content-Type': 'application/json',
+            },
+          });
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return await response.json();
+        } catch (error) {
+          console.error('Failed to fetch reviews:', error);
+          throw error; // Re-throw to handle it in the component
+        }
+      }
+    },
+    [session?.access_token],
+  );
+
   const addReview = useCallback((review: Review) => {
     console.log('Adding new review:', review);
     setGeneralReviews((prev) => [review, ...prev]); // Add new review at the start if sorting by newest first
@@ -150,6 +177,7 @@ export const ReviewProvider: React.FC<{ children: ReactNode }> = ({
         loading,
         error,
         fetchGeneralReviews,
+        fetchReviewsForUser,
         fetchUserReviews,
         fetchBreweryReviews,
         addReview,

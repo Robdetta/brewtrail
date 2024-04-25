@@ -84,17 +84,19 @@ class ReviewController(
         }
     }
 
-//    @PutMapping("/{reviewId}")
-//    fun updateReview(@PathVariable reviewId: Long, @RequestBody reviewDto: ReviewDto): ResponseEntity<Any> {
-//        try {
-//            // Temporarily use a fixed user ID or retrieve it in a different way for testing
-//            val userId = 18L // Example static user ID for testing purposes
-//            val updatedReview = reviewService.updateReview(reviewId, userId, reviewDto.rating, reviewDto.comment)
-//            return ResponseEntity.ok(updatedReview)
-//        } catch (ex: Exception) {
-//            return ResponseEntity.badRequest().body("Error updating review: ${ex.message}")
-//        }
-//    }
+    @GetMapping("/user/{userId}/reviews")
+    fun getReviewsByUserId(
+        @PathVariable userId: Long,
+        @AuthenticationPrincipal jwt: Jwt
+    ): ResponseEntity<List<DetailedReview>> {
+        logger.debug("Fetching reviews for user with ID: {}", userId)
+        val reviews = reviewService.getDetailedReviewsByUserId(userId)
+        return if (reviews.isNotEmpty()) {
+            ResponseEntity.ok(reviews)
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
 
 
     @DeleteMapping("/{reviewId}")

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, Button, ScrollView } from 'react-native';
+import { Text, StyleSheet, Button, ScrollView, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { fetchFriendships, fetchUserDetailsById } from '@/services/services';
 import {
@@ -35,8 +35,8 @@ const UserProfilePage: React.FC = () => {
   const [isRequestPending, setIsRequestPending] = useState(false); // Local state for pending status
   const normalizedUserId = parseInt(Array.isArray(userId) ? userId[0] : userId);
   const [pendingCheckDone, setPendingCheckDone] = useState(false); // New state to track if the pending check is complete
-
-  const { userReviews, fetchUserReviews } = useReviews();
+  const [viewedUserReviews, setViewedUserReviews] = useState<Review[]>([]);
+  const { fetchReviewsForUser } = useReviews();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,9 +53,10 @@ const UserProfilePage: React.FC = () => {
           session.access_token,
         );
         viewSetUserProfile(userProfileData);
-        await fetchUserReviews(); // Assume this method needs IDs and tokens
+        const reviews = await fetchReviewsForUser(normalizedUserId); // Fetch reviews for the viewed user
+        setViewedUserReviews(reviews);
       } catch (error) {
-        setModalMessage('Failed to load user details');
+        setModalMessage('Failed to load user details or reviews');
         setModalVisible(true);
       } finally {
         setLoading(false);
@@ -186,10 +187,10 @@ const UserProfilePage: React.FC = () => {
   }
 
   console.log(viewedUserProfile.id);
-  console.log(isRequestPending);
+  console.log(viewedUserProfile);
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <SimpleModal
         message={modalMessage}
         visible={modalVisible}
@@ -197,27 +198,30 @@ const UserProfilePage: React.FC = () => {
       />
       <Text style={styles.title}>User Profile: {viewedUserProfile?.name}</Text>
       <Text>Email: {viewedUserProfile?.email}</Text>
-      {userReviews.length > 0 ? (
-        <ReviewsList reviews={userReviews} />
+      {viewedUserReviews.length > 0 ? (
+        <ReviewsList reviews={viewedUserReviews} />
       ) : (
         <Text style={styles.emptyText}>No reviews found.</Text>
       )}
-      {isRequestPending ? (
-        <Text style={styles.pendingRequest}>Request Pending...</Text>
-      ) : isFriend(normalizedUserId) ? (
-        <Button
-          title='Unfriend'
-          onPress={handleUnfriend}
-        />
-      ) : (
-        <Button
-          title='Send Friend Request'
-          onPress={handleSendFriendRequest}
-        />
-      )}
-    </ScrollView>
+      <View style={styles.actionContainer}>
+        {isRequestPending ? (
+          <Text style={styles.pendingRequest}>Request Pending...</Text>
+        ) : isFriend(normalizedUserId) ? (
+          <Button
+            title='Unfriend'
+            onPress={handleUnfriend}
+          />
+        ) : (
+          <Button
+            title='Send Friend Request'
+            onPress={handleSendFriendRequest}
+          />
+        )}
+      </View>
+    </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -237,6 +241,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 10,
   },
+  actionContainer: {
+    marginTop: 20, // Add some space above the action buttons
+  },
 });
 
 export default UserProfilePage;
+function fetchReviewsForUser(normalizedUserId: number) {
+  throw new Error('Function not implemented.');
+}
