@@ -35,7 +35,34 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
 
+  const validateInput = (): boolean => {
+    const parsedRating = parseInt(rating);
+    if (!parsedRating || parsedRating < 1 || parsedRating > 5) {
+      setError('Please enter a valid rating between 1 and 5.');
+      return false;
+    }
+    if (!comment || comment.length > 200) {
+      // Limiting comments to 200 characters for simplicity
+      setError('Please keep your comment under 200 characters.');
+      return false;
+    }
+    return true;
+  };
+
+  const handleRatingChange = (text: string) => {
+    const num = parseInt(text);
+    if (num >= 1 && num <= 5) {
+      setRating(text);
+    } else if (text === '') {
+      setRating('');
+    }
+    // Optionally, could use else to set some error state to tell the user the input is invalid
+  };
+
   const handleReviewSubmit = async () => {
+    if (!validateInput()) {
+      return;
+    }
     const { data: session } = await supabase.auth.getSession();
     if (!session) {
       setModalMessage(
@@ -84,20 +111,19 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
       setError('Failed to submit review: ' + error.message);
     }
   };
-
   return (
     <Modal
       animationType='slide'
       transparent={true}
       visible={visible}
-      onRequestClose={() => onClose()}
+      onRequestClose={onClose}
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <Text style={styles.modalText}>Write a Review</Text>
           <TextInput
             style={styles.input}
-            onChangeText={setRating}
+            onChangeText={handleRatingChange}
             value={rating}
             placeholder='Rating (1-5)'
             keyboardType='numeric'
@@ -108,6 +134,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
             value={comment}
             placeholder='Comment'
             multiline
+            maxLength={200} // Set a maxLength for comment input
           />
           <Button
             title='Submit Review'
@@ -115,7 +142,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
           />
           <Button
             title='Cancel'
-            onPress={() => onClose()}
+            onPress={onClose}
           />
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </View>
