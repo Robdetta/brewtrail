@@ -54,9 +54,9 @@ const BreweryDetailsScreen = () => {
     ) || [];
 
   return (
-    <View>
+    <View style={styles.container}>
       {brewery && (
-        <View>
+        <View style={styles.breweryDetails}>
           <Text style={styles.title}>{brewery.name}</Text>
           <Text>City: {brewery.city}</Text>
           <Text>State: {brewery.stateProvince}</Text>
@@ -71,40 +71,33 @@ const BreweryDetailsScreen = () => {
               Visit Website
             </Text>
           )}
+          {session && (
+            <Button
+              title='Write Review'
+              onPress={() => setModalVisible(true)}
+            />
+          )}
         </View>
       )}
-
-      <View style={styles.reviewsSection}>
-        <Text style={styles.subtitle}>Reviews</Text>
-        {sortedReviews.length > 0 ? (
-          <ReviewsList
-            reviews={sortedReviews}
-            showBreweryName={false}
-          />
-        ) : (
-          <Text style={styles.emptyText}>No reviews found.</Text>
-        )}
-      </View>
 
       <ReviewModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         onReviewSubmitted={(review) => {
-          addReview(review); // Add review to context
-          fetchBreweryReviews(review.breweryId); // Optionally refetch reviews for the brewery
-        }} // Passing the function as a prop
+          addReview(review);
+          fetchBreweryReviews(review.breweryId);
+        }}
         breweryId={breweryIdString}
       />
 
-      {session ? (
-        <Button
-          title='Write Review'
-          onPress={() => setModalVisible(true)}
+      <Text style={styles.subtitle}>Reviews</Text>
+      {sortedReviews.length > 0 ? (
+        <ReviewsList
+          reviews={sortedReviews}
+          showBreweryName={false}
         />
       ) : (
-        <Link href='/(modals)/login'>
-          <Button title='Please Log In' />
-        </Link>
+        <Text style={styles.emptyText}>No reviews found.</Text>
       )}
     </View>
   );
@@ -115,32 +108,23 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+  breweryDetails: {
+    marginBottom: 20,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
   },
   subtitle: {
     fontSize: 20,
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  reviewsSection: {
-    marginTop: 20,
-  },
-  review: {
     marginBottom: 10,
   },
   link: {
     color: 'blue',
     marginTop: 5,
   },
-  reviewText: {
-    fontSize: 16,
-    color: '#333', // Dark grey for better readability
-  },
   emptyText: {
     textAlign: 'center',
-    marginTop: 20,
     fontSize: 16,
   },
 });
