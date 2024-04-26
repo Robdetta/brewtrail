@@ -18,6 +18,7 @@ const Layout = () => {
         name='index'
         options={{
           tabBarLabel: 'Feed',
+          headerTitle: 'BrewTrail',
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons
               name='feed'
@@ -31,6 +32,7 @@ const Layout = () => {
         name='friends'
         options={{
           tabBarLabel: 'Friends',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5
               name='user-friends'

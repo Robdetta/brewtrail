@@ -54,7 +54,7 @@ const BreweryDetailsScreen = () => {
     ) || [];
 
   return (
-    <View style={styles.container}>
+    <View>
       {brewery && (
         <View>
           <Text style={styles.title}>{brewery.name}</Text>

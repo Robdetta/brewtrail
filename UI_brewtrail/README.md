@@ -1,12 +1,12 @@
 input validation from review, comment
+write 2 unit tests
+a way to run a report
 
 within the search for friends, and breweries
 
 fix flatlist scrollview
 
 fix headers and add navigation
-
-write 2 unit tests
 
 fix some UI changes
 -within the friends list, and friend request
