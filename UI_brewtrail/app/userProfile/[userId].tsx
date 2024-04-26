@@ -247,6 +247,3 @@ const styles = StyleSheet.create({
 });
 
 export default UserProfilePage;
-function fetchReviewsForUser(normalizedUserId: number) {
-  throw new Error('Function not implemented.');
-}

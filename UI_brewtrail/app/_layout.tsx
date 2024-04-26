@@ -13,6 +13,7 @@ import { useColorScheme } from '@/components/useColorScheme';
 import { ReviewProvider } from '@/context/ReviewContext';
 import { FriendsProvider } from '@/context/FriendsContex';
 import UserProfile from './userProfile/[userId]';
+import BreweryDetails from './BreweryDetails/[breweryId]';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -51,6 +52,8 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
+console.log(UserProfile.name);
+
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
@@ -66,7 +69,15 @@ function RootLayoutNav() {
               />
               <Stack.Screen
                 name='(modals)/login'
-                options={{ presentation: 'modal' }}
+                options={{ presentation: 'modal', headerShown: false }}
+              />
+              <Stack.Screen
+                name='userProfile/[userId]'
+                options={{ headerTitle: 'User Profile' }}
+              />
+              <Stack.Screen
+                name='BreweryDetails/[breweryId]'
+                options={{ headerTitle: 'Brewery Details' }}
               />
             </Stack>
           </FriendsProvider>
