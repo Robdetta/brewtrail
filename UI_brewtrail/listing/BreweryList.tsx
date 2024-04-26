@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { Link } from 'expo-router'; // Use navigate from Expo Router
+import { Link, useNavigation } from 'expo-router'; // Use navigate from Expo Router
 
 interface Brewery {
   id: string;
@@ -20,6 +20,12 @@ interface BreweryListProps {
 }
 
 const BreweryList: React.FC<BreweryListProps> = ({ breweries }) => {
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({ headerShown: false });
+  }, [navigation]);
+
   const renderItem = ({ item }: { item: Brewery }) => (
     // Updated to use `href` instead of `to`
     <Link

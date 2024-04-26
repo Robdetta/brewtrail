@@ -46,6 +46,7 @@ const Layout = () => {
         name='explore'
         options={{
           tabBarLabel: 'Explore',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5
               name='search'
@@ -59,6 +60,7 @@ const Layout = () => {
         name='reviews'
         options={{
           tabBarLabel: 'Reviews',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons
               name='reviews'
@@ -72,6 +74,7 @@ const Layout = () => {
         name='profile'
         options={{
           tabBarLabel: 'Profile',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5
               name='user'

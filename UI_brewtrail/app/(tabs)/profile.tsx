@@ -11,7 +11,7 @@ const Profile: React.FC = () => {
   const { userProfile, signOut } = useAuth();
 
   if (!userProfile) {
-    return <Text>Please log in to view your profile.</Text>;
+    return <Redirect href='/(modals)/login' />;
   }
 
   const handleLogout = async () => {

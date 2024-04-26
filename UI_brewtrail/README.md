@@ -1,10 +1,4 @@
-input validation from review, comment
 write 2 unit tests
-a way to run a report
-
-within the search for friends, and breweries
-
-fix flatlist scrollview
 
 fix headers and add navigation
 
@@ -20,3 +14,5 @@ that to meet the project requirements
 look into the color scheme as well
 
 update documentation
+
+To Do change the Header names to be dynamic
