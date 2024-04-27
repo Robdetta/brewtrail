@@ -15,12 +15,11 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(''); // Store error messages from login attempts
 
-  async function signInWithEmail() {
+  async function signInWithEmail(): Promise<void> {
     if (!isValidEmail(email)) {
       setErrorMessage('Please enter a valid email address.');
       return;
     }
-
     if (!isValidPassword(password)) {
       setErrorMessage('Password must be at least 6 characters long.');
       return;
@@ -28,14 +27,15 @@ export default function Login() {
 
     setLoading(true);
     setErrorMessage(''); // Clear previous error messages
-    try {
-      await signIn(email, password);
-      closeModal(); // Close modal on successful login
-    } catch (error) {
-      console.error(error);
-      setErrorMessage('Failed to sign in. Please check your credentials.');
-    }
+    const result = await signIn(email, password);
     setLoading(false);
+    if (!result.success) {
+      setErrorMessage(
+        'Invalid login credentials' || 'An error occurred during sign-in.',
+      ); // Display server error message
+    } else {
+      closeModal(); // Close modal on successful login
+    }
   }
 
   const goToSignUp = () => {
@@ -71,6 +71,7 @@ export default function Login() {
         }} // Clear error message on edit
         value={email}
         placeholder='email@address.com'
+        testID='emailInput'
         autoCapitalize='none'
         errorMessage={errorMessage.includes('email') ? errorMessage : ''}
       />
@@ -86,16 +87,23 @@ export default function Login() {
         placeholder='Password'
         autoCapitalize='none'
         errorMessage={errorMessage.includes('Password') ? errorMessage : ''}
+        testID='passwordInput'
       />
       {errorMessage &&
         !errorMessage.includes('email') &&
         !errorMessage.includes('Password') && (
-          <Text style={styles.errorText}>{errorMessage}</Text>
+          <Text
+            style={styles.errorText}
+            testID='errorMessage'
+          >
+            {errorMessage}
+          </Text>
         )}
       <Button
         title='Login'
         loading={loading}
         onPress={signInWithEmail}
+        testID='loginButton'
       />
       <Button
         title="Don't have an account? Sign Up"

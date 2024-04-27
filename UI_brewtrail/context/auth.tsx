@@ -74,19 +74,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     // Optionally handle user notifications or navigation here
   };
 
-  const signIn = async (email: string, password: string) => {
-    setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) {
-      console.error('Error signing in:', error);
-      setLoading(false);
-      throw error; // or handle the error as per your application's needs
+  const signIn = async (
+    email: string,
+    password: string,
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw new Error(error.message); // Assuming error.message contains "Invalid login credentials"
+      updateSessionAndProfile(data.session);
+      router.replace('/(tabs)');
+      return { success: true };
+    } catch (error: any) {
+      console.error('Error signing in:', error.message);
+      return { success: false, error: error.message }; // Pass the error message back to the component
     }
-    updateSessionAndProfile(data.session);
-    router.replace('/(tabs)');
   };
 
   const signOut = async () => {
