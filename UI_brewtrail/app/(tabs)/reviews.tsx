@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
   },
 });
 

@@ -62,9 +62,3 @@ export interface Friendship {
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
 }
-
-export interface SignInResult {
-  success: boolean;
-  session?: any; // Replace 'any' with your session type
-  error?: string;
-}

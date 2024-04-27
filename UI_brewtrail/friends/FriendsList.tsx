@@ -10,7 +10,7 @@ import {
 } from '@/services/services';
 import SimpleModal from './FriendModal';
 import { useNavigation } from 'expo-router';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 
 interface Friend {
   id: number;
@@ -158,7 +158,10 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
               .filter((friend) => friend.status === FriendshipStatus.ACCEPTED)
               .map((friend) => (
                 <li key={friend.id}>
-                  <Link href={`/userProfile/${friend.friendId}`}>
+                  <Link
+                    href={`/userProfile/${friend.friendId}`}
+                    style={styles.nameLinkStyle}
+                  >
                     {friend.friendName}
                   </Link>
                 </li>
@@ -175,16 +178,21 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
               )
               .map((friend) => (
                 <li key={friend.id}>
-                  <Link href={`/userProfile/${friend.friendId}`}>
+                  <Link
+                    href={`/userProfile/${friend.friendId}`}
+                    style={styles.nameLinkStyle}
+                  >
                     {friend.friendName} - Pending
                   </Link>
                   <button
                     onClick={() => handleRequestAction('accept', friend.id)}
+                    style={styles.buttonStyle}
                   >
                     Accept
                   </button>
                   <button
                     onClick={() => handleRequestAction('reject', friend.id)}
+                    style={styles.rejectButtonStyle}
                   >
                     Reject
                   </button>
@@ -196,5 +204,42 @@ const FriendsListComponent: React.FC<FriendsListProps> = ({
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  linkStyle: {
+    color: 'blue', // Keep the link color as blue
+    textDecorationLine: 'underline', // Underline to signify clickability
+  },
+  buttonStyle: {
+    backgroundColor: '#4CAF50', // A green background for the accept button
+    color: 'white', // White text for visibility
+    padding: 8,
+    margin: 4,
+    borderRadius: 5, // Rounded corners
+  },
+  rejectButtonStyle: {
+    backgroundColor: '#F44336', // A red background for the reject button
+    color: 'white',
+    padding: 8,
+    margin: 4,
+    borderRadius: 5,
+  },
+  nameLinkStyle: {
+    paddingVertical: 2,
+    paddingHorizontal: 15,
+    marginVertical: 5,
+    backgroundColor: '#007bff', // A deeper blue background
+    color: 'white', // White text for high contrast
+    borderRadius: 20, // Rounded edges for a pill-like shape
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 18,
+    shadowColor: '#000', // Shadow for 3D effect
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 4, // For Android shadow effect
+  },
+});
 
 export default FriendsListComponent;

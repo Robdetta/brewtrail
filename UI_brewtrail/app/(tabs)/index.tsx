@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
   },
   card: {
     backgroundColor: '#ffd700', // Beer color for the cards

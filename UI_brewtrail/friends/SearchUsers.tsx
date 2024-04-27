@@ -72,6 +72,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   input: {
     height: 40,
@@ -79,6 +81,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+    width: '50%',
+    alignSelf: 'center',
+  },
+  buttonContainer: {
+    width: '50%',
+    alignSelf: 'center',
+    marginTop: 10,
   },
   errorText: {
     color: 'red',

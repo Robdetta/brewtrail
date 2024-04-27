@@ -89,11 +89,13 @@ const ExploreScreen = () => {
           value={state}
           placeholder='Enter State'
         />
-        <Button
-          onPress={handleSearch}
-          title='Search'
-          color='#841584'
-        />
+        <View style={styles.buttonContainer}>
+          <Button
+            onPress={handleSearch}
+            title='Search'
+            color='#841584'
+          />
+        </View>
       </View>
       <Text>Last Search: {lastSearchTime}</Text>
       <View style={styles.historyContainer}>
@@ -125,7 +127,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   searchContainer: {
-    width: '100%',
+    width: '30%',
     marginBottom: 20,
   },
   input: {
@@ -134,6 +136,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     width: '100%',
+    alignSelf: 'center',
   },
   historyContainer: {
     width: '100%',
@@ -147,6 +150,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 5,
     color: 'blue',
+  },
+  buttonContainer: {
+    width: '80%', // Match the input width
+    alignSelf: 'center', // Center align the button
+    marginTop: 10,
   },
 });
 
