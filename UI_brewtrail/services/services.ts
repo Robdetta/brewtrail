@@ -9,7 +9,7 @@ import {
   ApiResponse,
 } from '../types/types';
 
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL as string;
 
 export const searchBreweries = async (city: string, state: string) => {
   const url = `${BASE_URL}/search?city=${encodeURIComponent(
