@@ -40,7 +40,8 @@ interface ReviewContextType {
   fetchReviewsForUser: (userId: number) => Promise<void>;
 }
 
-const BASE_URL = 'http://localhost:8080/api/reviews';
+const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL + '/api/reviews';
+console.log('API Base URL:', process.env.EXPO_PUBLIC_BASE_URL);
 
 const ReviewContext = createContext<ReviewContextType>({
   generalReviews: [],
