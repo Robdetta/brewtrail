@@ -2,7 +2,6 @@
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -19,7 +18,6 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
-import org.springframework.web.cors.CorsUtils
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 import javax.crypto.spec.SecretKeySpec
@@ -39,17 +37,15 @@ class SecurityConfig {
     }
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
-        val config = CorsConfiguration().apply {
-            allowedOrigins = listOf(System.getenv("FRONTEND_URL")) // Ensure this matches exactly what the client sends
+        val configuration = CorsConfiguration().apply {
+            allowCredentials = true
+            allowedOrigins = listOf(System.getenv("FRONTEND_URL")) // Specify your frontend URL
             allowedHeaders = listOf("*")
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            allowCredentials = true
             maxAge = 3600L
         }
-        config.addAllowedMethod(HttpMethod.OPTIONS) // Explicitly allow OPTIONS
-
         val source = UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration("/**", config)
+        source.registerCorsConfiguration("/**", configuration)
         return source
     }
 
@@ -60,8 +56,7 @@ class SecurityConfig {
             .csrf { csrf -> csrf.disable() }
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/api/search/**","/api/breweries/**", "/api/reviews/").permitAll()
-                    .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()// Public endpoints
+                    .requestMatchers("/api/search/**","/api/breweries/**", "/api/reviews/").permitAll()  // Public endpoints
                     .requestMatchers("/api/reviews/user/**").authenticated()
                     .anyRequest().permitAll()// Other endpoints require authentication
             }
@@ -99,4 +94,5 @@ class SecurityConfig {
         }
 
     }
+
 }
