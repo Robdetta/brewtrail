@@ -23,7 +23,7 @@ class BreweryController(private val breweryService: BreweryService) {
     fun searchBreweriesByCityAndState(
         @RequestParam city: String,
         @RequestParam(required = false) state: String?
-    ): ResponseEntity<String> {
+    ): ResponseEntity<List<Brewery>> {
         return breweryService.searchBreweriesByCityAndState(city, state)
     }
     // Add other endpoints as needed
