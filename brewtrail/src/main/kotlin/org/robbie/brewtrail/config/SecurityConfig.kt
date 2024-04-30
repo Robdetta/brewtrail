@@ -39,7 +39,7 @@ class SecurityConfig {
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration().apply {
             allowCredentials = true
-            allowedOrigins = listOf("http://localhost:8081") // Specify your frontend URL
+            allowedOrigins = listOf(System.getenv("FRONTEND_URL")) // Specify your frontend URL
             allowedHeaders = listOf("*")
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
             maxAge = 3600L
