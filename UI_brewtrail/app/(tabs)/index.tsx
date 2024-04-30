@@ -18,7 +18,6 @@ const Feed = () => {
 
   useEffect(() => {
     // Sort reviews whenever the generalReviews array changes
-    console.log('General reviews updated:', generalReviews);
     const sorted = [...generalReviews].sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -56,6 +55,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
   },
   card: {
     backgroundColor: '#ffd700', // Beer color for the cards

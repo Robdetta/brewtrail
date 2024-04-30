@@ -19,11 +19,13 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <View>
-      <Text>Profile Page: Welcome, {userProfile.name}!</Text>
+    <View style={styles.container}>
+      <Text style={styles.displayName}>Welcome, {userProfile.name}!</Text>
       <Button
         title='Logout'
         onPress={handleLogout}
+        buttonStyle={styles.buttonStyle}
+        containerStyle={styles.buttonContainer} // Apply the container style here
       />
     </View>
   );
@@ -36,6 +38,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
+  displayName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#000000', // Sets the text color to black
+  },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
@@ -43,6 +50,15 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 18,
     marginTop: 10,
+  },
+  buttonContainer: {
+    alignSelf: 'center', // Aligns the button container to the center horizontally
+    width: '50%', // Sets the width of the button to 50% of its container's width
+    marginTop: 20, // Adds some margin on the top for spacing
+  },
+  buttonStyle: {
+    backgroundColor: '#264653', // Dark blue color
+    borderRadius: 10,
   },
 });
 

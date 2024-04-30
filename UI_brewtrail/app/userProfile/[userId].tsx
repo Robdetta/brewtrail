@@ -186,9 +186,6 @@ const UserProfilePage: React.FC = () => {
     return <Text>User not found.</Text>;
   }
 
-  console.log(viewedUserProfile.id);
-  console.log(viewedUserProfile);
-
   return (
     <View style={styles.container}>
       <SimpleModal
