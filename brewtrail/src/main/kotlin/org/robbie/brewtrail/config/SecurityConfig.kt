@@ -22,7 +22,6 @@ import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.CorsUtils
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
-import java.util.*
 import javax.crypto.spec.SecretKeySpec
 
 
@@ -69,11 +68,7 @@ class SecurityConfig {
             .sessionManagement { session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // Stateless session management
             }
-
-
-            .oauth2ResourceServer { oauth2 -> oauth2.jwt { jwt -> jwt.decoder(jwtDecoder()) } }
             .httpBasic(Customizer.withDefaults())  // Basic authentication as a fallback
-
         return httpSecurity.build()
     }
 
