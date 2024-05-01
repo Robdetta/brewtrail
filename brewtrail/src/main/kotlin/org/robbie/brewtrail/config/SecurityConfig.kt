@@ -2,6 +2,7 @@
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -15,8 +16,10 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.web.client.RestTemplate
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.CorsUtils
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 import java.util.*
@@ -37,15 +40,17 @@ class SecurityConfig {
     }
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
-        val configuration = CorsConfiguration().apply {
-            allowCredentials = true
-            allowedOrigins = listOf("http://localhost:8081") // Specify your frontend URL
+        val config = CorsConfiguration().apply {
+            allowedOrigins = listOf(System.getenv("FRONTEND_URL")) // Ensure this matches exactly what the client sends
             allowedHeaders = listOf("*")
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+            allowCredentials = true
             maxAge = 3600L
         }
+        config.addAllowedMethod(HttpMethod.OPTIONS) // Explicitly allow OPTIONS
+
         val source = UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration("/**", configuration)
+        source.registerCorsConfiguration("/**", config)
         return source
     }
 
@@ -56,7 +61,8 @@ class SecurityConfig {
             .csrf { csrf -> csrf.disable() }
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/api/search/**","/api/breweries/**", "/api/reviews/").permitAll()  // Public endpoints
+                    .requestMatchers("/api/search/**","/api/breweries/**", "/api/reviews/").permitAll()
+                    .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()// Public endpoints
                     .requestMatchers("/api/reviews/user/**").authenticated()
                     .anyRequest().permitAll()// Other endpoints require authentication
             }
@@ -89,4 +95,13 @@ class SecurityConfig {
         return BCryptPasswordEncoder()  // Define a password encoder bean
     }
 
+    @Configuration
+    class RestTemplateConfig {
+
+        @Bean
+        fun restTemplate(): RestTemplate {
+            return RestTemplate()
+        }
+
+    }
 }

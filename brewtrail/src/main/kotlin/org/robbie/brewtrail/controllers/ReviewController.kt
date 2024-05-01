@@ -16,7 +16,6 @@ import java.util.*
 
 data class ApiResponse(val message: String)
 @RestController
-@CrossOrigin(origins = ["http://localhost:8081"])
 @RequestMapping("/api/reviews")
 class ReviewController(
     private val reviewService: ReviewService,
