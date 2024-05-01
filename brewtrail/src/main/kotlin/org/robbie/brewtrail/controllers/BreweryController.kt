@@ -5,6 +5,7 @@ import org.robbie.brewtrail.services.interfaces.BreweryService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+
 @RestController
 @RequestMapping("/api")
 class BreweryController(private val breweryService: BreweryService) {
@@ -23,7 +24,7 @@ class BreweryController(private val breweryService: BreweryService) {
     fun searchBreweriesByCityAndState(
         @RequestParam city: String,
         @RequestParam(required = false) state: String?
-    ): ResponseEntity<List<Brewery>> {
+    ): ResponseEntity<String> {
         return breweryService.searchBreweriesByCityAndState(city, state)
     }
     // Add other endpoints as needed

@@ -7,6 +7,8 @@ import jakarta.persistence.Column
 @Entity
 data class Brewery(
 
+
+
     @Column(name = "open_brewery_db_id", unique = true)
     val openBreweryDbId: String,  // ID from Open Brewery DB
 

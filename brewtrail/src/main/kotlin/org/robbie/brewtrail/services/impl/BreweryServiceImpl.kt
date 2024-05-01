@@ -4,8 +4,6 @@ import org.robbie.brewtrail.dto.BreweryCreationDto
 import org.robbie.brewtrail.entity.Brewery
 import org.robbie.brewtrail.repository.BreweryRepository
 import org.robbie.brewtrail.services.interfaces.BreweryService
-import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
@@ -18,10 +16,9 @@ class BreweryServiceImpl(
 ) : BreweryService {
 
     private val baseUrl = "https://api.openbrewerydb.org/breweries"
-    override fun searchBreweriesByCityAndState(city: String, state: String?): ResponseEntity<List<Brewery>> {
-        val url = "$baseUrl?by_city=${city.replace(" ", "_")}${state?.let { "&by_state=${it.replace(" ", "_")}" }.orEmpty()}"
-        val responseType = object : ParameterizedTypeReference<List<Brewery>>() {}
-        return restTemplate.exchange(url, HttpMethod.GET, null, responseType)
+    override fun searchBreweriesByCityAndState(city: String, state: String?): ResponseEntity<String> {
+        val url = "$baseUrl?by_city=${city.replace(" ", "_")}" + state?.let { "&by_state=${state.replace(" ", "_")}"}.orEmpty()
+        return restTemplate.getForEntity(url, String::class.java)
     }
 
     override fun fetchBreweryByOpenBreweryDbId(openBreweryDbId: String): Brewery? {
