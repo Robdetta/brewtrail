@@ -15,6 +15,7 @@ export const searchBreweries = async (city: string, state: string) => {
   const url = `${BASE_URL}/search?city=${encodeURIComponent(
     city,
   )}&state=${encodeURIComponent(state)}`;
+  console.log('Constructed URL for API call:', url);
   try {
     const response = await fetch(url);
     const data = await response.json();
@@ -66,6 +67,7 @@ export const submitReview = async (
 
 export const fetchReviewsForBrewery = async (breweryId: string) => {
   try {
+    console.log(`BASE URL: ${BASE_URL}`);
     const response = await fetch(`${BASE_URL}/reviews/brewery/${breweryId}`);
     if (!response.ok) {
       throw new Error('Network response was not ok');

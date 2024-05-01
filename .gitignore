@@ -3,3 +3,7 @@ UI_brewtrail/env.dt.ts
 .idea
 .vscode
 UI_brewtrail/createUsers.ts
+
+
+# Local Netlify folder
+.netlify

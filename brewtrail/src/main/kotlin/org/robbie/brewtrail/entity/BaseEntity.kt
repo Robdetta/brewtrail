@@ -9,7 +9,7 @@ import java.time.Instant
 open class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    open val id: Long = 0
+    open val id: Long? = null
 
     @Column(name = "created_at", nullable = false, updatable = false)
     open val createdAt: Instant = Instant.now()
