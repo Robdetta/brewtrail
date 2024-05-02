@@ -201,7 +201,7 @@ const UserProfilePage: React.FC = () => {
         <Text style={styles.emptyText}>No reviews found.</Text>
       )}
       <View style={styles.actionContainer}>
-        {isRequestPending ? (
+        {isRequestPending || isPending(normalizedUserId) ? (
           <Text style={styles.pendingRequest}>Request Pending...</Text>
         ) : isFriend(normalizedUserId) ? (
           <Button
