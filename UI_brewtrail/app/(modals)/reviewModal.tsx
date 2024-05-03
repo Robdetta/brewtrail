@@ -111,6 +111,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
       setError('Failed to submit review: ' + error.message);
     }
   };
+
   return (
     <Modal
       animationType='slide'
@@ -186,7 +187,8 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
-    marginTop: 10,
+    fontSize: 14,
+    marginBottom: 10,
   },
 });
 
