@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Linking,
   FlatList,
+  TouchableOpacity,
 } from 'react-native';
 import {
   fetchBreweryDetails,
@@ -72,10 +73,12 @@ const BreweryDetailsScreen = () => {
             </Text>
           )}
           {session && (
-            <Button
-              title='Write Review'
+            <TouchableOpacity
+              style={styles.button}
               onPress={() => setModalVisible(true)}
-            />
+            >
+              <Text style={styles.buttonText}>Write Review</Text>
+            </TouchableOpacity>
           )}
         </View>
       )}
@@ -118,6 +121,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 20,
     marginBottom: 10,
+    textAlign: 'center',
   },
   link: {
     color: 'blue',
@@ -126,6 +130,22 @@ const styles = StyleSheet.create({
   emptyText: {
     textAlign: 'center',
     fontSize: 16,
+  },
+  button: {
+    backgroundColor: 'blue',
+    color: 'white',
+    paddingVertical: 8, // Reduced vertical padding
+    paddingHorizontal: 12, // Reduced horizontal padding
+    borderRadius: 5,
+    elevation: 2,
+    marginTop: 10,
+    marginBottom: 10,
+    width: 150,
+  },
+  buttonText: {
+    textAlign: 'center',
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 
