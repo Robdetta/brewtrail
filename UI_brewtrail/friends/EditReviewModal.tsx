@@ -17,10 +17,37 @@ const EditReviewModal: React.FC<EditReviewModalProps> = ({
 }) => {
   const [rating, setRating] = useState(review.rating.toString());
   const [comment, setComment] = useState(review.comment);
+  const [error, setError] = useState('');
+
+  const validateInput = (): boolean => {
+    const parsedRating = parseInt(rating);
+    if (!parsedRating || parsedRating < 1 || parsedRating > 5) {
+      setError('Please enter a valid rating between 1 and 5.');
+      return false;
+    }
+    if (!comment || comment.length > 200) {
+      setError('Please keep your comment under 200 characters.');
+      return false;
+    }
+    setError('');
+    return true;
+  };
+
+  const handleRatingChange = (text: string) => {
+    const num = parseInt(text);
+    if (num >= 1 && num <= 5) {
+      setRating(text);
+    } else if (text === '') {
+      setRating('');
+    }
+    // Optionally, could use else to set some error state to tell the user the input is invalid
+  };
 
   const handleSave = () => {
-    onSave(Number(rating), comment); // Ensure conversion to number if necessary
-    onClose();
+    if (validateInput()) {
+      onSave(Number(rating), comment); // Ensure conversion to number if necessary
+      onClose();
+    }
   };
 
   return (
@@ -36,7 +63,8 @@ const EditReviewModal: React.FC<EditReviewModalProps> = ({
           <TextInput
             style={styles.input}
             value={rating}
-            onChangeText={setRating}
+            onChangeText={handleRatingChange}
+            placeholder='Rating (1-5)'
             keyboardType='numeric'
           />
           <TextInput

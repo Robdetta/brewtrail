@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import { Button, Input, Text } from 'react-native-elements';
 import { supabase } from '@/lib/supabase-client'; // Ensure this path is correct
 import { useAuth } from '@/context/auth';
 import SimpleModal from '@/friends/FriendModal';
 import { router } from 'expo-router';
+
+const windowWidth = Dimensions.get('window').width;
+const formWidth = Math.min(windowWidth * 0.8, 400);
 
 export default function SignUp() {
   const { signUp } = useAuth();
@@ -65,85 +68,115 @@ export default function SignUp() {
       /[!@#$%^&*(),.?":{}|<>]/.test(password)
     ); // checks for at least one special character
   };
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
-      <Input
-        label='Email'
-        leftIcon={{ type: 'font-awesome', name: 'envelope' }}
-        onChangeText={setEmail}
-        value={email}
-        placeholder='email@address.com'
-        autoCapitalize='none'
-        errorMessage={errorMessage.includes('email') ? errorMessage : ''}
-      />
-      <Input
-        label='Username'
-        leftIcon={{ type: 'font-awesome', name: 'user' }}
-        onChangeText={setUsername}
-        value={username}
-        placeholder='Username'
-        autoCapitalize='none'
-      />
-      <Input
-        label='Password'
-        leftIcon={{ type: 'font-awesome', name: 'lock' }}
-        onChangeText={setPassword}
-        value={password}
-        secureTextEntry={true}
-        placeholder='Password'
-        autoCapitalize='none'
-        errorMessage={errorMessage.includes('Password') ? errorMessage : ''}
-      />
-      <Input
-        label='Confirm Password'
-        leftIcon={{ type: 'font-awesome', name: 'lock' }}
-        onChangeText={setConfirmPassword}
-        value={confirmPassword}
-        secureTextEntry={true}
-        placeholder='Confirm Password'
-        autoCapitalize='none'
-        errorMessage={
-          password !== confirmPassword && confirmPassword
-            ? 'Passwords do not match.'
-            : ''
-        }
-      />
-      <Button
-        title='Sign Up'
-        loading={loading}
-        onPress={validateAndSignUp}
-      />
-      <Button
-        title='Already have an account? Login'
-        type='clear'
-        onPress={() => router.push('/(modals)/login')}
-      />
-      <SimpleModal
-        visible={modalVisible}
-        message={modalMessage}
-        onClose={() => setModalVisible(false)}
-      />
+    <View style={styles.centeredView}>
+      <View style={styles.modalView}>
+        <Text style={styles.modalText}>Sign Up</Text>
+        <Input
+          label='Email'
+          leftIcon={{ type: 'font-awesome', name: 'envelope' }}
+          onChangeText={setEmail}
+          value={email}
+          placeholder='email@address.com'
+          autoCapitalize='none'
+          errorMessage={errorMessage.includes('email') ? errorMessage : ''}
+          containerStyle={styles.input}
+        />
+        <Input
+          label='Username'
+          leftIcon={{ type: 'font-awesome', name: 'user' }}
+          onChangeText={setUsername}
+          value={username}
+          placeholder='Username'
+          autoCapitalize='none'
+          containerStyle={styles.input}
+        />
+        <Input
+          label='Password'
+          leftIcon={{ type: 'font-awesome', name: 'lock' }}
+          onChangeText={setPassword}
+          value={password}
+          secureTextEntry={true}
+          placeholder='Password'
+          autoCapitalize='none'
+          errorMessage={errorMessage.includes('Password') ? errorMessage : ''}
+          containerStyle={styles.input}
+        />
+        <Input
+          label='Confirm Password'
+          leftIcon={{ type: 'font-awesome', name: 'lock' }}
+          onChangeText={setConfirmPassword}
+          value={confirmPassword}
+          secureTextEntry={true}
+          placeholder='Confirm Password'
+          autoCapitalize='none'
+          errorMessage={
+            password !== confirmPassword && confirmPassword
+              ? 'Passwords do not match.'
+              : ''
+          }
+          containerStyle={styles.input}
+        />
+        <Button
+          title='Sign Up'
+          loading={loading}
+          onPress={validateAndSignUp}
+          buttonStyle={styles.button}
+        />
+        <Button
+          title='Already have an account? Login'
+          type='clear'
+          onPress={() => router.push('/(modals)/login')}
+          buttonStyle={styles.button}
+        />
+        <SimpleModal
+          visible={modalVisible}
+          message={modalMessage}
+          onClose={() => setModalVisible(false)}
+        />
+      </View>
     </View>
   );
 }
 
 // Reuse the styles from the Login component
 const styles = StyleSheet.create({
-  container: {
+  centeredView: {
     flex: 1,
     justifyContent: 'center',
-    padding: 12,
+    alignItems: 'center',
+    marginTop: 22,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  modalView: {
+    margin: 25,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 45,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  input: {
+    width: '120%', // Ensure inputs take the full width of the modal
+    marginBottom: 10,
+  },
+  button: {
+    marginTop: 10,
+    width: '100%', // Ensure buttons take the full width of the modal
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    marginBottom: 10,
   },
 });
