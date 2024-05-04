@@ -12,6 +12,8 @@ import { useAuth } from '@/context/auth'; // Make sure this path matches where y
 import { submitReview } from '@/services/services';
 import { supabase } from '@/lib/supabase-client';
 import { Review } from '@/types/types';
+import { handleRatingInput } from '@/app/util/ratingInputHandler';
+import { validateReviewInput } from '@/app/util/validateReviewInput';
 
 interface ReviewModalProps {
   visible: boolean;
@@ -35,32 +37,8 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
 
-  const validateInput = (): boolean => {
-    const parsedRating = parseInt(rating);
-    if (!parsedRating || parsedRating < 1 || parsedRating > 5) {
-      setError('Please enter a valid rating between 1 and 5.');
-      return false;
-    }
-    if (!comment || comment.length > 200) {
-      // Limiting comments to 200 characters for simplicity
-      setError('Please keep your comment under 200 characters.');
-      return false;
-    }
-    return true;
-  };
-
-  const handleRatingChange = (text: string) => {
-    const num = parseInt(text);
-    if (num >= 1 && num <= 5) {
-      setRating(text);
-    } else if (text === '') {
-      setRating('');
-    }
-    // Optionally, could use else to set some error state to tell the user the input is invalid
-  };
-
   const handleReviewSubmit = async () => {
-    if (!validateInput()) {
+    if (!validateReviewInput(rating, comment, setError)) {
       return;
     }
     const { data: session } = await supabase.auth.getSession();
@@ -124,7 +102,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
           <Text style={styles.modalText}>Write a Review</Text>
           <TextInput
             style={styles.input}
-            onChangeText={handleRatingChange}
+            onChangeText={(text) => handleRatingInput(text, setRating)}
             value={rating}
             placeholder='Rating (1-5)'
             keyboardType='numeric'

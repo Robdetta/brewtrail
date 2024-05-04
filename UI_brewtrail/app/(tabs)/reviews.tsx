@@ -10,7 +10,8 @@ import { Review } from '@/types/types';
 import ReviewsList from '@/listing/ReviewList';
 
 const ReviewsPage = () => {
-  const { userReviews, loading, error, fetchUserReviews } = useReviews();
+  const { userReviews, loading, error, fetchUserReviews, lastUpdated } =
+    useReviews();
   const { session } = useAuth();
   const [currentReview, setCurrentReview] = useState<Review | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -22,7 +23,7 @@ const ReviewsPage = () => {
     if (session?.access_token) {
       fetchUserReviews();
     }
-  }, [fetchUserReviews, session?.access_token]);
+  }, [fetchUserReviews, session?.access_token, lastUpdated]);
 
   if (!session) {
     // Redirect to the login screen if the user is not authenticated

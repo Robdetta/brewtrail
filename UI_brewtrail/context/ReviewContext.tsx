@@ -38,6 +38,7 @@ interface ReviewContextType {
   ) => Promise<void>;
   deleteUserReview: (reviewId: string) => Promise<void>;
   fetchReviewsForUser: (userId: number) => Promise<void>;
+  lastUpdated: number;
 }
 
 const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL + '/reviews';
@@ -49,6 +50,7 @@ const ReviewContext = createContext<ReviewContextType>({
   breweryReviews: {},
   loading: false,
   error: '',
+  lastUpdated: new Date(),
   fetchGeneralReviews: async () => {},
   fetchUserReviews: async () => {},
   fetchBreweryReviews: async (_breweryId: string) => {},
@@ -71,6 +73,7 @@ export const ReviewProvider: React.FC<{ children: ReactNode }> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [reviews, setReviews] = useState({});
+  const [lastUpdated, setLastUpdated] = useState<number>(Date.now());
 
   // Fetch all reviews
   const fetchGeneralReviews = useCallback(async () => {
@@ -153,6 +156,7 @@ export const ReviewProvider: React.FC<{ children: ReactNode }> = ({
         [review.breweryId]: [review, ...(prev[review.breweryId] || [])],
       }));
     }
+    setLastUpdated(Date.now());
   }, []);
 
   const deleteUserReview = useCallback((reviewId: string) => {
@@ -177,6 +181,7 @@ export const ReviewProvider: React.FC<{ children: ReactNode }> = ({
         breweryReviews,
         loading,
         error,
+        lastUpdated,
         fetchGeneralReviews,
         fetchReviewsForUser,
         fetchUserReviews,
