@@ -1,4 +1,3 @@
-// utils/ratingInputHandler.js
 export const handleRatingInput = (
   text: string,
   setterFunction: (value: string) => void,

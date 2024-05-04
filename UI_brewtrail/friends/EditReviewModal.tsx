@@ -20,9 +20,19 @@ const EditReviewModal: React.FC<EditReviewModalProps> = ({
   const [rating, setRating] = useState(review.rating.toString());
   const [comment, setComment] = useState(review.comment);
   const [error, setError] = useState('');
+  const [errorComment, setErrorComment] = useState<string>('');
+
+  const handleCommentChange = (text: string) => {
+    if (text.length <= 200) {
+      setComment(text);
+      setErrorComment('');
+    } else {
+      setErrorComment('Comment must be under 200 characters.');
+    }
+  };
 
   const handleSave = () => {
-    if (validateReviewInput(rating, comment, setError)) {
+    if (!validateReviewInput(rating, comment, setError)) {
       onSave(Number(rating), comment); // Ensure conversion to number if necessary
       onClose();
     }
@@ -49,6 +59,8 @@ const EditReviewModal: React.FC<EditReviewModalProps> = ({
             style={styles.input}
             value={comment}
             onChangeText={setComment}
+            multiline
+            maxLength={200}
           />
           <Button
             title='Save Changes'
