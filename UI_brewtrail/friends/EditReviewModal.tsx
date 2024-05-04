@@ -32,7 +32,7 @@ const EditReviewModal: React.FC<EditReviewModalProps> = ({
   };
 
   const handleSave = () => {
-    if (!validateReviewInput(rating, comment, setError)) {
+    if (validateReviewInput(rating, comment, setError)) {
       onSave(Number(rating), comment); // Ensure conversion to number if necessary
       onClose();
     }
@@ -56,10 +56,11 @@ const EditReviewModal: React.FC<EditReviewModalProps> = ({
             keyboardType='numeric'
           />
           <TextInput
-            style={styles.input}
+            style={[styles.input, { height: 80 }]}
             value={comment}
             onChangeText={setComment}
             multiline
+            placeholder='Please enter a comment under 200 characters'
             maxLength={200}
           />
           <Button

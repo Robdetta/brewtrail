@@ -67,7 +67,6 @@ export const submitReview = async (
 
 export const fetchReviewsForBrewery = async (breweryId: string) => {
   try {
-    console.log(`BASE URL: ${BASE_URL}`);
     const response = await fetch(`${BASE_URL}/reviews/brewery/${breweryId}`);
     if (!response.ok) {
       throw new Error('Network response was not ok');

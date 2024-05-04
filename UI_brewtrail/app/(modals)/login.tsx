@@ -75,6 +75,7 @@ export default function Login() {
             setErrorMessage('');
           }} // Clear error message on edit
           value={email}
+          maxLength={25}
           placeholder='email@address.com'
           testID='emailInput'
           autoCapitalize='none'
@@ -90,6 +91,7 @@ export default function Login() {
           value={password}
           secureTextEntry={true}
           placeholder='Password'
+          maxLength={20}
           autoCapitalize='none'
           errorMessage={errorMessage.includes('Password') ? errorMessage : ''}
           testID='passwordInput'

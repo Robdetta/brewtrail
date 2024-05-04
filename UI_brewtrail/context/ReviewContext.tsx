@@ -42,7 +42,6 @@ interface ReviewContextType {
 }
 
 const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL + '/reviews';
-console.log('API Base URL:', process.env.EXPO_PUBLIC_BASE_URL);
 
 const ReviewContext = createContext<ReviewContextType>({
   generalReviews: [],

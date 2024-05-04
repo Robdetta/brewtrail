@@ -1,7 +1,7 @@
 import { Text, View } from '@/components/Themed';
 import React, { useEffect, useState } from 'react';
 import { useReviews } from '@/context/ReviewContext';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ActivityIndicator } from 'react-native';
 import ReviewsList from '@/listing/ReviewList';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -26,11 +26,18 @@ const Feed = () => {
   }, [generalReviews]);
 
   if (loading) {
-    return <Text>Loading...</Text>; // Display a loading indicator
+    return (
+      <View style={styles.centeredView}>
+        <ActivityIndicator
+          size='large'
+          color='#0000ff'
+        />
+      </View>
+    ); // Display a loading spinner
   }
 
   if (error) {
-    return <Text>Error: {error}</Text>; // Display error message
+    return <Text style={styles.errorText}>Error: {error}</Text>; // Display error message
   }
 
   return (
@@ -87,6 +94,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     fontSize: 16,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 

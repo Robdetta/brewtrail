@@ -52,8 +52,6 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
-console.log(UserProfile.name);
-
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
@@ -78,6 +76,10 @@ function RootLayoutNav() {
               <Stack.Screen
                 name='BreweryDetails/[breweryId]'
                 options={{ headerTitle: 'Brewery Details' }}
+              />
+              <Stack.Screen
+                name='(modals)/signup'
+                options={{ headerTitle: 'Sign Up' }}
               />
             </Stack>
           </FriendsProvider>

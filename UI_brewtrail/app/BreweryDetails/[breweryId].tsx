@@ -5,7 +5,7 @@ import {
   Button,
   StyleSheet,
   Linking,
-  FlatList,
+  ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
 import {
@@ -26,17 +26,19 @@ const BreweryDetailsScreen = () => {
   const { breweryReviews, addReview, fetchBreweryReviews } = useReviews();
   const [modalVisible, setModalVisible] = useState(false);
   const breweryIdString = Array.isArray(breweryId) ? breweryId[0] : breweryId;
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (breweryIdString) {
-      fetchBreweryDetails(breweryIdString).then(setBrewery);
-      fetchBreweryReviews(breweryIdString);
+      setLoading(true);
+      Promise.all([
+        fetchBreweryDetails(breweryIdString).then(setBrewery),
+        fetchBreweryReviews(breweryIdString),
+      ]).finally(() => setLoading(false));
     }
   }, [breweryIdString, fetchBreweryReviews]);
 
   const reviews = breweryReviews[breweryIdString] || [];
-
-  console.log(`Brewery ID from URL: ${breweryId}`);
 
   if (!breweryId) {
     return <Text>No brewery ID provided</Text>;
