@@ -60,6 +60,7 @@ const EditReviewModal: React.FC<EditReviewModalProps> = ({
             value={comment}
             onChangeText={setComment}
             multiline
+            placeholder='Please enter a comment under 200 characters'
             maxLength={200}
           />
           <Button

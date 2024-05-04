@@ -111,7 +111,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
             style={styles.input}
             onChangeText={setComment}
             value={comment}
-            placeholder='Comment'
+            placeholder='Please enter a comment under 200 characters'
             multiline
             maxLength={200} // Set a maxLength for comment input
           />

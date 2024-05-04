@@ -19,6 +19,7 @@ export default function SignUp() {
   const [errorMessage, setErrorMessage] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const [usernameError, setUsernameError] = useState('');
 
   const validateAndSignUp = async () => {
     if (!isValidEmail(email)) {
@@ -68,6 +69,17 @@ export default function SignUp() {
       /[!@#$%^&*(),.?":{}|<>]/.test(password)
     ); // checks for at least one special character
   };
+
+  const handleUsernameChange = (text: string): void => {
+    if (text.length <= 15) {
+      setUsername(text);
+      setUsernameError('');
+    } else {
+      console.log('Username exceeds 15 characters');
+      setUsernameError('Username must be under 15 characters.');
+    }
+  };
+
   return (
     <View style={styles.centeredView}>
       <View style={styles.modalView}>
@@ -78,6 +90,7 @@ export default function SignUp() {
           onChangeText={setEmail}
           value={email}
           placeholder='email@address.com'
+          maxLength={25}
           autoCapitalize='none'
           errorMessage={errorMessage.includes('email') ? errorMessage : ''}
           containerStyle={styles.input}
@@ -85,9 +98,11 @@ export default function SignUp() {
         <Input
           label='Username'
           leftIcon={{ type: 'font-awesome', name: 'user' }}
-          onChangeText={setUsername}
+          onChangeText={handleUsernameChange}
           value={username}
           placeholder='Username'
+          maxLength={15}
+          errorMessage={usernameError}
           autoCapitalize='none'
           containerStyle={styles.input}
         />
@@ -98,6 +113,7 @@ export default function SignUp() {
           value={password}
           secureTextEntry={true}
           placeholder='Password'
+          maxLength={20}
           autoCapitalize='none'
           errorMessage={errorMessage.includes('Password') ? errorMessage : ''}
           containerStyle={styles.input}
@@ -178,5 +194,11 @@ const styles = StyleSheet.create({
     color: 'red',
     fontSize: 14,
     marginBottom: 10,
+  },
+  error: {
+    color: 'red',
+    fontSize: 14,
+    marginTop: 2,
+    marginBottom: 2,
   },
 });
