@@ -108,7 +108,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
             keyboardType='numeric'
           />
           <TextInput
-            style={styles.input}
+            style={[styles.input, { height: 80 }]}
             onChangeText={setComment}
             value={comment}
             placeholder='Please enter a comment under 200 characters'

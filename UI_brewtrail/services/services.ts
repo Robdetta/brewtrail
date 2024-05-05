@@ -15,7 +15,6 @@ export const searchBreweries = async (city: string, state: string) => {
   const url = `${BASE_URL}/search?city=${encodeURIComponent(
     city,
   )}&state=${encodeURIComponent(state)}`;
-  console.log('Constructed URL for API call:', url);
   try {
     const response = await fetch(url);
     const data = await response.json();

@@ -26,34 +26,51 @@ export default function SignUp() {
       setErrorMessage('Please enter a valid email address.');
       return;
     }
-
     if (!isValidPassword(password)) {
       setErrorMessage(
         'Password must be at least 8 characters long and include at least one number and one special character.',
       );
       return;
     }
-
     if (password !== confirmPassword) {
       setErrorMessage('Passwords do not match');
       return;
     }
-
     setLoading(true);
     setErrorMessage('');
     try {
-      await signUp(email, password, username);
-      setModalMessage(
-        'Signup Successful, Please check your inbox for email verification!',
-      );
-      setModalVisible(true);
-      // Navigation or additional success logic can be handled within the signUp function if needed
-    } catch (error) {
-      setModalMessage(errorMessage);
-      setModalVisible(true);
-    }
+      const result = await signUp(email, password, username);
+      console.log('Signup result:', result); // Debug: log result to understand the structure
 
-    setLoading(false);
+      // Check if there's an error object and it's a network error with a response object
+      if (result.error) {
+        console.error('Signup error:', result.error); // Debug: log detailed error
+        if (result.error.message?.includes('already exists')) {
+          setModalMessage(
+            'Email already exists. Please use a different email.',
+          );
+        } else {
+          setModalMessage(
+            result.error.message || 'An unexpected error occurred',
+          );
+        }
+      } else {
+        setModalMessage(
+          'Signup Successful, Please check your inbox for email verification!',
+        );
+      }
+      setModalVisible(true);
+    } catch (error: any) {
+      console.error('Error during signup:', error); // Debug: log unexpected errors
+      if (error instanceof Error) {
+        setModalMessage(error.message || 'An unexpected error occurred');
+      } else {
+        setModalMessage('An unexpected error occurred');
+      }
+      setModalVisible(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const isValidEmail = (email: string) => {
