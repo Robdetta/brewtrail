@@ -9,12 +9,30 @@ import { fetchUserProfile } from '@/services/services';
 
 interface AuthContextType {
   session: Session | null;
-  userProfile: UserProfile;
+  userProfile: UserProfile | null;
   loading: boolean;
   setUserProfile: (userProfile: UserProfile | null) => void;
-  signUp: (email: string, password: string, username: string) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (
+    email: string,
+    password: string,
+    username: string,
+  ) => Promise<{ data?: Session | null; error?: SupabaseAuthError }>;
+  signIn: (
+    email: string,
+    password: string,
+  ) => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<void>;
+}
+
+interface SignUpResponse {
+  session?: Session; // Assuming Session is the correct type for your auth session
+  error?: string;
+}
+
+interface SupabaseAuthError {
+  message: string;
+  status: number;
+  details?: string;
 }
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
@@ -63,15 +81,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, username: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { username } },
-    });
-    if (error) throw error;
-    if (data.session) setSession(data.session);
-    // Optionally handle user notifications or navigation here
+  const signUp = async (
+    email: string,
+    password: string,
+    username: string,
+  ): Promise<SignUpResponse> => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { username } },
+      });
+
+      if (error) {
+        console.error('Signup error:', error);
+        return { error: error.message };
+      }
+
+      if (data.session) {
+        setSession(data.session);
+        return { session: data.session };
+      }
+      return {}; // No session created, no error found - handle as needed
+    } catch (error: any) {
+      console.error('Exception in signUp:', error);
+      // Handle or log the exception as necessary
+      return { error: error.message || 'An unexpected error occurred' };
+    }
   };
 
   const signIn = async (

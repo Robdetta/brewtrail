@@ -36,43 +36,32 @@ export default function SignUp() {
       setErrorMessage('Passwords do not match');
       return;
     }
+
     setLoading(true);
     setErrorMessage('');
     try {
-      const result = await signUp(email, password, username);
-      console.log('Signup result:', result); // Debug: log result to understand the structure
-
-      // Check if there's an error object and it's a network error with a response object
-      if (result.error) {
-        console.error('Signup error:', result.error); // Debug: log detailed error
-        if (result.error.message?.includes('already exists')) {
-          setModalMessage(
-            'Email already exists. Please use a different email.',
-          );
-        } else {
-          setModalMessage(
-            result.error.message || 'An unexpected error occurred',
-          );
-        }
+      const { data, error } = await signUp(email, password, username);
+      if (error) {
+        setModalMessage(
+          error.message || 'An unexpected error occurred during signup.',
+        );
       } else {
+        // Assuming signup is successful regardless of session presence
         setModalMessage(
           'Signup Successful, Please check your inbox for email verification!',
         );
+        // Set a timeout to redirect to the login page after 5 seconds
+        setTimeout(() => {
+          router.push('/(modals)/login');
+        }, 5000);
       }
-      setModalVisible(true);
     } catch (error: any) {
-      console.error('Error during signup:', error); // Debug: log unexpected errors
-      if (error instanceof Error) {
-        setModalMessage(error.message || 'An unexpected error occurred');
-      } else {
-        setModalMessage('An unexpected error occurred');
-      }
-      setModalVisible(true);
+      setModalMessage(error.message || 'An unexpected error occurred');
     } finally {
+      setModalVisible(true);
       setLoading(false);
     }
   };
-
   const isValidEmail = (email: string) => {
     const re =
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
