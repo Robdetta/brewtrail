@@ -37,6 +37,12 @@ export default function SignUp() {
       return;
     }
 
+    if (!username.trim()) {
+      // Check if username is not empty or just whitespace
+      setErrorMessage('Username cannot be empty.');
+      return;
+    }
+
     setLoading(true);
     setErrorMessage('');
     try {
@@ -77,12 +83,13 @@ export default function SignUp() {
   };
 
   const handleUsernameChange = (text: string): void => {
-    if (text.length <= 15) {
+    if (text.length < 3) {
+      setUsernameError('Username must be at least 3 characters long.');
+    } else if (text.length > 15) {
+      setUsernameError('Username must be under 15 characters.');
+    } else {
       setUsername(text);
       setUsernameError('');
-    } else {
-      console.log('Username exceeds 15 characters');
-      setUsernameError('Username must be under 15 characters.');
     }
   };
 
