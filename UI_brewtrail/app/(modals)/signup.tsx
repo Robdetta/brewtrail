@@ -83,6 +83,7 @@ export default function SignUp() {
   };
 
   const handleUsernameChange = (text: string): void => {
+    setUsername(text);
     if (text.length < 3) {
       setUsernameError('Username must be at least 3 characters long.');
     } else if (text.length > 15) {
