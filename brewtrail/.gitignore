@@ -42,4 +42,6 @@ out/
 
 # Environment variable files
 .env
-.env.local
+.env.prod
+.env.dev
+
