@@ -15,7 +15,7 @@ class BreweryServiceImpl(
     private val restTemplate: RestTemplate
 ) : BreweryService {
 
-    private val baseUrl = "https://api.openbrewerydb.org/breweries"
+    private val baseUrl = "http://api.openbrewerydb.org/v1/breweries"
     override fun searchBreweriesByCityAndState(city: String, state: String?): ResponseEntity<String> {
         val url = "$baseUrl?by_city=${city.replace(" ", "_")}" + state?.let { "&by_state=${state.replace(" ", "_")}"}.orEmpty()
         return restTemplate.getForEntity(url, String::class.java)

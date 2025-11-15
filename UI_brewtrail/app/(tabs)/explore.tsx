@@ -16,7 +16,7 @@ const ExploreScreen = () => {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [breweries, setBreweries] = useState([]);
-  const [searchHistory, setSearchHistory] = useState([]);
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [lastSearchTime, setLastSearchTime] = useState('');
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const ExploreScreen = () => {
     }
   };
 
-  const handleHistoryPress = async (item) => {
+  const handleHistoryPress = async (item: string) => {
     // Extract city and state from the selected item in the search history
     const [selectedCity, selectedState] = item.split(', ');
 

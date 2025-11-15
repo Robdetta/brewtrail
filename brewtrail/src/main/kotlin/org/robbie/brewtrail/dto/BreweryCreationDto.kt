@@ -6,9 +6,9 @@ data class BreweryCreationDto(
     @JsonProperty("id") val openBreweryDbId: String?,
     @JsonProperty("name") val name: String?,
     @JsonProperty("brewery_type") val breweryType: String? = "Unknown", // Make breweryType nullable or provide a default value
-    @JsonProperty("street") val address1: String?,
+    @JsonProperty("address_1") val address1: String?,
     @JsonProperty("city") val city: String?,
-    @JsonProperty("state") val stateProvince: String?,
+    @JsonProperty("state_province") val stateProvince: String?,
     @JsonProperty("postal_code") val postalCode: String?,
     @JsonProperty("country") val country: String?,
     @JsonProperty("longitude") val longitude: String?,
